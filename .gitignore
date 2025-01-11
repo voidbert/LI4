@@ -1,0 +1,9 @@
+# Build output
+/bin
+/obj
+
+# Bad code editors
+.vscode
+
+# OSX
+.DS_Store
