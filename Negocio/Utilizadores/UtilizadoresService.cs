@@ -6,7 +6,7 @@ namespace LI4.Negocio.Utilizadores;
 
 public class UtilizadoresService
 {
-    public async Task<Utilizador.Tipo> IniciarSessao(string enderecoEletronico, string palavraPasse)
+    public async Task<Utilizador> IniciarSessao(string enderecoEletronico, string palavraPasse)
     {
         UtilizadorModel? utilizadorModel = await UtilizadoresRepository.Instance.Get(enderecoEletronico);
         if (utilizadorModel == null)
@@ -27,7 +27,7 @@ public class UtilizadoresService
             throw new ImpedidoDeIniciarSessaoException();
         }
 
-        return utilizador.TipoDeConta;
+        return utilizador;
     }
 
     public async Task RegistarUtilizador(string enderecoEletronico, string nomeCivil, string palavraPasse, Utilizador.Tipo tipoDeConta)

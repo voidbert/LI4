@@ -22,14 +22,14 @@ public class SessaoController
         this.NavigationManager = NavigationManager;
     }
 
-    public async Task<Utilizador.Tipo> IniciarSessao(string enderecoEletronico, string palavraPasse)
+    public async Task<Utilizador> IniciarSessao(string enderecoEletronico, string palavraPasse)
     {
-        Utilizador.Tipo tipo = await UtilizadoresService.IniciarSessao(enderecoEletronico, palavraPasse);
+        Utilizador utilizador = await UtilizadoresService.IniciarSessao(enderecoEletronico, palavraPasse);
 
         await ProtectedLocalStorage.SetAsync("enderecoEletronico", enderecoEletronico);
         await ProtectedLocalStorage.SetAsync("palavraPasse", palavraPasse);
 
-        return await Task.FromResult(tipo);
+        return await Task.FromResult(utilizador);
     }
 
     public async Task TerminarSessao()
@@ -38,14 +38,14 @@ public class SessaoController
         await ProtectedLocalStorage.DeleteAsync("palavraPasse");
     }
 
-    public async Task<Utilizador.Tipo?> GetTipoDeUtilizadorComSessaoIniciada()
+    public async Task<Utilizador?> GetUtilizadorComSessaoIniciada()
     {
         string? enderecoEletronico = (await ProtectedLocalStorage.GetAsync<string>("enderecoEletronico")).Value;
         string? palavraPasse = (await ProtectedLocalStorage.GetAsync<string>("palavraPasse")).Value;
 
         if (enderecoEletronico == null || palavraPasse == null)
         {
-            return await Task.FromResult<Utilizador.Tipo?>(null);
+            return await Task.FromResult<Utilizador?>(null);
         }
         else
         {
@@ -56,19 +56,26 @@ public class SessaoController
             catch (Exception)
             {
                 await this.TerminarSessao();
-                return await Task.FromResult<Utilizador.Tipo?>(null);
+                return await Task.FromResult<Utilizador?>(null);
             }
         }
     }
 
-    public async void RedirecionarConformeTipo(Utilizador.Tipo? desejado)
+    public async Task RedirecionarConformeTipo(Utilizador.Tipo? desejado)
     {
-        Utilizador.Tipo? atual = await this.GetTipoDeUtilizadorComSessaoIniciada();
-        if (desejado != atual)
+        Utilizador? utilizadorAtual = await this.GetUtilizadorComSessaoIniciada();
+
+        Utilizador.Tipo? tipoAtual = null;
+        if (utilizadorAtual != null)
+        {
+            tipoAtual = utilizadorAtual.TipoDeConta;
+        }
+
+        if (desejado != tipoAtual)
         {
             if (desejado == null)
             {
-                string pagina = "/" + atual.ToString();
+                string pagina = "/" + tipoAtual.ToString();
                 NavigationManager.NavigateTo(pagina);
                 return;
             }

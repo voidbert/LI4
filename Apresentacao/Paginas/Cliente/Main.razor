@@ -16,7 +16,14 @@
     protected override void OnInitialized()
     {
         SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
-        SessaoController.RedirecionarConformeTipo(null);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Cliente);
+        }
     }
 
     private async Task Logout() {

@@ -39,7 +39,14 @@
     {
         FormModel ??= new ContaModel();
         SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
-        SessaoController.RedirecionarConformeTipo(null);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SessaoController!.RedirecionarConformeTipo(null);
+        }
     }
 
     private async Task Registar()
@@ -47,8 +54,8 @@
         try
         {
             await UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, Utilizador.Tipo.Cliente);
-            Utilizador.Tipo tipo = await SessaoController!.IniciarSessao(FormModel!.EnderecoEletronico, FormModel!.PalavraPasse);
-            SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Cliente);
+            await SessaoController!.IniciarSessao(FormModel!.EnderecoEletronico, FormModel!.PalavraPasse);
+            await SessaoController!.RedirecionarConformeTipo(null);
         }
         catch (EnderecoEletronicoInvalidoException)
         {
@@ -60,4 +67,3 @@
         }
     }
 }
-

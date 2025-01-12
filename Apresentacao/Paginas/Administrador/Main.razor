@@ -8,15 +8,42 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
 
+Olá, @NomeCivil!
+
+<a href="/Administrador/CriarConta">
+    <button>Registar Funcionário</button>
+</a>
+
+<a href="/Administrador/EliminarConta">
+    <button>Eliminar Conta</button>
+</a>
+
 <button @onclick="Logout">Terminar Sessão</button>
 
 @code {
+    private String? NomeCivil { get; set; } = "";
     private SessaoController? SessaoController { get; set; }
 
     protected override void OnInitialized()
     {
         SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
-        SessaoController.RedirecionarConformeTipo(null);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Administrador);
+
+            Utilizador? utilizador = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            if (utilizador == null)
+            {
+                return;
+            }
+
+            NomeCivil = utilizador.NomeCivil;
+            StateHasChanged();
+        }
     }
 
     private async Task Logout() {
