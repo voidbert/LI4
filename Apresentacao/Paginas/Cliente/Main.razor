@@ -1,0 +1,26 @@
+@page "/Cliente"
+
+@using LI4.Negocio.Utilizadores
+
+@namespace LI4.Apresentacao.Paginas.Cliente
+
+@inject UtilizadoresService UtilizadoresService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+
+<button @onclick="Logout">Terminar Sessão</button>
+
+@code {
+    private SessaoController? SessaoController { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController.RedirecionarConformeTipo(null);
+    }
+
+    private async Task Logout() {
+        await SessaoController!.TerminarSessao();
+        NavigationManager.NavigateTo("/");
+    }
+}
