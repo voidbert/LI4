@@ -1,0 +1,102 @@
+@page "/Administrador/EliminarConta"
+
+@using LI4.Negocio.Utilizadores
+
+@namespace LI4.Apresentacao.Paginas.Administrador
+
+@inject UtilizadoresService UtilizadoresService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject IJSRuntime JSRuntime
+
+Eliminar Contas
+
+<a href="/Administrador">
+    <button>Regressar</button>
+</a>
+
+<InputText id="search" placeholder="" @bind-Value=@Pesquisa @oninput=@Pesquisar />
+
+<table>
+    <tr>
+        <th>Nome</th>
+        <th>Endereco Eletronico</th>
+        <th>Tipo de Conta</th>
+        <th>Eliminar</th>
+    </tr>
+
+    @foreach(Utilizador utilizador in Utilizadores)
+    {
+        @if (utilizador.PossivelIniciarSessao && Administrador != null && utilizador.EnderecoEletronico != Administrador.EnderecoEletronico && utilizador.NomeCivil.Contains(Pesquisa))
+        {
+            <tr>
+                <td>@utilizador.NomeCivil</td>
+                <td>@utilizador.EnderecoEletronico</td>
+                <td>@ApresentarTipoDeConta(@utilizador.TipoDeConta)</td>
+                <td><button @onclick="() => EliminarUtilizador(utilizador.EnderecoEletronico)">Eliminar</button></td>
+            </tr>
+        }
+    }
+</table>
+
+@code {
+    private String Pesquisa { get; set; } = "";
+    private Utilizador? Administrador { get; set; }
+    private List<Utilizador> Utilizadores { get; set; } = new List<Utilizador>();
+    private SessaoController? SessaoController { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Administrador);
+
+            Utilizadores = await UtilizadoresService.ObterTodos();
+            Administrador = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            StateHasChanged();
+        }
+    }
+
+    private string ApresentarTipoDeConta(Utilizador.Tipo tipo)
+    {
+        Dictionary<Utilizador.Tipo, string> strings = new Dictionary<Utilizador.Tipo, string> {
+            {Utilizador.Tipo.Cliente, "Cliente"},
+            {Utilizador.Tipo.Administrador, "Administrador(a)"},
+            {Utilizador.Tipo.GestorDeStock, "Gestor(a) de Stock"},
+            {Utilizador.Tipo.GestorDeProducao, "Gestor(a) de Produção"},
+            {Utilizador.Tipo.GestorDeContas, "Gestor(a) de Contas"}
+        };
+
+        return strings[tipo];
+    }
+
+    private void Pesquisar(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            String? valor = e.Value.ToString();
+            if (valor != null)
+            {
+                Pesquisa = valor;
+            }
+        }
+        StateHasChanged();
+    }
+
+    private async Task EliminarUtilizador(string enderecoEletronico)
+    {
+        try
+        {
+            await UtilizadoresService.RegistarComoImpedidoDeIniciarSessao(enderecoEletronico);
+        }
+        catch (UtilizadorNaoEncontradoException) {}
+
+        Utilizadores = await UtilizadoresService.ObterTodos();
+        StateHasChanged();
+    }
+}

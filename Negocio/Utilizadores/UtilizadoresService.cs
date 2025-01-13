@@ -60,4 +60,22 @@ public class UtilizadoresService
 
         await UtilizadoresRepository.Instance.Add(model);
     }
+
+    public async Task<List<Utilizador>> ObterTodos()
+    {
+        List<UtilizadorModel> modelos = await UtilizadoresRepository.Instance.GetAll();
+        return modelos.Select(model => Utilizador.DeModel(model)).ToList();
+    }
+
+    public async Task RegistarComoImpedidoDeIniciarSessao(string enderecoEletronico)
+    {
+        UtilizadorModel? model = await UtilizadoresRepository.Instance.Get(enderecoEletronico);
+        if (model == null)
+        {
+            throw new UtilizadorNaoEncontradoException();
+        }
+
+        model.PossivelIniciarSessao = false;
+        await UtilizadoresRepository.Instance.Update(model);
+    }
 }

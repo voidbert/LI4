@@ -1,0 +1,76 @@
+@page "/Administrador/CriarConta"
+
+@using LI4.Negocio.Utilizadores
+
+@namespace LI4.Apresentacao.Paginas.Administrador
+
+@inject UtilizadoresService UtilizadoresService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject IJSRuntime JSRuntime
+
+<div class="text-center">
+    <EditForm Model="@FormModel" OnSubmit="@Registar" FormName="Registar">
+        <InputText id="name" placeholder="Nome civil" @bind-Value=@FormModel!.NomeCivil />
+        <InputText id="email" placeholder="Endereço eletrónico" @bind-Value=@FormModel!.EnderecoEletronico />
+        <InputText type="password" class="form-control" id="password" placeholder="Palavra passe" @bind-Value=@FormModel!.PalavraPasse />
+
+        <InputSelect id="type" @bind-Value=@FormModel!.TipoDeConta>
+            <option value="A" selected="">Administrador</option>
+            <option value="GS">Gestor de Stock</option>
+            <option value="GP">Gestor de Producao</option>
+            <option value="GC">Gestor de Contas</option>
+        </InputSelect>
+
+        <a href="/Administrador">
+            <button>Cancelar</button>
+        </a>
+        <button type="submit" id="register">Criar conta</button>
+    </EditForm>
+</div>
+
+@code {
+    private class ContaModel {
+        public string NomeCivil { get; set; } = "";
+        public string EnderecoEletronico { get; set; } = "";
+        public string PalavraPasse { get; set; } = "";
+        public string TipoDeConta { get; set; } = "A";
+    }
+
+    [SupplyParameterFromForm]
+    private ContaModel? FormModel { get; set; }
+
+    private SessaoController? SessaoController { get; set; }
+
+    protected override void OnInitialized()
+    {
+        FormModel ??= new ContaModel();
+        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Administrador);
+        }
+    }
+
+    private async Task Registar()
+    {
+        try
+        {
+            Utilizador.Tipo tipo = Utilizador.TipoDeString(FormModel!.TipoDeConta);
+            await UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, tipo);
+            NavigationManager.NavigateTo("/Administrador");
+        }
+        catch (EnderecoEletronicoInvalidoException)
+        {
+            (new Alert(JSRuntime)).Launch("Endereço eletrónico inválido");
+        }
+        catch (EnderecoEletronicoExistenteException)
+        {
+            (new Alert(JSRuntime)).Launch("Endereço eletrónico já se encontra registado");
+        }
+    }
+}
