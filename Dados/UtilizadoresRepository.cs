@@ -29,9 +29,31 @@ public class UtilizadoresRepository
         return lista[0];
     }
 
+    public async Task<List<UtilizadorModel>> GetAll()
+    {
+        string sql = "SELECT * FROM Utilizador";
+        List<UtilizadorModel> lista = await Database.Instance.LoadData<UtilizadorModel, dynamic>(sql, new { });
+        return lista;
+    }
+
     public async Task Add(UtilizadorModel model)
     {
         string sql = "INSERT INTO Utilizador (EnderecoEletronico, NomeCivil, PalavraPasse, TipoDeConta, PossivelIniciarSessao) VALUES (@enderecoEletronico, @nomeCivil, @palavraPasse, @tipoDeConta, @possivelIniciarSessao)";
+
+        await Database.Instance.SaveData<dynamic>(sql, new
+        {
+            enderecoEletronico = model.EnderecoEletronico,
+            nomeCivil = model.NomeCivil,
+            palavraPasse = model.PalavraPasse,
+            tipoDeConta = model.TipoDeConta,
+            possivelIniciarSessao = model.PossivelIniciarSessao
+        });
+    }
+
+    public async Task Update(UtilizadorModel model)
+    {
+
+        string sql = "UPDATE Utilizador SET NomeCivil=@nomeCivil, PalavraPasse=@palavraPasse, TipoDeConta=@tipoDeConta, PossivelIniciarSessao=@PossivelIniciarSessao WHERE EnderecoEletronico=@enderecoEletronico";
 
         await Database.Instance.SaveData<dynamic>(sql, new
         {

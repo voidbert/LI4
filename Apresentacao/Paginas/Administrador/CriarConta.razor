@@ -1,8 +1,8 @@
-@page "/Cliente/CriarConta"
+@page "/Administrador/CriarConta"
 
 @using LI4.Negocio.Utilizadores
 
-@namespace LI4.Apresentacao.Paginas.Cliente
+@namespace LI4.Apresentacao.Paginas.Administrador
 
 @inject UtilizadoresService UtilizadoresService
 @inject NavigationManager NavigationManager
@@ -12,14 +12,20 @@
 <div class="text-center">
     <EditForm Model="@FormModel" OnSubmit="@Registar" FormName="Registar">
         <InputText id="name" placeholder="Nome civil" @bind-Value=@FormModel!.NomeCivil />
-        <InputText class="form-control" id="email" placeholder="Endereço eletrónico" @bind-Value=@FormModel!.EnderecoEletronico />
+        <InputText id="email" placeholder="Endereço eletrónico" @bind-Value=@FormModel!.EnderecoEletronico />
         <InputText type="password" class="form-control" id="password" placeholder="Palavra passe" @bind-Value=@FormModel!.PalavraPasse />
 
-        <a href="/">
-            <button>Regressar</button>
-        </a>
+        <InputSelect id="type" @bind-Value=@FormModel!.TipoDeConta>
+            <option value="A" selected="">Administrador</option>
+            <option value="GS">Gestor de Stock</option>
+            <option value="GP">Gestor de Producao</option>
+            <option value="GC">Gestor de Contas</option>
+        </InputSelect>
 
-        <button type="submit" id="register">Continuar</button>
+        <a href="/Administrador">
+            <button>Cancelar</button>
+        </a>
+        <button type="submit" id="register">Criar conta</button>
     </EditForm>
 </div>
 
@@ -28,6 +34,7 @@
         public string NomeCivil { get; set; } = "";
         public string EnderecoEletronico { get; set; } = "";
         public string PalavraPasse { get; set; } = "";
+        public string TipoDeConta { get; set; } = "A";
     }
 
     [SupplyParameterFromForm]
@@ -45,7 +52,7 @@
     {
         if (firstRender)
         {
-            await SessaoController!.RedirecionarConformeTipo(null);
+            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Administrador);
         }
     }
 
@@ -53,9 +60,9 @@
     {
         try
         {
-            await UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, Utilizador.Tipo.Cliente);
-            await SessaoController!.IniciarSessao(FormModel!.EnderecoEletronico, FormModel!.PalavraPasse);
-            await SessaoController!.RedirecionarConformeTipo(null);
+            Utilizador.Tipo tipo = Utilizador.TipoDeString(FormModel!.TipoDeConta);
+            await UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, tipo);
+            NavigationManager.NavigateTo("/Administrador");
         }
         catch (EnderecoEletronicoInvalidoException)
         {
