@@ -1,0 +1,30 @@
+<a href="@Href" class="back-button">← Voltar</a>
+
+<style>
+    .back-button {
+        position: fixed;
+        bottom: 20px;
+        left: 20px; 
+        padding: 5px 10px;
+        
+        color: #ffffff;
+        background-color: #8b8b8b;
+        border: 1px solid #8b8b8b;
+        border-radius: 8px;
+        
+        font-size: 18px;
+        text-decoration: none;
+        
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+        background-color: #535252;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string Href { get; set; } = "/";
+}

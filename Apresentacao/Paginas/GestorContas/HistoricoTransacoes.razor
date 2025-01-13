@@ -1,0 +1,105 @@
+@page "/historico-transacoes"
+@using System.Globalization
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f3f3f3;
+        font-weight: bold;
+    }
+
+    .valor-positivo {
+        color: green;
+        font-weight: bold;
+    }
+
+    .valor-negativo {
+        color: red;
+        font-weight: bold;
+    }
+
+    .terminar-sessao {
+        margin-top: 20px;
+        display: block;
+        width: 150px;
+        padding: 10px;
+        text-align: center;
+        background-color: #000;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .terminar-sessao:hover {
+        background-color: #444;
+    }
+</style>
+
+<h1>Histórico de Transações</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Data/Hora</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var transacao in Transacoes)
+        {
+            <tr>
+                <td>@transacao.DataHora.ToString("dd/MM/yyyy - HH:mm")</td>
+                <td>@transacao.Descricao</td>
+                <td class="@GetValorClass(transacao.Valor)">
+                    @transacao.Valor.ToString("C", CultureInfo.CurrentCulture)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button class="terminar-sessao" @onclick="TerminarSessao">Terminar Sessão</button>
+
+@code {
+    private List<Transacao> Transacoes = new List<Transacao>
+    {
+        new Transacao { DataHora = new DateTime(2024, 8, 28, 12, 0, 0), Descricao = "Entrega da encomenda 923", Valor = 1000.00m },
+        new Transacao { DataHora = new DateTime(2024, 8, 29, 15, 30, 0), Descricao = "Entrega da encomenda 912", Valor = 1500.00m },
+        new Transacao { DataHora = new DateTime(2024, 8, 30, 17, 0, 0), Descricao = "Entrega da encomenda 915", Valor = 2000.00m },
+        new Transacao { DataHora = new DateTime(2024, 8, 31, 17, 35, 0), Descricao = "Devolução da mercadoria 874", Valor = -2000.00m },
+        new Transacao { DataHora = new DateTime(2024, 9, 1, 16, 0, 0), Descricao = "Devolução da mercadoria 801", Valor = -1500.00m },
+        new Transacao { DataHora = new DateTime(2024, 9, 2, 14, 45, 0), Descricao = "Entrega da encomenda 901", Valor = 1200.00m },
+        new Transacao { DataHora = new DateTime(2024, 9, 6, 10, 50, 0), Descricao = "Encerramento de partida 106", Valor = -300.00m },
+        new Transacao { DataHora = new DateTime(2024, 9, 6, 8, 30, 0), Descricao = "Encerramento de partida 107", Valor = -1200.00m }
+    };
+
+    private string GetValorClass(decimal valor)
+    {
+        return valor >= 0 ? "valor-positivo" : "valor-negativo";
+    }
+
+    private void TerminarSessao()
+    {
+        // Implementar lógica para terminar sessão
+        Console.WriteLine("Sessão terminada.");
+    }
+
+    private class Transacao
+    {
+        public DateTime DataHora { get; set; }
+        public string Descricao { get; set; } = string.Empty;
+        public decimal Valor { get; set; }
+    }
+}

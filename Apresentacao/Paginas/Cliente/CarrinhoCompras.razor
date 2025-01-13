@@ -1,0 +1,165 @@
+@page "/cliente/carrinho-compras"
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f7f7;
+    }
+
+    h1 {
+        font-size: 24px;
+        color: #555;
+        margin: 20px;
+    }
+
+    table {
+        width: 90%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        background-color: #fff;
+    }
+
+    table th, table td {
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    table th {
+        background-color: #f3f3f3;
+        font-weight: bold;
+    }
+
+    table td img {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        background-color: #f5caca;
+    }
+
+    .total {
+        margin: 20px auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
+
+<PageTitle>Carrinho de Compras</PageTitle>
+<h1>Carrinho de Compras</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Item:</th>
+            <th>Preço:</th>
+            <th>Quantidade:</th>
+            <th>Total:</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Carrinho)
+        {
+            <tr>
+                <td>
+                  <LI4.Pages.Componentes.ImageComp Url="@order.ImageUrl" Alt="@order.AltText" Width="100px" Height="50px" />
+                </td>
+                <td>@order.Preco$</td>
+                <td>
+                    <LI4.Pages.Componentes.CounterComp Value="@order.Quantidade" 
+                                          				ValueChanged="(newValue) => order.Quantidade = newValue" />
+                </td>
+                <td>@(order.Preco * order.Quantidade)$</td>
+                <td>
+                  <LI4.Pages.Componentes.XComp AoClicar="() => ApagarItem(order)" />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="total">Preço Final: @PrecoFinal$</div>
+<div>
+    <div>
+      <LI4.Pages.Componentes.InserirTextoComp 
+        Label="Morada de Entrega:" 
+        Id="address" 
+        Placeholder="Selecionar morada de entrega" 
+        Value="@MoradaEntrega" 
+        Style="width: 70%;" 
+      />
+    </div>
+    <div class="general-button">
+      <LI4.Pages.Componentes.BotaoComp Text="Finalizar Pedido" 
+                                         Style="width: 200px; top: 150px; left: 200px;" 
+                                         OnClick="FinalizarPedido" />
+    </div>
+</div>
+<div class="back-button">
+    <LI4.Pages.Componentes.VoltarComp Href="/" />
+</div>
+
+@code {
+	private List<Order> Carrinho { get; set; } = new List<Order>{
+		new Order{
+				ImageUrl = "imagens/",
+				AltText = "Imagem1",
+				Preco = 100,
+				Quantidade = 1
+			},
+			new Order{
+				ImageUrl = "imagens/",
+				AltText = "Imagem2",
+				Preco = 200,
+				Quantidade = 1
+			},
+			new Order{
+				ImageUrl = "imagens/arquitetura(1).png",
+				AltText = "Imagem3",
+				Preco = 300,
+				Quantidade = 1
+			},
+			new Order{
+				ImageUrl = "imagens/tiposTasks.png",
+				AltText = "Imagem4",
+				Preco = 400,
+				Quantidade = 1
+			}	
+	};
+
+    public class Order{
+        public string ImageUrl { get; set; } = string.Empty; 
+        public string AltText { get; set; } = string.Empty;
+        public int Preco { get; set; }
+		private int quantidade;
+        public int Quantidade{
+			get => quantidade;
+	    	set{
+		        quantidade = value;
+				Total = Preco * quantidade; // Recalcula o total
+			}
+    	}
+        public int Total { get; private set; }
+		public Order(){
+        	this.Total = this.Preco * this.quantidade;
+    	}
+    }
+    private void ApagarItem(Order order){
+        if (Carrinho != null){
+            // Remover o item da lista
+            Carrinho.Remove(order);
+        }
+    }
+
+    private decimal PrecoFinal => Carrinho.Sum(item => item.Preco * item.Quantidade);
+    private string MoradaEntrega { get; set; } = string.Empty;
+    private void AlterarQuantidade(Order order, int delta){
+        order.Quantidade = Math.Max(1, order.Quantidade + delta);
+    }
+
+    private void FinalizarPedido(){
+        Console.WriteLine("Pedido finalizado!");
+    }
+
+}
