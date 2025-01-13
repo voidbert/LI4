@@ -172,3 +172,13 @@ INSERT INTO Utilizador (EnderecoEletronico, NomeCivil, PalavraPasse, TipoDeConta
     ('guimaraes@nerv.jp', 'Inês Guimarães', HASHBYTES('SHA2_512', 'helpfrida'), 'GC', 1),
     ('bob@gmail.com', 'Bob', HASHBYTES('SHA2_512', 'bob'), 'C', 1);
 GO
+
+INSERT INTO Parte (Nome, Preco, QuantidadeArmazem) VALUES
+    ('Cabeça', 200.0, 10),
+    ('Tronco', 500.0, 20),
+    ('Braço', 100.0, 100),
+    ('Perna', 150.0, 100),
+    ('Tinta Roxa', 20.0, 10),
+    ('Tinta Branca', 18.0, 5),
+    ('Tinta Vermelha', 28.0, 30);
+GO
