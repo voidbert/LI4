@@ -6,6 +6,17 @@ namespace LI4.Negocio.Stock;
 
 public class StockService
 {
+    public async Task<Parte?> ObterParte(int identificador)
+    {
+        ParteModel? model = await PartesRepository.Instancia.Obter(identificador);
+        if (model == null)
+        {
+            return null;
+        }
+
+        return Parte.DeModel(model);
+    }
+
     public async Task<List<Parte>> ObterTodasAsPartes()
     {
         List<ParteModel> modelos = await PartesRepository.Instancia.ObterTodas();
