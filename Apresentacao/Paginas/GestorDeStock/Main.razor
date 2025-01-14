@@ -1,0 +1,53 @@
+@page "/GestorDeStock"
+
+@using LI4.Negocio.Utilizadores
+
+@namespace LI4.Apresentacao.Paginas.GestorDeStock
+
+@inject UtilizadoresService UtilizadoresService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+
+Olá, @NomeCivil!
+
+<a href="/GestorDeStock/EVAs">
+    <button>Consultar EVAs</button>
+</a>
+
+<a href="/GestorDeStock/Armazem">
+    <button>Consultar Armazém</button>
+</a>
+
+<button @onclick="Logout">Terminar Sessão</button>
+
+@code {
+    private String? NomeCivil { get; set; } = "";
+    private SessaoController? SessaoController { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeStock);
+
+            Utilizador? utilizador = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            if (utilizador == null)
+            {
+                return;
+            }
+
+            NomeCivil = utilizador.NomeCivil;
+            StateHasChanged();
+        }
+    }
+
+    private async Task Logout() {
+        await SessaoController!.TerminarSessao();
+        NavigationManager.NavigateTo("/");
+    }
+}

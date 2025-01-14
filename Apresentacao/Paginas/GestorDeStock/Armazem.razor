@@ -1,0 +1,130 @@
+@page "/GestorDeStock/Armazem"
+
+@using LI4.Negocio.Stock
+@using LI4.Negocio.Utilizadores
+
+@namespace LI4.Apresentacao.Paginas.GestorDeStock
+
+@inject UtilizadoresService UtilizadoresService
+@inject StockService StockService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+
+Armazém de Partes
+
+@if (Encomenda == null)
+{
+    <a href="/Administrador">
+        <button>Voltar</button>
+    </a>
+}
+else
+{
+    <button @onclick=@CancelarEncomenda>Cancelar Encomenda</button>
+}
+
+<table>
+    <tr>
+        <th>Identificador</th>
+        <th>Nome</th>
+        @if (Encomenda != null)
+        {
+            <th>Preço</th>
+            <th>Quantidade</th>
+        }
+        <th>Número de Exemplares</th>
+    </tr>
+
+    @foreach(Parte parte in Partes)
+    {
+        <tr>
+            <td>@parte.Identificador</td>
+            <td>@parte.Nome</td>
+
+            @if (Encomenda != null)
+            {
+                <td>@String.Format("{0:F2} €", parte.Preco)</td>
+                <td>
+                    <button @onclick="@(() => DecrementarQuantidade(parte))">-</button>
+                    @Encomenda.Conteudo.GetValueOrDefault(parte.Identificador, 0).ToString()
+                    <button @onclick="@(() => IncrementarQuantidade(parte))">+</button>
+                </td>
+            }
+            <td>@parte.QuantidadeArmazem</td>
+        </tr>
+    }
+</table>
+
+@if (Encomenda == null)
+{
+    <button @onclick=@ComecarEncomenda>Começar Encomenda</button>
+}
+else
+{
+    <span>Total &colon; @String.Format("{0:F2} €", Encomenda.Preco)</span>
+    <button @onclick=@ColocarEncomenda>
+        Colocar Encomenda
+    </button>
+}
+
+
+@code {
+    private List<Parte> Partes { get; set; } = new List<Parte>();
+    private EncomendaPartes? Encomenda { get; set; }
+    private SessaoController? SessaoController { get; set; }
+    private Utilizador? GestorDeProduto { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeStock);
+
+            GestorDeProduto = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            Partes = await StockService.ObterTodasAsPartes();
+            StateHasChanged();
+        }
+    }
+
+    private void ComecarEncomenda()
+    {
+        Encomenda = new EncomendaPartes(DateTime.Now, GestorDeProduto!);
+    }
+
+    private void CancelarEncomenda()
+    {
+        Encomenda = null;
+    }
+
+    private async Task ColocarEncomenda()
+    {
+        Encomenda!.InstanteRealizacao = DateTime.Now;
+        await StockService.ColocarEncomenda(Encomenda!);
+
+        Partes = await StockService.ObterTodasAsPartes();
+        Encomenda = null;
+        StateHasChanged();
+    }
+
+    private void IncrementarQuantidade(Parte parte)
+    {
+        int quantidade = Encomenda!.Conteudo.GetValueOrDefault(parte.Identificador, 0);
+        Encomenda!.DefinirQuantidadeDeProduto(parte, quantidade + 1);
+        StateHasChanged();
+    }
+
+    private void DecrementarQuantidade(Parte parte)
+    {
+        int quantidade = Encomenda!.Conteudo.GetValueOrDefault(parte.Identificador, 0);
+        if (quantidade == 0)
+            return;
+
+        Encomenda!.DefinirQuantidadeDeProduto(parte, quantidade - 1);
+        StateHasChanged();
+    }
+}

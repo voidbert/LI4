@@ -1,4 +1,5 @@
 using LI4.Apresentacao;
+using LI4.Negocio.Stock;
 using LI4.Negocio.Utilizadores;
 
 namespace LI4;
@@ -11,6 +12,7 @@ public class Program
 
         builder.Services.AddRazorComponents().AddInteractiveServerComponents();
         builder.Services.AddSingleton<UtilizadoresService>();
+        builder.Services.AddSingleton<StockService>();
 
         WebApplication app = builder.Build();
 
