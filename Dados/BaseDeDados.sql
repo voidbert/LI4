@@ -179,6 +179,32 @@ INSERT INTO Parte (Nome, Preco, QuantidadeArmazem) VALUES
     ('Braço', 100.0, 100),
     ('Perna', 150.0, 100),
     ('Tinta Roxa', 20.0, 10),
-    ('Tinta Branca', 18.0, 5),
-    ('Tinta Vermelha', 28.0, 30);
+    ('Tinta Vermelha', 28.0, 30),
+    ('Tinta Branca', 18.0, 5);
+GO
+
+INSERT INTO EVA (Nome, Imagem, Preco, QuantidadeArmazem) VALUES
+    ('EVA-01', '/eva01.webp', 20000.00, 5),
+    ('EVA-02', '/eva02.webp', 22000.00, 5),
+    ('EVA-03', '/eva03.webp', 25000.00, 3);
+GO
+
+INSERT INTO EVAPartes (EVA, Parte, Quantidade) VALUES
+    (1, 1, 1),
+    (1, 2, 1),
+    (1, 3, 2),
+    (1, 4, 2),
+    (1, 5, 1),
+
+    (2, 1, 1),
+    (2, 2, 1),
+    (2, 3, 2),
+    (2, 4, 2),
+    (2, 6, 1),
+
+    (3, 1, 1),
+    (3, 2, 1),
+    (3, 3, 2),
+    (3, 4, 2),
+    (3, 7, 1);
 GO
