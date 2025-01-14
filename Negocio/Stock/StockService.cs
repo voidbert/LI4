@@ -16,17 +16,29 @@ public class StockService
     {
         BaseDeDados.Instancia.IniciarTransacao();
 
+        int partes = 0;
         foreach (KeyValuePair<int, int> entrada in encomenda.Conteudo)
         {
-            ParteModel? parte = await PartesRepository.Instancia.Obter(entrada.Key);
-            if (parte == null)
+            if (entrada.Value != 0)
             {
-                BaseDeDados.Instancia.AbortarTransacao();
-                throw new ParteNaoEncontradaException();
-            }
+                ParteModel? parte = await PartesRepository.Instancia.Obter(entrada.Key);
+                if (parte == null)
+                {
+                    BaseDeDados.Instancia.AbortarTransacao();
+                    throw new ParteNaoEncontradaException();
+                }
 
-            ParteModel novaParte = parte with { QuantidadeArmazem = parte.QuantidadeArmazem + entrada.Value };
-            await PartesRepository.Instancia.Atualizar(novaParte);
+                ParteModel novaParte = parte with { QuantidadeArmazem = parte.QuantidadeArmazem + entrada.Value };
+                await PartesRepository.Instancia.Atualizar(novaParte);
+
+                partes++;
+            }
+        }
+
+        if (partes == 0)
+        {
+            BaseDeDados.Instancia.AbortarTransacao();
+            throw new EncomendaVaziaException();
         }
 
         EncomendaPartesModel encomendaPartesModel = new EncomendaPartesModel

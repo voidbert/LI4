@@ -9,6 +9,7 @@
 @inject StockService StockService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
+@inject IJSRuntime JSRuntime
 
 Armazém de Partes
 
@@ -87,6 +88,7 @@ else
 
             GestorDeProduto = await SessaoController!.GetUtilizadorComSessaoIniciada();
             Partes = await StockService.ObterTodasAsPartes();
+            Partes.Sort((p1, p2) => p1.Nome.CompareTo(p2.Nome));
             StateHasChanged();
         }
     }
@@ -104,11 +106,15 @@ else
     private async Task ColocarEncomenda()
     {
         Encomenda!.InstanteRealizacao = DateTime.Now;
-        await StockService.ColocarEncomenda(Encomenda!);
-
-        Partes = await StockService.ObterTodasAsPartes();
-        Encomenda = null;
-        StateHasChanged();
+        try
+        {
+            await StockService.ColocarEncomenda(Encomenda!);
+            NavigationManager.NavigateTo("/GestorDeStock");
+        }
+        catch (EncomendaVaziaException)
+        {
+            (new Alert(JSRuntime)).Launch("Encomenda vazia não pode ser colocada");
+        }
     }
 
     private void IncrementarQuantidade(Parte parte)
@@ -125,6 +131,5 @@ else
             return;
 
         Encomenda!.DefinirQuantidadeDeProduto(parte, quantidade - 1);
-        StateHasChanged();
     }
 }
