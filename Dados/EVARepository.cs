@@ -1,0 +1,105 @@
+namespace LI4.Dados;
+
+public class EVARepository
+{
+    private static EVARepository? _Instancia;
+
+    private EVARepository() { }
+
+    public static EVARepository Instancia
+    {
+        get
+        {
+            if (EVARepository._Instancia == null)
+                EVARepository._Instancia = new EVARepository();
+            return EVARepository._Instancia;
+        }
+    }
+
+    public async Task<EVAModel?> Obter(int identificador)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        string sql = "SELECT * FROM EVA WHERE Identificador=@identificador";
+        List<EVAModel> lista = await BaseDeDados.Instancia.LerDados<EVAModel, dynamic>(sql, new
+        {
+            identificador = identificador
+        });
+
+        if (lista.Count == 0)
+        {
+            return null;
+        }
+
+        string conteudoSql = "SELECT Parte AS [Key], Quantidade AS Value FROM EVAPartes WHERE EVA = @identificador";
+        foreach (EVAModel model in lista)
+        {
+            List<KeyValuePair<int, int>> tuplos = await BaseDeDados.Instancia.LerDados<KeyValuePair<int, int>, dynamic>(conteudoSql, new
+            {
+                identificador = identificador
+            });
+
+            lista[0].Partes = new Dictionary<int, int>(tuplos);
+        }
+
+        BaseDeDados.Instancia.CommitTransacao();
+        return lista[0];
+    }
+
+    public async Task<List<EVAModel>> ObterTodas()
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        string sql = "SELECT * FROM EVA";
+        List<EVAModel> lista = await BaseDeDados.Instancia.LerDados<EVAModel, dynamic>(sql, new { });
+
+        string conteudoSql = "SELECT Parte AS [Key], Quantidade AS Value FROM EVAPartes WHERE EVA = @eva";
+        foreach (EVAModel model in lista)
+        {
+            List<KeyValuePair<int, int>> tuplos = await BaseDeDados.Instancia.LerDados<KeyValuePair<int, int>, dynamic>(conteudoSql, new
+            {
+                eva = model.Identificador
+            });
+
+            model.Partes = new Dictionary<int, int>(tuplos);
+        }
+
+        BaseDeDados.Instancia.CommitTransacao();
+        return lista;
+    }
+
+    public async Task Atualizar(EVAModel model)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        string sql = "UPDATE EVA SET Nome=@nome, Imagem=@imagem, Preco=@preco, QuantidadeArmazem=@quantidadeArmazem WHERE Identificador=@identificador";
+
+        await BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
+        {
+            identificador = model.Identificador,
+            nome = model.Nome,
+            imagem = model.Imagem,
+            preco = model.Preco,
+            quantidadeArmazem = model.QuantidadeArmazem
+        });
+
+        string apagarConteudoSql = "DELETE FROM EVAPartes WHERE EVA=@identificador";
+        await BaseDeDados.Instancia.EscreverDados<dynamic>(apagarConteudoSql, new
+        {
+            identificador = model.Identificador
+        });
+
+        string novoConteudoSql = "INSERT INTO EVAPartes VALUES (@eva, @parte, @quantidade)";
+        foreach (KeyValuePair<int, int> entrada in model.Partes)
+        {
+            await BaseDeDados.Instancia.EscreverDados<dynamic>(novoConteudoSql, new
+            {
+                eva = model.Identificador,
+                parte = entrada.Key,
+                quantidade = entrada.Value
+            });
+        }
+
+        BaseDeDados.Instancia.CommitTransacao();
+    }
+}

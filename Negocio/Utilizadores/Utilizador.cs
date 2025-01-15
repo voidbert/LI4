@@ -84,7 +84,12 @@ public abstract class Utilizador
         }
     }
 
-    public string EnderecoEletronico { get; set; }
+    public override int GetHashCode()
+    {
+        return this.EnderecoEletronico.GetHashCode();
+    }
+
+    public string EnderecoEletronico { get; init; }
     public string NomeCivil { get; set; }
     public byte[] PalavraPasse { get; set; }
     public abstract Tipo TipoDeConta { get; }

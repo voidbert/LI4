@@ -1,0 +1,17 @@
+namespace LI4.Negocio.Stock;
+
+[Serializable]
+public class ParteNaoEncontradaException : Exception
+{
+    public ParteNaoEncontradaException() { }
+    public ParteNaoEncontradaException(string message) : base(message) { }
+    public ParteNaoEncontradaException(string message, Exception innerException) : base(message, innerException) { }
+}
+
+[Serializable]
+public class EncomendaVaziaException : Exception
+{
+    public EncomendaVaziaException() { }
+    public EncomendaVaziaException(string message) : base(message) { }
+    public EncomendaVaziaException(string message, Exception innerException) : base(message, innerException) { }
+}

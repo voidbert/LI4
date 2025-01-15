@@ -8,7 +8,7 @@ public class UtilizadoresService
 {
     public async Task<Utilizador> IniciarSessao(string enderecoEletronico, string palavraPasse)
     {
-        UtilizadorModel? utilizadorModel = await UtilizadoresRepository.Instance.Get(enderecoEletronico);
+        UtilizadorModel? utilizadorModel = await UtilizadoresRepository.Instancia.Obter(enderecoEletronico);
         if (utilizadorModel == null)
         {
             throw new UtilizadorNaoEncontradoException();
@@ -41,7 +41,9 @@ public class UtilizadoresService
             throw new EnderecoEletronicoInvalidoException();
         }
 
-        UtilizadorModel? existente = await UtilizadoresRepository.Instance.Get(enderecoEletronico);
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        UtilizadorModel? existente = await UtilizadoresRepository.Instancia.Obter(enderecoEletronico);
         if (existente != null)
         {
             throw new EnderecoEletronicoExistenteException();
@@ -58,24 +60,29 @@ public class UtilizadoresService
             PossivelIniciarSessao = true
         };
 
-        await UtilizadoresRepository.Instance.Add(model);
+        await UtilizadoresRepository.Instancia.Adicionar(model);
+        BaseDeDados.Instancia.CommitTransacao();
     }
 
     public async Task<List<Utilizador>> ObterTodos()
     {
-        List<UtilizadorModel> modelos = await UtilizadoresRepository.Instance.GetAll();
+        List<UtilizadorModel> modelos = await UtilizadoresRepository.Instancia.ObterTodos();
         return modelos.Select(model => Utilizador.DeModel(model)).ToList();
     }
 
     public async Task RegistarComoImpedidoDeIniciarSessao(string enderecoEletronico)
     {
-        UtilizadorModel? model = await UtilizadoresRepository.Instance.Get(enderecoEletronico);
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        UtilizadorModel? model = await UtilizadoresRepository.Instancia.Obter(enderecoEletronico);
         if (model == null)
         {
             throw new UtilizadorNaoEncontradoException();
         }
 
         model.PossivelIniciarSessao = false;
-        await UtilizadoresRepository.Instance.Update(model);
+        await UtilizadoresRepository.Instancia.Atualizar(model);
+
+        BaseDeDados.Instancia.CommitTransacao();
     }
 }

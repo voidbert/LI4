@@ -1,16 +1,64 @@
 @page "/Cliente"
 
+@using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
 @inject UtilizadoresService UtilizadoresService
+@inject ComumService ComumService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
+
+<InputText id="search" placeholder="Pesquisar" @bind-Value=@Pesquisa @oninput=@Pesquisar />
+
+<br/>
+<InputRadioGroup @bind-Value="@Ordem">
+    @foreach (string ordem in Ordens.Keys)
+    {
+        <InputRadio id=@ordem Value=@ordem @oninput=@Reordenar />
+        <label for=@ordem>@ordem</label>
+        <br />
+    }
+</InputRadioGroup>
+
+@foreach (EVA eva in EVAs)
+{
+    @if (eva.Nome.Contains(Pesquisa))
+    {
+        <div>
+            <img src="@eva.Imagem" asp-append-version="true" width="200rem" />
+            @eva.Nome
+            @String.Format("{0:F2} €", eva.Preco)
+        </div>
+    }
+}
+
+Olá, @NomeCivil!
+
+<a href="/Cliente/Carrinho">
+    <button>Ver Carrinho</button>
+</a>
+
+<a href="/Cliente/Encomendas">
+    <button>Ver Encomendas</button>
+</a>
 
 <button @onclick="Logout">Terminar Sessão</button>
 
 @code {
+    private Dictionary<string, Comparison<EVA>> Ordens = new Dictionary<string, Comparison<EVA>>
+    {
+        { "Alfabética ↑", (e1, e2) => e1.Nome.CompareTo(e2.Nome) },
+        { "Alfabética ↓", (e1, e2) => e2.Nome.CompareTo(e1.Nome) },
+        { "Preço ↑", (e1, e2) => e1.Preco.CompareTo(e2.Preco) },
+        { "Preço ↓", (e1, e2) => e2.Preco.CompareTo(e1.Preco) }
+    };
+    private String Ordem { get; set; } = "Alfabética ↑";
+    private String Pesquisa { get; set; } = "";
+
+    private List<EVA> EVAs { get; set; } = new List<EVA>();
+    private String? NomeCivil { get; set; } = "";
     private SessaoController? SessaoController { get; set; }
 
     protected override void OnInitialized()
@@ -23,7 +71,37 @@
         if (firstRender)
         {
             await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Cliente);
+
+            Utilizador? utilizador = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            if (utilizador == null)
+            {
+                return;
+            }
+
+            NomeCivil = utilizador.NomeCivil;
+            EVAs = await ComumService.ObterTodasAsEVAs();
+            StateHasChanged();
         }
+    }
+
+    private void Pesquisar(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            String? valor = e.Value.ToString();
+            if (valor != null)
+            {
+                Pesquisa = valor;
+            }
+        }
+        StateHasChanged();
+    }
+
+    private void Reordenar(ChangeEventArgs e)
+    {
+        Ordem = e.Value!.ToString();
+        EVAs.Sort(Ordens[Ordem]);
+        StateHasChanged();
     }
 
     private async Task Logout() {
