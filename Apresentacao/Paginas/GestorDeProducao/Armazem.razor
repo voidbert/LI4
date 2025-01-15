@@ -1,0 +1,138 @@
+@page "/GestorDeProducao/Armazem"
+
+@using LI4.Negocio
+@using LI4.Negocio.Producao
+@using LI4.Negocio.Utilizadores
+
+@namespace LI4.Apresentacao.Paginas.GestorDeProducao
+
+@inject UtilizadoresService UtilizadoresService
+@inject ProducaoService ProducaoService
+@inject ComumService ComumService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject IJSRuntime JSRuntime
+
+Armazém de EVAs
+
+@if (OrdemProducao == null)
+{
+    <a href="/GestorDeProducao">
+        <button>Voltar</button>
+    </a>
+}
+else
+{
+    <button @onclick=@CancelarOrdemProducao>Cancelar Ordem de Produção</button>
+}
+
+<table>
+    <tr>
+        <th>Identificador</th>
+        <th>Nome</th>
+        @if (OrdemProducao != null)
+        {
+            <th>Quantidade</th>
+        }
+        <th>Número de Exemplares</th>
+    </tr>
+
+    @foreach(EVA eva in EVAs)
+    {
+        <tr>
+            <td>@eva.Identificador</td>
+            <td>@eva.Nome</td>
+
+            @if (OrdemProducao != null)
+            {
+                <td>
+                    <button @onclick="@(() => DecrementarQuantidade(eva))">-</button>
+                    @OrdemProducao.Conteudo.GetValueOrDefault(eva.Identificador, 0).ToString()
+                    <button @onclick="@(() => IncrementarQuantidade(eva))">+</button>
+                </td>
+            }
+            <td>@eva.QuantidadeArmazem</td>
+        </tr>
+    }
+</table>
+
+@if (OrdemProducao == null)
+{
+    <button @onclick=@ComecarOrdemProducao>Começar Ordem de Produção</button>
+}
+else
+{
+    <button @onclick=@ColocarOrdemProducao>
+        Colocar Ordem de Producao
+    </button>
+}
+
+
+@code {
+    private List<EVA> EVAs { get; set; } = new List<EVA>();
+    private OrdemProducao? OrdemProducao { get; set; }
+    private SessaoController? SessaoController { get; set; }
+    private Utilizador? GestorDeProducao { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeProducao);
+
+            GestorDeProducao = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            EVAs = await ComumService.ObterTodasAsEVAs();
+            EVAs.Sort((e1, e2) => e1.Nome.CompareTo(e2.Nome));
+            StateHasChanged();
+        }
+    }
+
+    private void ComecarOrdemProducao()
+    {
+        OrdemProducao = new OrdemProducao(DateTime.Now, GestorDeProducao!);
+    }
+
+    private void CancelarOrdemProducao()
+    {
+        OrdemProducao = null;
+    }
+
+    private async Task ColocarOrdemProducao()
+    {
+        OrdemProducao!.InstanteEmissao = DateTime.Now;
+        try
+        {
+            await ProducaoService.ColocarOrdemProducao(OrdemProducao!);
+            NavigationManager.NavigateTo("/GestorDeStock");
+        }
+        catch (OrdemProducaoVaziaException)
+        {
+            (new Alert(JSRuntime)).Launch("Ordem de produção vazia não pode ser colocada");
+        }
+        catch (SemPartesException)
+        {
+            (new Alert(JSRuntime)).Launch("Sem partes suficientes");
+        }
+    }
+
+    private void IncrementarQuantidade(EVA eva)
+    {
+        int quantidade = OrdemProducao!.Conteudo.GetValueOrDefault(eva.Identificador, 0);
+        OrdemProducao!.DefinirQuantidadeDeEVA(eva, quantidade + 1);
+        StateHasChanged();
+    }
+
+    private void DecrementarQuantidade(EVA eva)
+    {
+        int quantidade = OrdemProducao!.Conteudo.GetValueOrDefault(eva.Identificador, 0);
+        if (quantidade == 0)
+            return;
+
+        OrdemProducao!.DefinirQuantidadeDeEVA(eva, quantidade - 1);
+    }
+}
