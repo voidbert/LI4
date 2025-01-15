@@ -1,0 +1,61 @@
+@page "/administrador/pagina-principal"
+@using System.Globalization
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    .saudacao {
+        font-size: 24px;
+        margin-bottom: 30px;
+    }
+</style>
+
+<div class="container">
+    <div class="saudacao">
+        Olá, @NomeUsuario!
+    </div>
+
+    <div class="general-button">
+        <LI4.Pages.Componentes.BotaoComp Text="Registar Funcionário" 
+                                         Style="width: 200px; top: 50px;" 
+                                         OnClick="RegistarFuncionario" />
+
+        <LI4.Pages.Componentes.BotaoComp Text="Eliminar Conta" 
+                                         Style="width: 200px; top: 100px;" 
+                                         OnClick="EliminarConta" />
+
+        <LI4.Pages.Componentes.BotaoComp Text="Terminar Sessão" 
+                                         Style="width: 200px; top: 150px;" 
+                                         OnClick="TerminarSessao" />
+    </div>
+</div>
+
+@code {
+    private string NomeUsuario { get; set; } = "João Silva";
+
+    private void RegistarFuncionario()
+    {
+        Console.WriteLine("Registrar Funcionário clicado!");
+        // Adicione a lógica aqui
+    }
+
+    private void EliminarConta()
+    {
+        Console.WriteLine("Eliminar Conta clicado!");
+        // Adicione a lógica aqui
+    }
+
+    private void TerminarSessao()
+    {
+        Console.WriteLine("Terminar Sessão clicado!");
+        // Adicione a lógica aqui
+    }
+}
+

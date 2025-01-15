@@ -1,0 +1,28 @@
+<style>
+  .X button {
+      width: 30px;
+      height: 30px;
+      
+      color: #fff;
+      background-color: #8b8b8b;
+      border: none;
+      border-radius: 5px;
+      
+      font-size: 18px;
+      font-weight: bold;
+      
+      cursor: pointer;
+  }
+    
+  .X button:hover {
+      background-color: #535252;
+  }
+</style>
+<div class="X">
+    <button @onclick="AoClicar">✖</button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback AoClicar { get; set; }
+}

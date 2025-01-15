@@ -1,0 +1,198 @@
+@page "/gestor-producao/gestao-encomendas"
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f7f7;
+    }
+
+    h1 {
+        font-size: 24px;
+        color: #555;
+        margin: 20px;
+    }
+
+    table {
+        width: 90%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        background-color: #fff;
+    }
+
+    table th, table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    table th {
+        background-color: #f3f3f3;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    table td {
+        vertical-align: top;
+    }
+
+    .estado {
+        text-align: center;
+    }
+
+    .estado.aprovado {
+        color: green;
+    }
+
+    .estado.rejeitado {
+        color: red;
+    }
+
+    .estado.entregue {
+        color: gray;
+    }
+
+    .estado.devolvido {
+        color: orange;
+    }
+
+    .acoes {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .acoes button {
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+    }
+
+    .acoes .btn-aprovar {
+        color: green;
+        font-size: 20px;
+    }
+
+    .acoes .btn-rejeitar {
+        color: red;
+        font-size: 20px;
+    }
+</style>
+
+<h1>Gestão de Encomendas</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Item:</th>
+            <th>Estado:</th>
+            <th>Conteúdo:</th>
+            <th>Preço:</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var encomenda in Encomendas)
+        {
+            <tr>
+                <td>
+                    <strong style="color: red;">@encomenda.Nome</strong><br />
+                    Cliente: @encomenda.Cliente<br />
+                    Data: @encomenda.Data
+                </td>
+                <td class="estado @encomenda.EstadoClass">
+                    @encomenda.Estado<br />
+                    @if (!string.IsNullOrEmpty(encomenda.DataEstado))
+                    {
+                        <small>@encomenda.DataEstado</small>
+                    }
+                </td>
+                <td>
+                    @foreach (var item in encomenda.Conteudo)
+                    {
+                        <div>
+                            ● @item.Nome - Id: @item.Id x@item.Quantidade
+                        </div>
+                    }
+                </td>
+                <td>
+                    @encomenda.Preco$<br />
+                    <div class="acoes">
+                        <button class="btn-aprovar" @onclick="@(() => AprovarEncomenda(encomenda))">✔</button>
+                        <button class="btn-rejeitar" @onclick="@(() => RejeitarEncomenda(encomenda))">✖</button>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="container">
+    <LI4.Pages.Componentes.VoltarComp Href="/" />
+</div>
+
+@code {
+    private List<Encomenda> Encomendas { get; set; } = new List<Encomenda>
+    {
+        new Encomenda
+        {
+            Nome = "Encomenda 1",
+            Cliente = "Cliente 1",
+            Data = "06/10/2024 10h00",
+            Estado = "Entregue",
+            EstadoClass = "entregue",
+            DataEstado = "06/10/2024 10h00",
+            Preco = 100,
+            Conteudo = new List<Item>
+            {
+                new Item { Nome = "EVA 1", Id = 101001, Quantidade = 2 },
+                new Item { Nome = "EVA 1", Id = 101001, Quantidade = 2 }
+            }
+        },
+        new Encomenda
+        {
+            Nome = "Encomenda 1",
+            Cliente = "Cliente 1",
+            Data = "06/10/2024 10h00",
+            Estado = "Devolvida",
+            EstadoClass = "devolvido",
+            DataEstado = "06/10/2024 10h00",
+            Preco = 100,
+            Conteudo = new List<Item>
+            {
+                new Item { Nome = "EVA 1", Id = 101001, Quantidade = 2 },
+                new Item { Nome = "EVA 1", Id = 101001, Quantidade = 2 }
+            }
+        },
+        // Adicione outras encomendas aqui...
+    };
+
+    private void AprovarEncomenda(Encomenda encomenda)
+    {
+        encomenda.Estado = "Aprovada";
+        encomenda.EstadoClass = "aprovado";
+    }
+
+    private void RejeitarEncomenda(Encomenda encomenda)
+    {
+        encomenda.Estado = "Rejeitada";
+        encomenda.EstadoClass = "rejeitado";
+    }
+
+    private class Encomenda
+    {
+        public string Nome { get; set; }= string.Empty; 
+        public string Cliente { get; set; }= string.Empty; 
+        public string Data { get; set; }= string.Empty;
+        public string Estado { get; set; }= string.Empty; 
+        public string EstadoClass { get; set; }= string.Empty; 
+        public string DataEstado { get; set; }= string.Empty;
+        public decimal Preco { get; set; }
+        public List<Item> Conteudo { get; set; }= new List<Item>();
+    }
+
+    private class Item{
+        public string Nome { get; set; }= string.Empty;
+        public int Id { get; set; }
+        public int Quantidade { get; set; }
+    }
+}

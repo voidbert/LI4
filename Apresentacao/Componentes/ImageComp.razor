@@ -1,0 +1,17 @@
+<img src="@Url" alt="@Alt" style="@Style" />
+
+@code {
+    [Parameter]
+    public string Url { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Alt { get; set; } = "Imagem não definida";
+
+    [Parameter]
+    public string? Width { get; set; } // Pode ser nulo
+    [Parameter]
+    public string? Height { get; set; } // Pode ser nulo
+
+    private string Style => 
+        $"{(string.IsNullOrEmpty(Width) ? "" : $"width: {Width};")} {(string.IsNullOrEmpty(Height) ? "" : $"height: {Height};")}";
+}

@@ -1,0 +1,225 @@
+@page "/gestor-stock/armazem-partes"
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f7f7;
+    }
+
+    h1 {
+        font-size: 24px;
+        color: #555;
+        margin: 20px;
+    }
+    .grid {
+        width: 65%;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        border: 2px dashed #ffc0cb;
+        border-radius: 10px;
+        background-color: #fff;
+    }
+
+    .item-name {
+        font-weight: bold;
+        color: #ff6b6b;
+        margin-bottom: 10px;
+    }
+
+    .item-details {
+        font-size: 16px;
+        color: #777;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .controls {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .order-summary {
+		position: fixed;
+        width: 30%;
+		top: 70px;
+        right: 20px;
+        padding: 20px;
+
+		color: #8b8b8b;
+        background-color: #fff;
+        border: 1px solid #8b8b8b;
+        border-radius: 10px;
+        
+		font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .total {
+        font-weight: bold;
+        margin-top: 20px;
+        font-size: 16px;
+        text-align: right;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container">
+    <div>
+        <h1>Armazém de Partes</h1>
+        <div class="grid">
+            @foreach (var item in ItensArmazem)
+            {
+                <div class="item">
+                    <div class="item-name">@item.Nome</div>
+                    <div class="item-details">Id: @item.Id<br />Stock: @item.Stock</div>
+                    <div class="controls">
+                        <div class="counter">
+                            <LI4.Pages.Componentes.CounterComp Value="@item.Quantidade" 
+                                          				ValueChanged="(newValue) => item.Quantidade = newValue" />
+                        </div>
+						<div class="general-button">
+                            <LI4.Pages.Componentes.BotaoComp 
+								Text="Adicionar" 
+								Style="width: 200px; padding: 5px 10px;" 
+								OnClick="() => AdicionarAoCarrinho(item)" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="order-summary">
+    <h2>Encomenda</h2>
+    @foreach (var carrinhoItem in Carrinho)
+    {
+        <div class="order-item">
+            <span>@carrinhoItem.Nome x@carrinhoItem.Quantidade</span>
+            <span>@(carrinhoItem.Preco * carrinhoItem.Quantidade)$</span>
+			<div class="X">
+				<LI4.Pages.Componentes.XComp AoClicar="() => RemoverDoCarrinho(carrinhoItem)" />
+			</div>
+
+        </div>
+    }
+    
+	<div class="total">Total: @TotalCarrinho$</div>
+        
+    <div class="general-button">
+        <LI4.Pages.Componentes.BotaoComp 
+            Text="Finalizar" 
+            Style="width: 200px; bottom: 40px;  right: 90px;" 
+            OnClick="FinalizarCompra" />
+	</div>
+	<div class="general-button">
+        <LI4.Pages.Componentes.BotaoComp 
+            Text="Cancelar" 
+            Style="width: 200px; bottom: 40px;  right: 20px;" 
+            OnClick="CancelarCompra" />
+	</div>
+</div>
+
+
+<div class="back-button">
+    <LI4.Pages.Componentes.VoltarComp Href="/" />
+</div>
+
+@code {
+    private List<Item> ItensArmazem { get; set; } = new List<Item>
+    {
+        new Item { Nome = "Peça 1", Id = 10101011, Stock = 50, Preco = 25 },
+        new Item { Nome = "Peça 2", Id = 10101012, Stock = 100, Preco = 50 },
+        // Adicione mais itens conforme necessário
+    };
+
+    private List<Item> Carrinho { get; set; } = new List<Item>();
+
+    private void IncrementarQuantidade(Item item)
+    {
+        if (item.Quantidade < item.Stock)
+        {
+            item.Quantidade++;
+        }
+    }
+
+    private void DecrementarQuantidade(Item item)
+    {
+        if (item.Quantidade > 1)
+        {
+            item.Quantidade--;
+        }
+    }
+
+    private void AdicionarAoCarrinho(Item item)
+    {
+        var existente = Carrinho.FirstOrDefault(c => c.Id == item.Id);
+        if (existente == null)
+        {
+            Carrinho.Add(new Item
+            {
+                Nome = item.Nome,
+                Id = item.Id,
+                Quantidade = item.Quantidade,
+                Preco = item.Preco
+            });
+        }
+        else
+        {
+            existente.Quantidade += item.Quantidade;
+        }
+        item.Quantidade = 1;
+    }
+
+    private void RemoverDoCarrinho(Item item)
+    {
+        Carrinho.Remove(item);
+    }
+
+    private void FinalizarCompra()
+    {
+        // Lógica de finalização
+        Carrinho.Clear();
+    }
+
+    private void CancelarCompra()
+    {
+        Carrinho.Clear();
+    }
+
+    private int TotalCarrinho => Carrinho.Sum(i => i.Quantidade * i.Preco);
+
+    private class Item
+    {
+        public string Nome { get; set; }= string.Empty;
+        public int Id { get; set; }
+        public int Stock { get; set; }
+        public int Quantidade { get; set; } = 1;
+        public int Preco { get; set; }
+    }
+}
