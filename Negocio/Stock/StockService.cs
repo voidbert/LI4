@@ -1,5 +1,3 @@
-using System.Net.Mail;
-
 using LI4.Dados;
 
 namespace LI4.Negocio.Stock;
@@ -25,31 +23,22 @@ public class StockService
 
     public async Task ColocarEncomenda(EncomendaPartes encomenda)
     {
+        if (encomenda.Conteudo.Count == 0)
+            throw new EncomendaVaziaException();
+
         BaseDeDados.Instancia.IniciarTransacao();
 
-        int partes = 0;
         foreach (KeyValuePair<int, int> entrada in encomenda.Conteudo)
         {
-            if (entrada.Value != 0)
+            ParteModel? parte = await PartesRepository.Instancia.Obter(entrada.Key);
+            if (parte == null)
             {
-                ParteModel? parte = await PartesRepository.Instancia.Obter(entrada.Key);
-                if (parte == null)
-                {
-                    BaseDeDados.Instancia.AbortarTransacao();
-                    throw new ParteNaoEncontradaException();
-                }
-
-                ParteModel novaParte = parte with { QuantidadeArmazem = parte.QuantidadeArmazem + entrada.Value };
-                await PartesRepository.Instancia.Atualizar(novaParte);
-
-                partes++;
+                BaseDeDados.Instancia.AbortarTransacao();
+                throw new ParteNaoEncontradaException();
             }
-        }
 
-        if (partes == 0)
-        {
-            BaseDeDados.Instancia.AbortarTransacao();
-            throw new EncomendaVaziaException();
+            ParteModel novaParte = parte with { QuantidadeArmazem = parte.QuantidadeArmazem + entrada.Value };
+            await PartesRepository.Instancia.Atualizar(novaParte);
         }
 
         EncomendaPartesModel encomendaPartesModel = new EncomendaPartesModel

@@ -73,7 +73,7 @@ else
     private List<Parte> Partes { get; set; } = new List<Parte>();
     private EncomendaPartes? Encomenda { get; set; }
     private SessaoController? SessaoController { get; set; }
-    private Utilizador? GestorDeProduto { get; set; }
+    private Utilizador? GestorDeStock { get; set; }
 
     protected override void OnInitialized()
     {
@@ -86,7 +86,7 @@ else
         {
             await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeStock);
 
-            GestorDeProduto = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            GestorDeStock = await SessaoController!.GetUtilizadorComSessaoIniciada();
             Partes = await StockService.ObterTodasAsPartes();
             Partes.Sort((p1, p2) => p1.Nome.CompareTo(p2.Nome));
             StateHasChanged();
@@ -95,7 +95,7 @@ else
 
     private void ComecarEncomenda()
     {
-        Encomenda = new EncomendaPartes(DateTime.Now, GestorDeProduto!);
+        Encomenda = new EncomendaPartes(DateTime.Now, GestorDeStock!);
     }
 
     private void CancelarEncomenda()
@@ -120,7 +120,7 @@ else
     private void IncrementarQuantidade(Parte parte)
     {
         int quantidade = Encomenda!.Conteudo.GetValueOrDefault(parte.Identificador, 0);
-        Encomenda!.DefinirQuantidadeDeProduto(parte, quantidade + 1);
+        Encomenda!.DefinirQuantidadeDeParte(parte, quantidade + 1);
         StateHasChanged();
     }
 
@@ -130,6 +130,6 @@ else
         if (quantidade == 0)
             return;
 
-        Encomenda!.DefinirQuantidadeDeProduto(parte, quantidade - 1);
+        Encomenda!.DefinirQuantidadeDeParte(parte, quantidade - 1);
     }
 }

@@ -13,15 +13,6 @@ public class EncomendaPartes
         this._Conteudo = new Dictionary<int, int>();
     }
 
-    public EncomendaPartes(int identificador, DateTime instanteRealizacao, Utilizador funcionario, Dictionary<int, int> conteudo)
-    {
-        this.Identificador = identificador;
-        this.InstanteRealizacao = instanteRealizacao;
-        this.Preco = 0.0;
-        this._Funcionario = funcionario.EnderecoEletronico;
-        this._Conteudo = conteudo;
-    }
-
     private EncomendaPartes(int? identificador, DateTime instanteRealizacao, double preco, string funcionario, Dictionary<int, int> conteudo)
     {
         this.Identificador = identificador;
@@ -36,12 +27,23 @@ public class EncomendaPartes
         return new EncomendaPartes(model.Identificador, model.InstanteRealizacao, model.Preco, model.Funcionario, model.Conteudo);
     }
 
-    public void DefinirQuantidadeDeProduto(Parte parte, int quantidade)
+    public void DefinirQuantidadeDeParte(Parte parte, int quantidade)
     {
         int antiga = this._Conteudo.GetValueOrDefault(parte.Identificador);
         this.Preco -= antiga * parte.Preco;
         this.Preco += quantidade * parte.Preco;
-        this._Conteudo[parte.Identificador] = quantidade;
+
+        if (quantidade == 0)
+        {
+            if (this._Conteudo.ContainsKey(parte.Identificador))
+            {
+                this._Conteudo.Remove(parte.Identificador);
+            }
+        }
+        else
+        {
+            this._Conteudo[parte.Identificador] = quantidade;
+        }
     }
 
     public override int GetHashCode()
