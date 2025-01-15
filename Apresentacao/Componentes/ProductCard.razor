@@ -1,0 +1,18 @@
+@namespace LI4.Apresentacao.Componentes
+
+<div class="product-card">
+    <div class="product-image">
+        <div class="image-placeholder"></div>
+    </div>
+    <div class="product-details">
+        <span class="product-name">@Name</span>
+        <span class="product-price">@Price.ToString("F2")€</span>
+    </div>
+    <button class="add-to-cart-button">Adicionar ao carrinho</button>
+</div>
+
+@code {
+    [Parameter] public string Name { get; set; } = "Template";
+    [Parameter] public decimal Price { get; set; } = 0.0m;
+    [Parameter] public string ImageUrl { get; set; } = "";
+}

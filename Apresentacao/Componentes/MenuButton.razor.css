@@ -1,0 +1,18 @@
+.menu-button button {
+    width: 200px;
+    padding: 10px 20px;
+    margin-bottom: 15px;
+    background-color: #333333;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.menu-button button:hover {
+    background-color: #555555;
+}

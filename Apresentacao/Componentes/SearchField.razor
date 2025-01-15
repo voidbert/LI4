@@ -1,0 +1,10 @@
+@namespace LI4.Apresentacao.Componentes
+
+<div class="search">
+    <input type="text" placeholder="@Placeholder" />
+</div>
+
+@code {
+    [Parameter]
+    public string Placeholder { get; set; } = "Pesquisar"; // Default placeholder text
+}

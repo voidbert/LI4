@@ -1,0 +1,83 @@
+/* Layout wrapper */
+.catalog-layout {
+    display: grid;
+    grid-template-columns: 250px auto 320px;
+    height: 100vh;
+}
+
+/* Main Content */
+.catalog-container {
+    width: 100%;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    justify-content: center;
+    align-items: start;
+}
+
+/* Sidebar container */
+.left-sidebar {
+    width: 200px;
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #dcdcdc;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Filters container */
+.left-sidebar .filters {
+    display: flex;
+    flex-direction: column;
+    /* Stack labels vertically */
+    gap: 10px;
+    /* Space between each filter option */
+}
+
+/* Radio buttons and labels */
+.left-sidebar .filters label {
+    display: flex;
+    align-items: center;
+    /* Align radio buttons with text */
+    font-size: 14px;
+    /* Adjust font size */
+    cursor: pointer;
+    /* Make the label clickable */
+}
+
+.left-sidebar .filters input[type="radio"] {
+    margin-right: 10px;
+    /* Space between radio button and text */
+    accent-color: #007bff;
+    /* Customize radio button color */
+}
+
+.right-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 250px;
+    /* Full height of the viewport */
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for separation */
+}
+
+.right-sidebar h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #000000;
+    text-align: center;
+}
