@@ -21,7 +21,8 @@ public class EVARepository
         BaseDeDados.Instancia.IniciarTransacao();
 
         string sql = "SELECT * FROM EVA WHERE Identificador=@identificador";
-        List<EVAModel> lista = await BaseDeDados.Instancia.LerDados<EVAModel, dynamic>(sql, new {
+        List<EVAModel> lista = await BaseDeDados.Instancia.LerDados<EVAModel, dynamic>(sql, new
+        {
             identificador = identificador
         });
 
