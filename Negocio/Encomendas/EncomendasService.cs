@@ -10,6 +10,12 @@ public class EncomendasService
         return CarrinhoCompras.DeModel(model);
     }
 
+    public async Task<List<EncomendaEVAs>> ObterTodasAsEncomendasEVAs()
+    {
+        List<EncomendaEVAsModel> modelos = await EncomendaEVAsRepository.Instancia.ObterTodas();
+        return modelos.Select(model => EncomendaEVAs.DeModel(model)).ToList();
+    }
+
     public async Task AtualizarCarrinho(CarrinhoCompras carrinho)
     {
         CarrinhoComprasModel model = new CarrinhoComprasModel

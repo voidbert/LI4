@@ -18,14 +18,13 @@ public class EncomendaEVAsRepository
 
     public async Task<List<EncomendaEVAsModel>> ObterTodas()
     {
-        /*
         BaseDeDados.Instancia.IniciarTransacao();
 
-        string sql = "SELECT * FROM Encomenda";
-        List<EncomendaPartesModel> lista = await BaseDeDados.Instancia.LerDados<EncomendaPartesModel, dynamic>(sql, new { });
+        string sql = "SELECT * FROM EncomendaEVAs";
+        List<EncomendaEVAsModel> lista = await BaseDeDados.Instancia.LerDados<EncomendaEVAsModel, dynamic>(sql, new { });
 
-        string conteudoSql = "SELECT Parte AS Key, Quantidade AS Value FROM EncomendaPartes WHERE Encomenda = @encomenda";
-        foreach (EncomendaPartesModel model in lista)
+        string conteudoSql = "SELECT EVA AS [Key], Quantidade AS Value FROM ConteudoEncomendaEVAs WHERE Encomenda = @encomenda";
+        foreach (EncomendaEVAsModel model in lista)
         {
             List<KeyValuePair<int, int>> tuplos = await BaseDeDados.Instancia.LerDados<KeyValuePair<int, int>, dynamic>(conteudoSql, new
             {
@@ -37,10 +36,6 @@ public class EncomendaEVAsRepository
 
         BaseDeDados.Instancia.CommitTransacao();
         return lista;
-        */
-
-        // TODO
-        return new List<EncomendaEVAsModel>();
     }
 
     public async Task<EncomendaEVAsModel> Adicionar(EncomendaEVAsModel model)
