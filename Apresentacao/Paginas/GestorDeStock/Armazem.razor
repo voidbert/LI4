@@ -2,6 +2,7 @@
 
 @using LI4.Negocio.Stock
 @using LI4.Negocio.Utilizadores
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
@@ -11,63 +12,60 @@
 @inject ProtectedLocalStorage ProtectedLocalStorage
 @inject IJSRuntime JSRuntime
 
-Armazém de Partes
-
-@if (Encomenda == null)
-{
-    <a href="/GestorDeStock">
-        <button>Voltar</button>
-    </a>
-}
-else
-{
-    <button @onclick=@CancelarEncomenda>Cancelar Encomenda</button>
-}
-
-<table>
-    <tr>
-        <th>Identificador</th>
-        <th>Nome</th>
-        @if (Encomenda != null)
-        {
-            <th>Preço</th>
-            <th>Quantidade</th>
-        }
-        <th>Número de Exemplares</th>
-    </tr>
-
-    @foreach(Parte parte in Partes)
-    {
+<main>
+    <HeaderTitle>Armazém de Partes</HeaderTitle>
+    <table class="part-warehouse">
         <tr>
-            <td>@parte.Identificador</td>
-            <td>@parte.Nome</td>
-
+            <th>Identificador</th>
+            <th>Nome</th>
             @if (Encomenda != null)
             {
-                <td>@String.Format("{0:F2} €", parte.Preco)</td>
-                <td>
-                    <button @onclick="@(() => DecrementarQuantidade(parte))">-</button>
-                    @Encomenda.Conteudo.GetValueOrDefault(parte.Identificador, 0).ToString()
-                    <button @onclick="@(() => IncrementarQuantidade(parte))">+</button>
-                </td>
+                <th>Preço</th>
+                <th>Quantidade</th>
             }
-            <td>@parte.QuantidadeArmazem</td>
+            <th>Número de Exemplares</th>
         </tr>
-    }
-</table>
 
-@if (Encomenda == null)
-{
-    <button @onclick=@ComecarEncomenda>Começar Encomenda</button>
-}
-else
-{
-    <span>Total &colon; @String.Format("{0:F2} €", Encomenda.Preco)</span>
-    <button @onclick=@ColocarEncomenda>
-        Colocar Encomenda
-    </button>
-}
+        @foreach(Parte parte in Partes)
+        {
+            <tr>
+                <td>@parte.Identificador</td>
+                <td>@parte.Nome</td>
 
+                @if (Encomenda != null)
+                {
+                    <td>@String.Format("{0:F2} €", parte.Preco)</td>
+                    <td>
+                        <button @onclick="@(() => DecrementarQuantidade(parte))">-</button>
+                        @Encomenda.Conteudo.GetValueOrDefault(parte.Identificador, 0).ToString()
+                        <button @onclick="@(() => IncrementarQuantidade(parte))">+</button>
+                    </td>
+                }
+                <td>@parte.QuantidadeArmazem</td>
+            </tr>
+        }
+    </table>
+
+    <div class="action-buttons">
+        @if (Encomenda == null)
+        {
+            <LinkButton Href="/GestorDeStock" Title="Voltar" />
+        }
+        else
+        {
+            <ActionButton Callback="@CancelarEncomenda" Title="Cancelar Encomenda" />
+        }
+        @if (Encomenda == null)
+        {
+            <ActionButton Callback="@ComecarEncomenda" Title="Começar Encomenda" />
+        }
+        else
+        {
+            <span>Total &colon; @String.Format("{0:F2} €", Encomenda.Preco)</span>
+            <ActionButton Callback="@ColocarEncomenda" Title="Colocar Encomenda" />
+        }
+    </div>
+</main>
 
 @code {
     private List<Parte> Partes { get; set; } = new List<Parte>();

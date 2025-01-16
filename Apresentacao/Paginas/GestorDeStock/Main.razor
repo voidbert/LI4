@@ -1,6 +1,7 @@
 @page "/GestorDeStock"
 
 @using LI4.Negocio.Utilizadores
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
@@ -8,17 +9,12 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
 
-Olá, @NomeCivil!
-
-<a href="/GestorDeStock/EVAs">
-    <button>Consultar EVAs</button>
-</a>
-
-<a href="/GestorDeStock/Armazem">
-    <button>Consultar Armazém</button>
-</a>
-
-<button @onclick="Logout">Terminar Sessão</button>
+<main>
+    <HeaderTitle>Olá, @NomeCivil!</HeaderTitle>
+    <LinkButton Href="/GestorDeStock/EVAs" Title="Consultar EVAs"/>
+    <LinkButton Href="/GestorDeStock/Armazem" Title="Consultar Armazém"/>
+    <ActionButton Callback="@Logout" Title="Terminar Sessão"/>
+</main>
 
 @code {
     private String? NomeCivil { get; set; } = "";

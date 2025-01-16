@@ -3,6 +3,7 @@
 @using LI4.Negocio
 @using LI4.Negocio.Producao
 @using LI4.Negocio.Utilizadores
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.GestorDeProducao
 
@@ -13,60 +14,59 @@
 @inject ProtectedLocalStorage ProtectedLocalStorage
 @inject IJSRuntime JSRuntime
 
-Armazém de EVAs
 
-@if (OrdemProducao == null)
-{
-    <a href="/GestorDeProducao">
-        <button>Voltar</button>
-    </a>
-}
-else
-{
-    <button @onclick=@CancelarOrdemProducao>Cancelar Ordem de Produção</button>
-}
-
-<table>
-    <tr>
-        <th>Identificador</th>
-        <th>Nome</th>
-        @if (OrdemProducao != null)
-        {
-            <th>Quantidade</th>
-        }
-        <th>Número de Exemplares</th>
-    </tr>
-
-    @foreach(EVA eva in EVAs)
-    {
+<main>
+    <HeaderTitle>Armazém de EVAs</HeaderTitle>
+    <table class="warehouse">
         <tr>
-            <td>@eva.Identificador</td>
-            <td>@eva.Nome</td>
-
+            <th>Identificador</th>
+            <th>Nome</th>
             @if (OrdemProducao != null)
             {
-                <td>
-                    <button @onclick="@(() => DecrementarQuantidade(eva))">-</button>
-                    @OrdemProducao.Conteudo.GetValueOrDefault(eva.Identificador, 0).ToString()
-                    <button @onclick="@(() => IncrementarQuantidade(eva))">+</button>
-                </td>
+                <th>Quantidade</th>
             }
-            <td>@eva.QuantidadeArmazem</td>
+            <th>Número de Exemplares</th>
         </tr>
-    }
-</table>
 
-@if (OrdemProducao == null)
-{
-    <button @onclick=@ComecarOrdemProducao>Começar Ordem de Produção</button>
-}
-else
-{
-    <button @onclick=@ColocarOrdemProducao>
-        Colocar Ordem de Producao
-    </button>
-}
+        @foreach(EVA eva in EVAs)
+        {
+            <tr>
+                <td>@eva.Identificador</td>
+                <td>@eva.Nome</td>
 
+                @if (OrdemProducao != null)
+                {
+                    <td>
+                        <button @onclick="@(() => DecrementarQuantidade(eva))">-</button>
+                        @OrdemProducao.Conteudo.GetValueOrDefault(eva.Identificador, 0).ToString()
+                        <button @onclick="@(() => IncrementarQuantidade(eva))">+</button>
+                    </td>
+                }
+                <td>@eva.QuantidadeArmazem</td>
+            </tr>
+        }
+    </table>
+
+    <div class="action-buttons">
+        @if (OrdemProducao == null)
+        {
+            <LinkButton Href="/GestorDeProducao" Title="Voltar" />
+        }
+        else
+        {
+            <ActionButton Callback="@CancelarOrdemProducao" Title="Cancelar Ordem de Produção" />
+        }
+
+        @if (OrdemProducao == null)
+        {
+            <ActionButton Callback="@ComecarOrdemProducao" Title="Começar Ordem de Produção" />
+        }
+        else
+        {
+            <ActionButton Callback="@ColocarOrdemProducao" Title="Colocar Ordem de Produção" />
+        }
+    </div>
+</main>
 
 @code {
     private List<EVA> EVAs { get; set; } = new List<EVA>();

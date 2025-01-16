@@ -55,21 +55,6 @@ main {
     justify-content: center;
 }
 
-.address-input {
-    flex: 3;
-    display: flex;
-    justify-content: center;
-}
-
-.address-input input {
-    width: 100%;
-    max-width: 300px;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
 .final-price {
     flex: 2;
     text-align: center;
@@ -99,7 +84,7 @@ button:hover {
 .checkout-container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 15rem;
     padding: 1rem 2rem;
 }
 
@@ -142,12 +127,6 @@ button:hover {
 
 /* Address input spans the whole width */
 .address-input {
-    display: flex;
-    justify-content: right;
-    align-items: end;
-    align-content: end;
-    justify-items: right;
-    width: 100%;
     margin-bottom: 0.5rem;
 }
 

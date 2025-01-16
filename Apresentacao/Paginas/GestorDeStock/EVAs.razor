@@ -3,6 +3,7 @@
 @using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 @using LI4.Negocio.Stock
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
@@ -12,55 +13,54 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
 
-Catálogo Técnico
-
-<table>
-    <tr>
-        <th>Identificador</th>
-        <th>Nome</th>
-        <th>Constituição</th>
-    </tr>
-
-    @{
-        List<KeyValuePair<EVA, Dictionary<Parte, int>>> bixosOrdem = Bixos.ToList();
-        bixosOrdem.Sort((e1, e2) => e1.Key.Nome.CompareTo(e2.Key.Nome));
-    }
-
-    @foreach(KeyValuePair<EVA, Dictionary<Parte, int>> eva in bixosOrdem)
-    {
+<main>
+    <HeaderTitle>Catálogo Técnico</HeaderTitle>
+    <table class="eva-warehouse">
         <tr>
-            <td>@eva.Key.Identificador</td>
-            <td>@eva.Key.Nome</td>
-            <td>
-                @{
-                    List<KeyValuePair<Parte, int>> partesOrdem = eva.Value.ToList();
-                    partesOrdem.Sort((p1, p2) => p1.Key.Nome.CompareTo(p2.Key.Nome));
-                }
-
-                <table>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Identificador</th>
-                        <th>Número</th>
-                    </tr>
-
-                    @foreach (KeyValuePair<Parte, int> parte in partesOrdem)
-                    {
-                        <tr>
-                            <td>@parte.Key.Nome</td>
-                            <td>@parte.Key.Identificador</td>
-                            <td>@parte.Value</td>
-                        </tr>
-                    }
-                </table>
-            </td>
+            <th>Identificador</th>
+            <th>Nome</th>
+            <th>Constituição</th>
         </tr>
-    }
-</table>
 
-<a href="/GestorDeStock">
-    <button>Voltar</button>
-</a>
+        @{
+            List<KeyValuePair<EVA, Dictionary<Parte, int>>> bixosOrdem = Bixos.ToList();
+            bixosOrdem.Sort((e1, e2) => e1.Key.Nome.CompareTo(e2.Key.Nome));
+        }
+
+        @foreach(KeyValuePair<EVA, Dictionary<Parte, int>> eva in bixosOrdem)
+        {
+            <tr>
+                <td>@eva.Key.Identificador</td>
+                <td>@eva.Key.Nome</td>
+                <td>
+                    @{
+                        List<KeyValuePair<Parte, int>> partesOrdem = eva.Value.ToList();
+                        partesOrdem.Sort((p1, p2) => p1.Key.Nome.CompareTo(p2.Key.Nome));
+                    }
+
+                    <table class="eva-parts">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Identificador</th>
+                            <th>Número</th>
+                        </tr>
+
+                        @foreach (KeyValuePair<Parte, int> parte in partesOrdem)
+                        {
+                            <tr>
+                                <td>@parte.Key.Nome</td>
+                                <td>@parte.Key.Identificador</td>
+                                <td>@parte.Value</td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+            </tr>
+        }
+    </table>
+    
+    <LinkButton Href="/GestorDeStock" Title="Voltar" />
+</main>
 
 @code {
     private Dictionary<EVA, Dictionary<Parte, int>> Bixos { get; set; } = new Dictionary<EVA, Dictionary<Parte, int>>();
