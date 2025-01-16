@@ -5,12 +5,13 @@ namespace LI4.Negocio.Stock;
 
 public class EncomendaPartes
 {
-    public EncomendaPartes(DateTime instanteRealizacao, Utilizador funcionario)
+    public EncomendaPartes(DateTime instanteRealizacao, string funcionario)
     {
+        this.Identificador = null;
         this.InstanteRealizacao = instanteRealizacao;
         this.Preco = 0.0;
-        this._Funcionario = funcionario.EnderecoEletronico;
-        this._Conteudo = new Dictionary<int, int>();
+        this.FuncionarioRaw = funcionario;
+        this._ConteudoRaw = new Dictionary<int, int>();
     }
 
     private EncomendaPartes(int? identificador, DateTime instanteRealizacao, double preco, string funcionario, Dictionary<int, int> conteudo)
@@ -18,8 +19,8 @@ public class EncomendaPartes
         this.Identificador = identificador;
         this.InstanteRealizacao = instanteRealizacao;
         this.Preco = preco;
-        this._Funcionario = funcionario;
-        this._Conteudo = conteudo;
+        this.FuncionarioRaw = funcionario;
+        this._ConteudoRaw = conteudo.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
     }
 
     public static EncomendaPartes DeModel(EncomendaPartesModel model)
@@ -27,22 +28,34 @@ public class EncomendaPartes
         return new EncomendaPartes(model.Identificador, model.InstanteRealizacao, model.Preco, model.Funcionario, model.Conteudo);
     }
 
+    public EncomendaPartesModel ParaModel()
+    {
+        return new EncomendaPartesModel
+        {
+            Identificador = this.Identificador,
+            InstanteRealizacao = this.InstanteRealizacao,
+            Preco = this.Preco,
+            Funcionario = this.FuncionarioRaw,
+            Conteudo = this.ConteudoRaw
+        };
+    }
+
     public void DefinirQuantidadeDeParte(Parte parte, int quantidade)
     {
-        int antiga = this._Conteudo.GetValueOrDefault(parte.Identificador);
+        int antiga = this._ConteudoRaw.GetValueOrDefault(parte.Identificador);
         this.Preco -= antiga * parte.Preco;
         this.Preco += quantidade * parte.Preco;
 
         if (quantidade == 0)
         {
-            if (this._Conteudo.ContainsKey(parte.Identificador))
+            if (this._ConteudoRaw.ContainsKey(parte.Identificador))
             {
-                this._Conteudo.Remove(parte.Identificador);
+                this._ConteudoRaw.Remove(parte.Identificador);
             }
         }
         else
         {
-            this._Conteudo[parte.Identificador] = quantidade;
+            this._ConteudoRaw[parte.Identificador] = quantidade;
         }
     }
 
@@ -54,31 +67,42 @@ public class EncomendaPartes
     public int? Identificador { get; init; }
     public DateTime InstanteRealizacao { get; set; }
     public double Preco { get; set; }
-    private string _Funcionario;
-    private Dictionary<int, int> _Conteudo { get; set; }
+    public string FuncionarioRaw { get; set; }
+    private Dictionary<int, int> _ConteudoRaw { get; set; }
 
-    public Task<Utilizador> Funcionario
+    public Utilizador Funcionario
     {
         get
         {
-            return (UtilizadoresRepository.Instancia.Obter(this._Funcionario)!).ContinueWith(model => Utilizador.DeModel(model.Result!));
+            return Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.FuncionarioRaw)!);
         }
-
         set
         {
-            this._Funcionario = value.Result.EnderecoEletronico;
+            this.FuncionarioRaw = value.EnderecoEletronico;
         }
     }
 
-    public Dictionary<int, int> Conteudo
+    public Dictionary<int, int> ConteudoRaw
     {
         get
         {
-            return this._Conteudo.ToDictionary(entry => entry.Key, entry => entry.Value);
+            return this._ConteudoRaw.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
         }
         set
         {
-            this._Conteudo = value.ToDictionary(entry => entry.Key, entry => entry.Value);
+            this._ConteudoRaw = value.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
+        }
+    }
+
+    public Dictionary<Parte, int> Conteudo
+    {
+        get
+        {
+            return this._ConteudoRaw.ToDictionary(entrada => Parte.DeModel(ParteRepository.Instancia.Obter(entrada.Key)!), entrada => entrada.Value);
+        }
+        set
+        {
+            this._ConteudoRaw = value.ToDictionary(entrada => entrada.Key.Identificador, entrada => entrada.Value);
         }
     }
 }

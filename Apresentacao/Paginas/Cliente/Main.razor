@@ -1,16 +1,19 @@
 @page "/Cliente"
 
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio
-@using LI4.Negocio.Utilizadores
 @using LI4.Negocio.Encomendas
+@using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
-@inject UtilizadoresService UtilizadoresService
 @inject ComumService ComumService
 @inject EncomendasService EncomendasService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@Utilizador.Tipo.Cliente />
 
 <InputText id="search" placeholder="Pesquisar" @bind-Value=@Pesquisa @oninput=@Pesquisar />
 
@@ -39,7 +42,7 @@
 
 @if (Cliente == null)
 {
-    <span>Olá, ???!</span>
+    <span>Olá, !</span>
 }
 else
 {
@@ -56,7 +59,8 @@ else
 
 <button @onclick="Logout">Terminar Sessão</button>
 
-@code {
+@code
+{
     private Dictionary<string, Comparison<EVA>> Ordens = new Dictionary<string, Comparison<EVA>>
     {
         { "Alfabética ↑", (e1, e2) => e1.Nome.CompareTo(e2.Nome) },
@@ -68,9 +72,9 @@ else
     private String Pesquisa { get; set; } = "";
 
     private List<EVA> EVAs { get; set; } = new List<EVA>();
-    private String? NomeCivil { get; set; } = "";
-    private SessaoController? SessaoController { get; set; }
     private Utilizador? Cliente { get; set; }
+
+    private SessaoController? SessaoController { get; set; }
 
     protected override void OnInitialized()
     {
@@ -81,10 +85,8 @@ else
     {
         if (firstRender)
         {
-            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Cliente);
-
-            Cliente = await SessaoController!.GetUtilizadorComSessaoIniciada();
-            EVAs = await ComumService.ObterTodasAsEVAs();
+            Cliente = await SessaoController!.ObterUtilizadorComSessaoIniciada();
+            EVAs = ComumService.ObterTodasAsEVAs();
             StateHasChanged();
         }
     }
@@ -109,13 +111,13 @@ else
         StateHasChanged();
     }
 
-    private async Task AdicionarCarrinho(EVA eva)
+    private void AdicionarCarrinho(EVA eva)
     {
-        CarrinhoCompras carrinho = await EncomendasService.ObterCarrinho(Cliente!.EnderecoEletronico);
+        CarrinhoCompras carrinho = EncomendasService.ObterCarrinho(Cliente!.EnderecoEletronico);
 
-        int quantidade = carrinho!.Conteudo.GetValueOrDefault(eva.Identificador, 0);
+        int quantidade = carrinho!.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0);
         carrinho.DefinirQuantidadeDeEVA(eva, quantidade + 1);
-        await EncomendasService.AtualizarCarrinho(carrinho);
+        EncomendasService.AtualizarCarrinho(carrinho);
     }
 
     private async Task Logout() {

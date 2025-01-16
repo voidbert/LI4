@@ -29,14 +29,14 @@ public class BaseDeDados
         }
     }
 
-    public async Task<List<T>> LerDados<T, U>(string sql, U parametros)
+    public List<T> LerDados<T, U>(string sql, U parametros)
     {
-        return (await this.Conexao.QueryAsync<T>(sql, parametros, transaction: TransacaoAtual)).ToList();
+        return this.Conexao.Query<T>(sql, parametros, transaction: TransacaoAtual).ToList();
     }
 
-    public async Task EscreverDados<T>(string sql, T parametros)
+    public void EscreverDados<T>(string sql, T parametros)
     {
-        await this.Conexao.ExecuteAsync(sql, parametros, transaction: TransacaoAtual);
+        this.Conexao.Execute(sql, parametros, transaction: TransacaoAtual);
     }
 
     public void IniciarTransacao()

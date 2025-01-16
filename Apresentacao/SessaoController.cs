@@ -11,12 +11,8 @@ public class SessaoController
     private ProtectedLocalStorage ProtectedLocalStorage;
     private NavigationManager NavigationManager;
 
-    public SessaoController(
-            UtilizadoresService UtilizadoresService,
-            ProtectedLocalStorage ProtectedLocalStorage,
-            NavigationManager NavigationManager)
+    public SessaoController(UtilizadoresService UtilizadoresService, ProtectedLocalStorage ProtectedLocalStorage, NavigationManager NavigationManager)
     {
-
         this.UtilizadoresService = UtilizadoresService;
         this.ProtectedLocalStorage = ProtectedLocalStorage;
         this.NavigationManager = NavigationManager;
@@ -24,7 +20,7 @@ public class SessaoController
 
     public async Task<Utilizador> IniciarSessao(string enderecoEletronico, string palavraPasse)
     {
-        Utilizador utilizador = await UtilizadoresService.IniciarSessao(enderecoEletronico, palavraPasse);
+        Utilizador utilizador = UtilizadoresService.IniciarSessao(enderecoEletronico, palavraPasse);
 
         await ProtectedLocalStorage.SetAsync("enderecoEletronico", enderecoEletronico);
         await ProtectedLocalStorage.SetAsync("palavraPasse", palavraPasse);
@@ -38,7 +34,7 @@ public class SessaoController
         await ProtectedLocalStorage.DeleteAsync("palavraPasse");
     }
 
-    public async Task<Utilizador?> GetUtilizadorComSessaoIniciada()
+    public async Task<Utilizador?> ObterUtilizadorComSessaoIniciada()
     {
         string? enderecoEletronico = (await ProtectedLocalStorage.GetAsync<string>("enderecoEletronico")).Value;
         string? palavraPasse = (await ProtectedLocalStorage.GetAsync<string>("palavraPasse")).Value;
@@ -55,6 +51,7 @@ public class SessaoController
             }
             catch (Exception)
             {
+                // Credenciais mudaram / utilizador apagado
                 await this.TerminarSessao();
                 return await Task.FromResult<Utilizador?>(null);
             }
@@ -63,7 +60,7 @@ public class SessaoController
 
     public async Task RedirecionarConformeTipo(Utilizador.Tipo? desejado)
     {
-        Utilizador? utilizadorAtual = await this.GetUtilizadorComSessaoIniciada();
+        Utilizador? utilizadorAtual = await this.ObterUtilizadorComSessaoIniciada();
 
         Utilizador.Tipo? tipoAtual = null;
         if (utilizadorAtual != null)

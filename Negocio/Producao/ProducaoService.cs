@@ -1,54 +1,45 @@
 using LI4.Dados;
+using LI4.Negocio.Stock;
 
 namespace LI4.Negocio.Producao;
 
 public class ProducaoService
 {
-    public async Task ColocarOrdemProducao(OrdemProducao ordemProducao)
+    public void ColocarOrdemProducao(OrdemProducao ordemProducao)
     {
         if (ordemProducao.Conteudo.Count == 0)
             throw new OrdemProducaoVaziaException();
 
         BaseDeDados.Instancia.IniciarTransacao();
 
-        foreach (KeyValuePair<int, int> entrada in ordemProducao.Conteudo)
+        // Remover partes necessárias e colocar novas EVAs no armazém 
+        foreach (KeyValuePair<EVA, int> evaEntrada in ordemProducao.Conteudo)
         {
-            EVAModel? eva = await EVARepository.Instancia.Obter(entrada.Key);
-            if (eva == null)
-            {
-                BaseDeDados.Instancia.AbortarTransacao();
-                throw new EVANaoEncontradaException();
-            }
+            EVAModel eva = evaEntrada.Key.ParaModel();
 
-            foreach (KeyValuePair<int, int> parteEntrada in eva.Partes)
+            foreach (KeyValuePair<Parte, int> parteEntrada in evaEntrada.Key.Partes)
             {
-                ParteModel? parte = await PartesRepository.Instancia.Obter(parteEntrada.Key);
-                if (parte == null || parte.QuantidadeArmazem < parteEntrada.Value * entrada.Value)
+                ParteModel parte = parteEntrada.Key.ParaModel();
+
+                if (parteEntrada.Key.QuantidadeArmazem < parteEntrada.Value * evaEntrada.Value)
                 {
                     BaseDeDados.Instancia.AbortarTransacao();
                     throw new SemPartesException();
                 }
 
-                ParteModel novaParte = parte with { QuantidadeArmazem = parte.QuantidadeArmazem - parteEntrada.Value * entrada.Value };
-                await PartesRepository.Instancia.Atualizar(novaParte);
+                ParteModel novaParte = parte with { QuantidadeArmazem = parte.QuantidadeArmazem - parteEntrada.Value * evaEntrada.Value };
+                ParteRepository.Instancia.Atualizar(novaParte);
             }
 
-            EVAModel novaEVA = eva with { QuantidadeArmazem = eva.QuantidadeArmazem + entrada.Value };
-            await EVARepository.Instancia.Atualizar(novaEVA);
+            EVAModel novaEVA = eva with { QuantidadeArmazem = eva.QuantidadeArmazem + evaEntrada.Value };
+            EVARepository.Instancia.Atualizar(novaEVA);
         }
 
-        OrdemProducaoModel ordemProducaoModel = new OrdemProducaoModel
-        {
-            Identificador = ordemProducao.Identificador,
-            Funcionario = (await ordemProducao.Funcionario).EnderecoEletronico,
-            InstanteEmissao = ordemProducao.InstanteEmissao,
-            Visualizada = ordemProducao.Visualizada,
-            Conteudo = ordemProducao.Conteudo
-        };
-
-        await OrdemProducaoRepository.Instancia.Adicionar(ordemProducaoModel);
-        BaseDeDados.Instancia.CommitTransacao();
+        // Registar ordem de producao
+        OrdemProducaoRepository.Instancia.Adicionar(ordemProducao.ParaModel());
 
         // TODO - suprir encomendas
+
+        BaseDeDados.Instancia.CommitTransacao();
     }
 }

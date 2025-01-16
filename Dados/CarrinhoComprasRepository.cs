@@ -16,10 +16,10 @@ public class CarrinhoComprasRepository
         }
     }
 
-    public async Task<CarrinhoComprasModel> Obter(string cliente)
+    public CarrinhoComprasModel Obter(string cliente)
     {
         string sql = "SELECT EVA AS [Key], Quantidade AS Value FROM CarrinhoCompras WHERE Cliente=@cliente";
-        List<KeyValuePair<int, int>> lista = await BaseDeDados.Instancia.LerDados<KeyValuePair<int, int>, dynamic>(sql, new
+        List<KeyValuePair<int, int>> lista = BaseDeDados.Instancia.LerDados<KeyValuePair<int, int>, dynamic>(sql, new
         {
             cliente = cliente
         });
@@ -31,12 +31,12 @@ public class CarrinhoComprasRepository
         };
     }
 
-    public async Task Atualizar(CarrinhoComprasModel carrinhoCompras)
+    public void Atualizar(CarrinhoComprasModel carrinhoCompras)
     {
         BaseDeDados.Instancia.IniciarTransacao();
 
         string apagarSql = "DELETE FROM CarrinhoCompras WHERE Cliente=@cliente";
-        await BaseDeDados.Instancia.EscreverDados<dynamic>(apagarSql, new
+        BaseDeDados.Instancia.EscreverDados<dynamic>(apagarSql, new
         {
             cliente = carrinhoCompras.Cliente
         });
@@ -44,7 +44,7 @@ public class CarrinhoComprasRepository
         string inserirSql = "INSERT INTO CarrinhoCompras (Cliente, EVA, Quantidade) VALUES (@cliente, @eva, @quantidade)";
         foreach (KeyValuePair<int, int> entrada in carrinhoCompras.Conteudo)
         {
-            await BaseDeDados.Instancia.EscreverDados<dynamic>(inserirSql, new
+            BaseDeDados.Instancia.EscreverDados<dynamic>(inserirSql, new
             {
                 cliente = carrinhoCompras.Cliente,
                 eva = entrada.Key,

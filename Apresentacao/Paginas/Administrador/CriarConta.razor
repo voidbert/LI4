@@ -1,13 +1,15 @@
 @page "/Administrador/CriarConta"
 
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio.Utilizadores
+
+@inject NavigationManager NavigationManager
+@inject UtilizadoresService UtilizadoresService
 
 @namespace LI4.Apresentacao.Paginas.Administrador
 
-@inject UtilizadoresService UtilizadoresService
-@inject NavigationManager NavigationManager
-@inject ProtectedLocalStorage ProtectedLocalStorage
-@inject IJSRuntime JSRuntime
+<Autorizador TipoDeConta=@Utilizador.Tipo.Administrador />
+<Alerta @bind-Mensagem=@MensagemAlerta />
 
 <div class="text-center">
     <EditForm Model="@FormModel" OnSubmit="@Registar" FormName="Registar">
@@ -29,8 +31,10 @@
     </EditForm>
 </div>
 
-@code {
-    private class ContaModel {
+@code
+{
+    private class ContaModel
+    {
         public string NomeCivil { get; set; } = "";
         public string EnderecoEletronico { get; set; } = "";
         public string PalavraPasse { get; set; } = "";
@@ -40,37 +44,28 @@
     [SupplyParameterFromForm]
     private ContaModel? FormModel { get; set; }
 
-    private SessaoController? SessaoController { get; set; }
+    private string? MensagemAlerta { get; set; }
 
     protected override void OnInitialized()
     {
         FormModel ??= new ContaModel();
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Administrador);
-        }
-    }
-
-    private async Task Registar()
+    private void Registar()
     {
         try
         {
             Utilizador.Tipo tipo = Utilizador.TipoDeString(FormModel!.TipoDeConta);
-            await UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, tipo);
+            UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, tipo);
             NavigationManager.NavigateTo("/Administrador");
         }
         catch (EnderecoEletronicoInvalidoException)
         {
-            (new Alert(JSRuntime)).Launch("Endereço eletrónico inválido");
+            MensagemAlerta = "Endereço eletrónico inválido";
         }
-        catch (EnderecoEletronicoExistenteException)
+        catch (UtilizadorExistenteException)
         {
-            (new Alert(JSRuntime)).Launch("Endereço eletrónico já se encontra registado");
+            MensagemAlerta = "Endereço eletrónico já se encontra registado";
         }
     }
 }

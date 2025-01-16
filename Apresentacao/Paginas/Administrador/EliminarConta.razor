@@ -1,13 +1,15 @@
 @page "/Administrador/EliminarConta"
 
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Administrador
 
-@inject UtilizadoresService UtilizadoresService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject IJSRuntime JSRuntime
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@Utilizador.Tipo.Administrador />
 
 Eliminar Contas
 
@@ -39,10 +41,13 @@ Eliminar Contas
     }
 </table>
 
-@code {
-    private String Pesquisa { get; set; } = "";
+@code
+{
+    private string Pesquisa { get; set; } = "";
+
     private Utilizador? Administrador { get; set; }
     private List<Utilizador> Utilizadores { get; set; } = new List<Utilizador>();
+
     private SessaoController? SessaoController { get; set; }
 
     protected override void OnInitialized()
@@ -54,10 +59,8 @@ Eliminar Contas
     {
         if (firstRender)
         {
-            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Administrador);
-
-            Utilizadores = await UtilizadoresService.ObterTodos();
-            Administrador = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            Utilizadores = UtilizadoresService.ObterTodos();
+            Administrador = await SessaoController!.ObterUtilizadorComSessaoIniciada();
             StateHasChanged();
         }
     }
@@ -88,15 +91,15 @@ Eliminar Contas
         StateHasChanged();
     }
 
-    private async Task EliminarUtilizador(string enderecoEletronico)
+    private void EliminarUtilizador(string enderecoEletronico)
     {
         try
         {
-            await UtilizadoresService.RegistarComoImpedidoDeIniciarSessao(enderecoEletronico);
+            UtilizadoresService.RegistarComoImpedidoDeIniciarSessao(enderecoEletronico);
         }
         catch (UtilizadorNaoEncontradoException) {}
 
-        Utilizadores = await UtilizadoresService.ObterTodos();
+        Utilizadores = UtilizadoresService.ObterTodos();
         StateHasChanged();
     }
 }

@@ -1,8 +1,8 @@
 using LI4.Apresentacao;
 using LI4.Negocio;
-using LI4.Negocio.Stock;
-using LI4.Negocio.Producao;
 using LI4.Negocio.Encomendas;
+using LI4.Negocio.Producao;
+using LI4.Negocio.Stock;
 using LI4.Negocio.Utilizadores;
 
 namespace LI4;
@@ -15,10 +15,10 @@ public class Program
 
         builder.Services.AddRazorComponents().AddInteractiveServerComponents();
         builder.Services.AddSingleton<ComumService>();
-        builder.Services.AddSingleton<UtilizadoresService>();
-        builder.Services.AddSingleton<StockService>();
-        builder.Services.AddSingleton<ProducaoService>();
         builder.Services.AddSingleton<EncomendasService>();
+        builder.Services.AddSingleton<ProducaoService>();
+        builder.Services.AddSingleton<StockService>();
+        builder.Services.AddSingleton<UtilizadoresService>();
 
         WebApplication app = builder.Build();
 

@@ -1,14 +1,16 @@
 @page "/"
 
-@using System.Net.Mail
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas
 
-@inject UtilizadoresService UtilizadoresService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject IJSRuntime JSRuntime
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@null />
+<Alerta @bind-Mensagem=@MensagemAlerta />
 
 <div class="text-center">
     <EditForm Model="@FormModel" OnSubmit="@Autenticar" FormName="Autenticar">
@@ -23,8 +25,10 @@
     </EditForm>
 </div>
 
-@code {
-    private class CredenciaisModel {
+@code
+{
+    private class CredenciaisModel
+    {
         public string EnderecoEletronico { get; set; } = "";
         public string PalavraPasse { get; set; } = "";
     }
@@ -34,56 +38,40 @@
 
     private SessaoController? SessaoController { get; set; }
 
+    private string? MensagemAlerta { get; set; }
+
     protected override void OnInitialized()
     {
         FormModel ??= new CredenciaisModel();
         SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await SessaoController!.RedirecionarConformeTipo(null);
-        }
-    }
-
     private async Task Autenticar()
     {
         if (FormModel!.EnderecoEletronico == "" || FormModel!.PalavraPasse == "")
         {
-            (new Alert(JSRuntime)).Launch("Preencha o endereço eletrónico e a palavra passe");
-            return;
-        }
-
-        try
-        {
-            new MailAddress(FormModel!.EnderecoEletronico);
-        }
-        catch (FormatException)
-        {
-            (new Alert(JSRuntime)).Launch("Endereço eletrónico inválido");
+            MensagemAlerta = "Preencha o endereço eletrónico e a palavra passe";
             return;
         }
 
         try
         {
             await SessaoController!.IniciarSessao(FormModel!.EnderecoEletronico, FormModel!.PalavraPasse);
-            await SessaoController.RedirecionarConformeTipo(null);
+            await SessaoController!.RedirecionarConformeTipo(null);
         }
         catch (UtilizadorNaoEncontradoException)
         {
-            (new Alert(JSRuntime)).Launch("Endereço eletrónico não encontrado");
+            MensagemAlerta = "Endereço eletrónico não encontrado";
             FormModel!.PalavraPasse = "";
         }
         catch (PalavraPasseIncorretaException)
         {
-            (new Alert(JSRuntime)).Launch("Palavra passe incorreta");
+            MensagemAlerta = "Palavra passe incorreta";
             FormModel!.PalavraPasse = "";
         }
         catch (ImpedidoDeIniciarSessaoException)
         {
-            (new Alert(JSRuntime)).Launch("Este utilizador foi eliminado");
+            MensagemAlerta = "Este utilizador foi eliminado";
             FormModel!.PalavraPasse = "";
         }
     }

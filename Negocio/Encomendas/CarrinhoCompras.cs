@@ -8,65 +8,87 @@ public class CarrinhoCompras
 {
     private CarrinhoCompras(string cliente, Dictionary<int, int> conteudo)
     {
-        this._Cliente = cliente;
-        this._Conteudo = conteudo;
+        this.ClienteRaw = cliente;
+        this._ConteudoRaw = conteudo.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
     }
 
     public static CarrinhoCompras DeModel(CarrinhoComprasModel model)
     {
-        string.Join(Environment.NewLine, model.Conteudo);
         return new CarrinhoCompras(model.Cliente, model.Conteudo);
     }
 
-    private string _Cliente;
-    private Dictionary<int, int> _Conteudo;
+    public CarrinhoComprasModel ParaModel()
+    {
+        return new CarrinhoComprasModel
+        {
+            Cliente = this.ClienteRaw,
+            Conteudo = this.ConteudoRaw
+        };
+    }
+
+    public string ClienteRaw { get; set; }
+    private Dictionary<int, int> _ConteudoRaw;
 
     public void DefinirQuantidadeDeEVA(EVA eva, int quantidade)
     {
         if (quantidade == 0)
         {
-            if (this._Conteudo.ContainsKey(eva.Identificador))
+            if (this._ConteudoRaw.ContainsKey(eva.Identificador))
             {
-                this._Conteudo.Remove(eva.Identificador);
+                this._ConteudoRaw.Remove(eva.Identificador);
             }
         }
         else
         {
-            this._Conteudo[eva.Identificador] = quantidade;
+            this._ConteudoRaw[eva.Identificador] = quantidade;
         }
     }
 
-    public async Task<double> CalcularPreco()
+    public double CalcularPreco()
     {
         double preco = 0.0;
 
-        foreach (KeyValuePair<int, int> entrada in _Conteudo)
+        foreach (KeyValuePair<EVA, int> entrada in this.Conteudo)
         {
-            EVAModel? evaModel = await EVARepository.Instancia.Obter(entrada.Key)!;
-            EVA eva = EVA.DeModel(evaModel!);
-            preco += eva.Preco * entrada.Value;
+            preco += entrada.Key.Preco * entrada.Value;
         }
 
         return preco;
     }
 
-    public Task<Utilizador> Cliente
+    public Utilizador Cliente
     {
         get
         {
-            return (UtilizadoresRepository.Instancia.Obter(this._Cliente)!).ContinueWith(model => Utilizador.DeModel(model.Result!));
-        }
-    }
-
-    public Dictionary<int, int> Conteudo
-    {
-        get
-        {
-            return this._Conteudo.ToDictionary(entry => entry.Key, entry => entry.Value);
+            return Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.ClienteRaw)!);
         }
         set
         {
-            this._Conteudo = value.ToDictionary(entry => entry.Key, entry => entry.Value);
+            this.ClienteRaw = Cliente.EnderecoEletronico;
+        }
+    }
+
+    public Dictionary<int, int> ConteudoRaw
+    {
+        get
+        {
+            return this._ConteudoRaw.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
+        }
+        set
+        {
+            this._ConteudoRaw = value.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
+        }
+    }
+
+    public Dictionary<EVA, int> Conteudo
+    {
+        get
+        {
+            return this._ConteudoRaw.ToDictionary(entrada => EVA.DeModel(EVARepository.Instancia.Obter(entrada.Key)!), entrada => entrada.Value);
+        }
+        set
+        {
+            this._ConteudoRaw = value.ToDictionary(entrada => entrada.Key.Identificador, entrada => entrada.Value);
         }
     }
 }

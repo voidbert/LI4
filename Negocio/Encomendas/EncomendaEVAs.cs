@@ -5,19 +5,29 @@ namespace LI4.Negocio.Encomendas;
 
 public class EncomendaEVAs
 {
-    public EncomendaEVAs(Utilizador cliente, string morada, double preco, DateTime instanteColocacao, Dictionary<int, int> conteudo)
+    public enum EstadoEncomenda
     {
-        this._Cliente = cliente.EnderecoEletronico;
+        Colocada,
+        Rejeitada,
+        Aprovada,
+        Cancelada,
+        Entregue,
+        Devolvida
+    }
+
+    public EncomendaEVAs(string cliente, string morada, double preco, DateTime instanteColocacao, Dictionary<int, int> conteudo)
+    {
+        this.ClienteRaw = cliente;
         this.Morada = morada;
         this.Preco = preco;
         this.InstanteColocacao = instanteColocacao;
-        this._Conteudo = conteudo;
+        this._ConteudoRaw = conteudo.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
     }
 
     private EncomendaEVAs(int identificador, string cliente, string morada, double preco, DateTime instanteColocacao, DateTime? instanteConfirmacao, DateTime? instanteEntrega, DateTime? instanteCancelamento, DateTime? instanteDevolucao, bool aprovada, Dictionary<int, int> conteudo)
     {
         this.Identificador = identificador;
-        this._Cliente = cliente;
+        this.ClienteRaw = cliente;
         this.Morada = morada;
         this.Preco = preco;
         this.InstanteColocacao = instanteColocacao;
@@ -25,7 +35,7 @@ public class EncomendaEVAs
         this.InstanteEntrega = instanteEntrega;
         this.InstanteCancelamento = instanteCancelamento;
         this.InstanteDevolucao = instanteDevolucao;
-        this._Conteudo = conteudo;
+        this._ConteudoRaw = conteudo;
     }
 
     public static EncomendaEVAs DeModel(EncomendaEVAsModel model)
@@ -33,22 +43,39 @@ public class EncomendaEVAs
         return new EncomendaEVAs(model.Identificador!.Value, model.Cliente, model.Morada, model.Preco, model.InstanteColocacao, model.InstanteConfirmacao, model.InstanteEntrega, model.InstanteCancelamento, model.InstanteDevolucao, model.Aprovada, model.Conteudo);
     }
 
+    public EncomendaEVAsModel ParaModel()
+    {
+        return new EncomendaEVAsModel
+        {
+            Cliente = this.ClienteRaw,
+            Morada = this.Morada,
+            Preco = this.Preco,
+            InstanteColocacao = this.InstanteColocacao,
+            InstanteConfirmacao = this.InstanteConfirmacao,
+            InstanteEntrega = this.InstanteEntrega,
+            InstanteCancelamento = this.InstanteCancelamento,
+            InstanteDevolucao = this.InstanteDevolucao,
+            Aprovada = this.Aprovada,
+            Conteudo = this.ConteudoRaw
+        };
+    }
+
     public void DefinirQuantidadeDeEVA(EVA eva, int quantidade)
     {
-        int antiga = this._Conteudo.GetValueOrDefault(eva.Identificador);
+        int antiga = this._ConteudoRaw.GetValueOrDefault(eva.Identificador);
         this.Preco -= antiga * eva.Preco;
         this.Preco += quantidade * eva.Preco;
 
         if (quantidade == 0)
         {
-            if (this._Conteudo.ContainsKey(eva.Identificador))
+            if (this._ConteudoRaw.ContainsKey(eva.Identificador))
             {
-                this._Conteudo.Remove(eva.Identificador);
+                this._ConteudoRaw.Remove(eva.Identificador);
             }
         }
         else
         {
-            this._Conteudo[eva.Identificador] = quantidade;
+            this._ConteudoRaw[eva.Identificador] = quantidade;
         }
     }
 
@@ -58,7 +85,7 @@ public class EncomendaEVAs
     }
 
     public int? Identificador { get; init; }
-    public string _Cliente { get; set; }
+    public string ClienteRaw { get; set; }
     public string Morada { get; set; }
     public double Preco { get; set; }
     public DateTime InstanteColocacao { get; set; }
@@ -67,30 +94,75 @@ public class EncomendaEVAs
     public DateTime? InstanteCancelamento { get; set; }
     public DateTime? InstanteDevolucao { get; set; }
     public bool Aprovada { get; set; }
-    public Dictionary<int, int> _Conteudo { get; set; }
+    private Dictionary<int, int> _ConteudoRaw;
 
-    public Task<Utilizador> Cliente
+    public Utilizador Cliente
     {
         get
         {
-            return (UtilizadoresRepository.Instancia.Obter(this._Cliente)!).ContinueWith(model => Utilizador.DeModel(model.Result!));
+            return Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.ClienteRaw)!);
         }
-
         set
         {
-            this._Cliente = value.Result.EnderecoEletronico;
+            this.ClienteRaw = value.EnderecoEletronico;
         }
     }
 
-    public Dictionary<int, int> Conteudo
+    public Dictionary<int, int> ConteudoRaw
     {
         get
         {
-            return this._Conteudo.ToDictionary(entry => entry.Key, entry => entry.Value);
+            return this._ConteudoRaw.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
         }
         set
         {
-            this._Conteudo = value.ToDictionary(entry => entry.Key, entry => entry.Value);
+            this._ConteudoRaw = value.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
+        }
+    }
+
+    public Dictionary<EVA, int> Conteudo
+    {
+        get
+        {
+            return this._ConteudoRaw.ToDictionary(entrada => EVA.DeModel(EVARepository.Instancia.Obter(entrada.Key)!), entrada => entrada.Value);
+        }
+        set
+        {
+            this._ConteudoRaw = value.ToDictionary(entrada => entrada.Key.Identificador, entrada => entrada.Value);
+        }
+    }
+
+    public EstadoEncomenda Estado
+    {
+        get
+        {
+            if (this.InstanteDevolucao != null)
+            {
+                return EstadoEncomenda.Devolvida;
+            }
+            else if (this.InstanteEntrega != null)
+            {
+                return EstadoEncomenda.Entregue;
+            }
+            else if (this.InstanteCancelamento != null)
+            {
+                return EstadoEncomenda.Cancelada;
+            }
+            else if (this.InstanteConfirmacao != null)
+            {
+                if (this.Aprovada)
+                {
+                    return EstadoEncomenda.Aprovada;
+                }
+                else
+                {
+                    return EstadoEncomenda.Rejeitada;
+                }
+            }
+            else
+            {
+                return EstadoEncomenda.Colocada;
+            }
         }
     }
 }
