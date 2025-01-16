@@ -4,7 +4,7 @@ namespace LI4.Negocio.Stock;
 
 public class Parte
 {
-    public Parte(int identificador, string nome, double preco, int quantidadeArmazem)
+    private Parte(int identificador, string nome, double preco, int quantidadeArmazem)
     {
         this.Identificador = identificador;
         this.Nome = nome;
@@ -15,6 +15,17 @@ public class Parte
     public static Parte DeModel(ParteModel model)
     {
         return new Parte(model.Identificador, model.Nome, model.Preco, model.QuantidadeArmazem);
+    }
+
+    public ParteModel ParaModel()
+    {
+        return new ParteModel
+        {
+            Identificador = this.Identificador,
+            Nome = this.Nome,
+            Preco = this.Preco,
+            QuantidadeArmazem = this.QuantidadeArmazem
+        };
     }
 
     public override int GetHashCode()

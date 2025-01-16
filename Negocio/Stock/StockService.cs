@@ -4,9 +4,9 @@ namespace LI4.Negocio.Stock;
 
 public class StockService
 {
-    public async Task<Parte?> ObterParte(int identificador)
+    public Parte? ObterParte(int identificador)
     {
-        ParteModel? model = await PartesRepository.Instancia.Obter(identificador);
+        ParteModel? model = ParteRepository.Instancia.Obter(identificador);
         if (model == null)
         {
             return null;
@@ -15,48 +15,34 @@ public class StockService
         return Parte.DeModel(model);
     }
 
-    public async Task<List<Parte>> ObterTodasAsPartes()
+    public List<Parte> ObterTodasAsPartes()
     {
-        List<ParteModel> modelos = await PartesRepository.Instancia.ObterTodas();
-        return modelos.Select(model => Parte.DeModel(model)).ToList();
+        return ParteRepository.Instancia.ObterTodas().Select(model => Parte.DeModel(model)).ToList();
     }
 
-    public async Task<List<EncomendaPartes>> ObterTodasAsEncomendasPartes()
+    public List<EncomendaPartes> ObterTodasAsEncomendasPartes()
     {
-        List<EncomendaPartesModel> modelos = await EncomendaPartesRepository.Instancia.ObterTodas();
-        return modelos.Select(model => EncomendaPartes.DeModel(model)).ToList();
+        return EncomendaPartesRepository.Instancia.ObterTodas().Select(model => EncomendaPartes.DeModel(model)).ToList();
     }
 
-    public async Task ColocarEncomenda(EncomendaPartes encomenda)
+    public void ColocarEncomenda(EncomendaPartes encomenda)
     {
         if (encomenda.Conteudo.Count == 0)
+        {
             throw new EncomendaVaziaException();
+        }
 
         BaseDeDados.Instancia.IniciarTransacao();
 
-        foreach (KeyValuePair<int, int> entrada in encomenda.Conteudo)
+        foreach (KeyValuePair<Parte, int> entrada in encomenda.Conteudo)
         {
-            ParteModel? parte = await PartesRepository.Instancia.Obter(entrada.Key);
-            if (parte == null)
-            {
-                BaseDeDados.Instancia.AbortarTransacao();
-                throw new ParteNaoEncontradaException();
-            }
-
+            ParteModel parte = entrada.Key.ParaModel();
             ParteModel novaParte = parte with { QuantidadeArmazem = parte.QuantidadeArmazem + entrada.Value };
-            await PartesRepository.Instancia.Atualizar(novaParte);
+            ParteRepository.Instancia.Atualizar(novaParte);
         }
 
-        EncomendaPartesModel encomendaPartesModel = new EncomendaPartesModel
-        {
-            Identificador = encomenda.Identificador,
-            InstanteRealizacao = encomenda.InstanteRealizacao,
-            Preco = encomenda.Preco,
-            Funcionario = (await encomenda.Funcionario).EnderecoEletronico,
-            Conteudo = encomenda.Conteudo
-        };
-
-        await EncomendaPartesRepository.Instancia.Adicionar(encomendaPartesModel);
+        EncomendaPartesModel encomendaPartesModel = encomenda.ParaModel();
+        EncomendaPartesRepository.Instancia.Adicionar(encomendaPartesModel);
         BaseDeDados.Instancia.CommitTransacao();
     }
 }
