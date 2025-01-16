@@ -1,6 +1,7 @@
 @page "/Administrador"
 
 @using LI4.Negocio.Utilizadores
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.Administrador
 
@@ -8,17 +9,12 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
 
-Olá, @NomeCivil!
-
-<a href="/Administrador/CriarConta">
-    <button>Registar Funcionário</button>
-</a>
-
-<a href="/Administrador/EliminarConta">
-    <button>Eliminar Conta</button>
-</a>
-
-<button @onclick="Logout">Terminar Sessão</button>
+<main>
+    <HeaderTitle>Olá, @NomeCivil!</HeaderTitle>
+    <LinkButton Href="/Administrador/CriarConta" Title="Registar Funcionário"/>
+    <LinkButton Href="/Administrador/EliminarConta" Title="Eliminar Conta"/>
+    <ActionButton Callback="@Logout" Title="Terminar Sessão"/>
+</main>
 
 @code {
     private String? NomeCivil { get; set; } = "";

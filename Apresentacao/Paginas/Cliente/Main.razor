@@ -33,7 +33,7 @@
         {
             @if (eva.Nome.Contains(Pesquisa))
             {
-                <ProductCard Imagem="@eva.Imagem" Nome="@eva.Nome" Preco="@eva.Preco"/>
+                <ProductCard Imagem="@eva.Imagem" Nome="@eva.Nome" Preco="@eva.Preco" Callback="() => AdicionarCarrinho(eva)"/>
             }
         }
     </div>

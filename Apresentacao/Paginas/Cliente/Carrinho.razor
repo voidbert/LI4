@@ -3,6 +3,7 @@
 @using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 @using LI4.Negocio.Encomendas
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
@@ -12,54 +13,67 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
 
-Carrinho de Compras
-
-<table>
-    <tr>
-        <th>Item</th>
-        <th>Preço</th>
-        <th>Quantidade</th>
-        <th>Total</th>
-        <th></th>
-    </tr>
-
-    @foreach (EVA eva in EVAs)
-    {
+<main>
+    <HeaderTitle>Carrinho de Compras</HeaderTitle>
+    <table class="cart">
         <tr>
-            <td>
-                <img src="@eva.Imagem" asp-append-version="true" width="200rem" />
-                @eva.Nome
-            </td>
-            <td>
-                @String.Format("{0:F2} €", eva.Preco)
-            </td>
-            <td>
-                <button @onclick="@(() => DecrementarQuantidade(eva))">-</button>
-                @CarrinhoCompras!.Conteudo.GetValueOrDefault(eva.Identificador, 0).ToString()
-                <button @onclick="@(() => IncrementarQuantidade(eva))">+</button>
-            </td>
-            <td>
-                @String.Format("{0:F2} €", eva.Preco * CarrinhoCompras!.Conteudo[eva.Identificador])
-            </td>
-            <td>
-                <button @onclick="@(() => RemoverEVA(eva))">Remover</button>
-            </td>
+            <th>Item</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+            <th>Total</th>
+            <th></th>
         </tr>
-    }
 
-</table>
+        @foreach (EVA eva in EVAs)
+        {
+            <tr>
+                <td class="eva">
+                    <img src="@eva.Imagem" asp-append-version="true" width="200rem" />
+                    <span>@eva.Nome</span>
+                </td>
+                <td>
+                    @String.Format("{0:F2} €", eva.Preco)
+                </td>
+                <td>
+                    <Counter Value="@CarrinhoCompras!.Conteudo.GetValueOrDefault(eva.Identificador, 0)" Decrementar="@(() => DecrementarQuantidade(eva))" Incrementar="@(() => IncrementarQuantidade(eva))"/>
+                </td>
+                <td>
+                    @String.Format("{0:F2} €", eva.Preco * CarrinhoCompras!.Conteudo[eva.Identificador])
+                </td>
+                <td>
+                    <XComp AoClicar="@(() => RemoverEVA(eva))" />
+                </td>
+            </tr>
+        }
+    </table>
 
-<a href="/Cliente">
-    <button>Voltar</button>
-</a>
+    <div class="checkout-container">
+        <!-- Row 1: Back Button -->
+            <div class="left-button">
+                <LinkButton Href="/Cliente" Title="Voltar" />
+            </div>
 
-<span>
-    @String.Format("{0:F2} €", Preco)
-</span>
+        <!-- Row 2: Finalization Section -->
+        <div class="finalization">
+            <!-- Address Input -->
+            <div class="address-input">
+                <InputField Placeholder="Morada de Entrega" Value="@Morada" />
+            </div>
 
-<InputText placeholder="Morada" @bind-Value=@Morada />
+            <!-- Final Price and Button -->
+            <div class="finalization-details">
+                <div class="final-price">
+                    Preço Final: <span>@String.Format("{0:F2} €", Preco)</span>
+                </div>
+                <div class="finalize-button">
+                    <ActionButton Callback="@FinalizarPedido" Title="Finalizar Pedido" />
+                </div>
+            </div>
+        </div>
+    </div>
 
-<button @onclick=@FinalizarPedido>Finalizar Pedido</button>
+
+</main>
 
 @code {
     private List<EVA> EVAs { get; set; } = new List<EVA>();

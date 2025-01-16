@@ -1,6 +1,7 @@
 @page "/Cliente/CriarConta"
 
 @using LI4.Negocio.Utilizadores
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
@@ -10,13 +11,14 @@
 @inject IJSRuntime JSRuntime
 
 <main>
+    <HeaderTitle>Criar Conta</HeaderTitle>
     <form class="form" @onsubmit="Registar">
-        <input id="name" class="form-control" placeholder="Nome civil" @bind="FormModel!.NomeCivil" />
-        <input id="email" class="form-control" placeholder="Endereço eletrónico" @bind="FormModel!.EnderecoEletronico" />
-        <input type="password" id="password" class="form-control" placeholder="Palavra passe" @bind="FormModel!.PalavraPasse" />
-        
-        
-        <a href="/"><button class="btn">Regressar</button></a>
+        <input id="name" class="form-control" placeholder="Nome civil" @bind="FormModel!.NomeCivil"/>
+        <input id="email" class="form-control" placeholder="Endereço eletrónico" @bind="FormModel!.EnderecoEletronico"/>
+        <input type="password" id="password" class="form-control" placeholder="Palavra passe" @bind="FormModel!.PalavraPasse"/>
+
+
+        <a href="/"><button class="btn">Cancelar</button></a>
         <button type="submit" id="register" class="btn">Continuar</button>
     </form>
 </main>

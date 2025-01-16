@@ -15,11 +15,13 @@
         <span class="product-name">@Nome</span>
         <span class="product-price">@String.Format("{0:F2} €", Preco)</span>
     </div>
-    <button class="add-to-cart-button">Adicionar ao carrinho</button>
+    <button class="add-to-cart-button" onclick="@Callback">Adicionar ao carrinho</button>
 </div>
 
 @code {
     [Parameter] public string Nome { get; set; } = "";
     [Parameter] public double Preco { get; set; } = 0.0;
     [Parameter] public string? Imagem { get; set; }
+    [Parameter]
+    public EventCallback Callback { get; set; }
 }

@@ -1,45 +1,171 @@
-body {
+/* Styling for the main section */
+main {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f7f7f7;
-}
-
-h1 {
-    font-size: 24px;
-    color: #555;
     margin: 20px;
 }
 
-table {
-    width: 90%;
-    margin: 20px auto;
+/* Table styling */
+.cart {
+    width: 100%;
     border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.cart th,
+.cart td {
+    border-bottom: 2px solid #bbb;
+    padding: 10px 15px;
+    text-align: left;
+}
+
+.eva {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.eva img {
+    object-fit: scale-down;
+    height: 200px;
+}
+
+/* Header styling */
+.cart th {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+/* Highlight hover */
+.cart tr:hover {
+    background-color: #fafafa;
+}
+
+.checkout-container {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    padding: 0 2rem;
+}
+
+.left-button,
+.right-button {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.address-input {
+    flex: 3;
+    display: flex;
+    justify-content: center;
+}
+
+.address-input input {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.5rem;
+    font-size: 1rem;
     border: 1px solid #ccc;
-    background-color: #fff;
+    border-radius: 5px;
 }
 
-table th, table td {
-    padding: 15px;
+.final-price {
+    flex: 2;
     text-align: center;
-    border-bottom: 1px solid #ddd;
-}
-
-table th {
-    background-color: #f3f3f3;
+    font-size: 1.2rem;
     font-weight: bold;
 }
 
-table td img {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    background-color: #f5caca;
+.final-price span {
+    text-decoration: underline;
 }
 
-.total {
-    margin: 20px auto;
-    font-size: 20px;
-    font-weight: bold;
+button {
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    background-color: #373b3f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4a4f54;
+}
+
+/* Main container */
+.checkout-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem 2rem;
+}
+
+/* Each row */
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Left button styling */
+.left-button {
     text-align: center;
+}
+
+button {
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    background-color: #373b3f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4a4f54;
+}
+
+.checkout-container {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Finalization section */
+.finalization {
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Address input spans the whole width */
+.address-input {
+    display: flex;
+    justify-content: right;
+    align-items: end;
+    align-content: end;
+    justify-items: right;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+/* Final price and button are in a column */
+.finalization-details {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: end;
+    gap: 1rem;
+}
+
+.final-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: end;
+}
+
+.final-price span {
+    text-decoration: underline;
 }

@@ -2,6 +2,7 @@
 
 @using System.Net.Mail
 @using LI4.Negocio.Utilizadores
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas
 
@@ -11,13 +12,14 @@
 @inject IJSRuntime JSRuntime
 
 <main>
+    <HeaderTitle>Iniciar Sessão</HeaderTitle>
     <form class="form" @onsubmit="Autenticar">
-        <input id="email" class="form-control" placeholder="Endereço eletrónico" @bind="FormModel!.EnderecoEletronico" />
-        <input type="password" id="password" class="form-control" placeholder="Palavra passe" @bind="FormModel!.PalavraPasse" />
+        <input id="email" class="form-control" placeholder="Endereço eletrónico" @bind="FormModel!.EnderecoEletronico"/>
+        <input type="password" id="password" class="form-control" placeholder="Palavra passe" @bind="FormModel!.PalavraPasse"/>
 
 
-        <a href="/"><button class="btn">Regressar</button></a>
-        <button type="submit" id="register" class="btn">Continuar</button>
+        <a href="/Cliente/CriarConta"><button class="btn">Registrar</button></a>
+        <button type="submit" id="register" class="btn">Iniciar Sessão</button>
     </form>
 </main>
 

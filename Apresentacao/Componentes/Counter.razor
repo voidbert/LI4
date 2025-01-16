@@ -11,17 +11,9 @@
     public int Value { get; set; }
     [Parameter]
     public EventCallback<int> ValueChanged { get; set; }
-
-    private void Incrementar(){
-        Value++;
-        ValueChanged.InvokeAsync(Value);
-    }
-
-    private void Decrementar(){
-        if (Value > 0)
-        {
-            Value--;
-            ValueChanged.InvokeAsync(Value);
-        }
-    }
+    [Parameter]
+    public EventCallback Decrementar { get; set; }
+    [Parameter]
+    public EventCallback Incrementar { get; set; }
+  
 }

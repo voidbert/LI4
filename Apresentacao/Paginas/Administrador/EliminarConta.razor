@@ -1,6 +1,7 @@
 @page "/Administrador/EliminarConta"
 
 @using LI4.Negocio.Utilizadores
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.Administrador
 
@@ -9,35 +10,38 @@
 @inject ProtectedLocalStorage ProtectedLocalStorage
 @inject IJSRuntime JSRuntime
 
-Eliminar Contas
+<main>
+    <HeaderTitle>Eliminar Contas</HeaderTitle>
+    
+    <div class="search">
+        <InputField Id="search" Placeholder="Pesquisar" Value="@Pesquisa" Callback="@Pesquisar" />
+    </div>
 
-<a href="/Administrador">
-    <button>Regressar</button>
-</a>
+    <table class="accounts">
+        <tr>
+            <th>Nome</th>
+            <th>Endereco Eletronico</th>
+            <th>Tipo de Conta</th>
+            <th>Eliminar</th>
+        </tr>
 
-<InputText id="search" placeholder="" @bind-Value=@Pesquisa @oninput=@Pesquisar />
-
-<table>
-    <tr>
-        <th>Nome</th>
-        <th>Endereco Eletronico</th>
-        <th>Tipo de Conta</th>
-        <th>Eliminar</th>
-    </tr>
-
-    @foreach(Utilizador utilizador in Utilizadores)
-    {
-        @if (utilizador.PossivelIniciarSessao && Administrador != null && utilizador.EnderecoEletronico != Administrador.EnderecoEletronico && utilizador.NomeCivil.Contains(Pesquisa))
+        @foreach(Utilizador utilizador in Utilizadores)
         {
-            <tr>
-                <td>@utilizador.NomeCivil</td>
-                <td>@utilizador.EnderecoEletronico</td>
-                <td>@ApresentarTipoDeConta(@utilizador.TipoDeConta)</td>
-                <td><button @onclick="() => EliminarUtilizador(utilizador.EnderecoEletronico)">Eliminar</button></td>
-            </tr>
+            @if (utilizador.PossivelIniciarSessao && Administrador != null && utilizador.EnderecoEletronico != Administrador.EnderecoEletronico && utilizador.NomeCivil.Contains(Pesquisa))
+            {
+                <tr>
+                    <td>@utilizador.NomeCivil</td>
+                    <td>@utilizador.EnderecoEletronico</td>
+                    <td>@ApresentarTipoDeConta(@utilizador.TipoDeConta)</td>
+                    <td><XComp AoClicar="() => EliminarUtilizador(utilizador.EnderecoEletronico)"></XComp></td>
+                </tr>
+            }
         }
-    }
-</table>
+    </table>
+    
+    <LinkButton Href="/Administrador" Title="Voltar" />
+</main>
+
 
 @code {
     private String Pesquisa { get; set; } = "";
