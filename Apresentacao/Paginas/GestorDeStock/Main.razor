@@ -1,12 +1,15 @@
 @page "/GestorDeStock"
 
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
-@inject UtilizadoresService UtilizadoresService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeStock />
 
 Olá, @NomeCivil!
 
@@ -20,8 +23,9 @@ Olá, @NomeCivil!
 
 <button @onclick="Logout">Terminar Sessão</button>
 
-@code {
-    private String? NomeCivil { get; set; } = "";
+@code
+{
+    private string NomeCivil { get; set; } = "";
     private SessaoController? SessaoController { get; set; }
 
     protected override void OnInitialized()
@@ -33,9 +37,7 @@ Olá, @NomeCivil!
     {
         if (firstRender)
         {
-            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeStock);
-
-            Utilizador? utilizador = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            Utilizador? utilizador = await SessaoController!.ObterUtilizadorComSessaoIniciada();
             if (utilizador == null)
             {
                 return;

@@ -1,5 +1,6 @@
 @page "/GestorDeContas"
 
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 @using LI4.Negocio.Encomendas
@@ -7,11 +8,13 @@
 
 @namespace LI4.Apresentacao.Paginas.GestorDeContas
 
-@inject UtilizadoresService UtilizadoresService
-@inject StockService StockService
 @inject EncomendasService EncomendasService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
+@inject StockService StockService
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeContas />
 
 Histórico de Transações
 
@@ -34,7 +37,8 @@ Histórico de Transações
 
 <button @onclick="Logout">Terminar Sessão</button>
 
-@code {
+@code
+{
     private record Transacao
     {
         public required DateTime Instante { get; set; }
@@ -50,13 +54,11 @@ Histórico de Transações
         SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeContas);
-
-            foreach (EncomendaPartes encomenda in await StockService.ObterTodasAsEncomendasPartes())
+            foreach (EncomendaPartes encomenda in StockService.ObterTodasAsEncomendasPartes())
             {
                 Transacoes.Add(new Transacao
                 {
@@ -66,7 +68,7 @@ Histórico de Transações
                 });
             }
 
-            foreach (EncomendaEVAs encomenda in await EncomendasService.ObterTodasAsEncomendasEVAs())
+            foreach (EncomendaEVAs encomenda in EncomendasService.ObterTodasAsEncomendasEVAs())
             {
                 if (encomenda.InstanteEntrega != null)
                 {
