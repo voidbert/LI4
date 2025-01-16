@@ -93,15 +93,26 @@ Carrinho de Compras
                     EVAs.Add(eva);
                 }
             }
+            EVAs.Sort((e1, e2) => e1.Nome.CompareTo(e2.Nome));
 
             Preco = await CarrinhoCompras!.CalcularPreco();
             StateHasChanged();
         }
     }
 
-    private void FinalizarPedido()
+    private async Task FinalizarPedido()
     {
+        EncomendaEVAs encomenda = new EncomendaEVAs(Cliente!, Morada, Preco, DateTime.Now, CarrinhoCompras!.Conteudo);
+        await EncomendasService.ColocarEncomenda(encomenda);
 
+        foreach (EVA eva in EVAs)
+        {
+            CarrinhoCompras!.DefinirQuantidadeDeEVA(eva, 0);
+        }
+        await EncomendasService.AtualizarCarrinho(CarrinhoCompras!);
+
+        EVAs = new List<EVA>(); // Not to crash the renderer
+        NavigationManager.NavigateTo("/Cliente");
     }
 
     private async Task IncrementarQuantidade(EVA eva)

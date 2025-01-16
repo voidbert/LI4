@@ -20,4 +20,27 @@ public class EncomendasService
 
         await CarrinhoComprasRepository.Instancia.Atualizar(model);
     }
+
+    public async Task ColocarEncomenda(EncomendaEVAs encomenda)
+    {
+        if (encomenda.Conteudo.Count == 0)
+        {
+            throw new CarrinhoVazioException();
+        }
+
+        EncomendaEVAsModel model = new EncomendaEVAsModel
+        {
+            Cliente = (await encomenda.Cliente).EnderecoEletronico,
+            Morada = encomenda.Morada,
+            Preco = encomenda.Preco,
+            InstanteColocacao = encomenda.InstanteColocacao,
+            InstanteConfirmacao = encomenda.InstanteConfirmacao,
+            InstanteEntrega = encomenda.InstanteEntrega,
+            InstanteCancelamento = encomenda.InstanteCancelamento,
+            InstanteDevolucao = encomenda.InstanteDevolucao,
+            Aprovada = encomenda.Aprovada,
+            Conteudo = encomenda.Conteudo
+        };
+        await EncomendaEVAsRepository.Instancia.Adicionar(model);
+    }
 }

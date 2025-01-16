@@ -20,10 +20,10 @@ public class EncomendaPartesRepository
     {
         BaseDeDados.Instancia.IniciarTransacao();
 
-        string sql = "SELECT * FROM Parte";
+        string sql = "SELECT * FROM EncomendaPartes";
         List<EncomendaPartesModel> lista = await BaseDeDados.Instancia.LerDados<EncomendaPartesModel, dynamic>(sql, new { });
 
-        string conteudoSql = "SELECT Parte AS Key, Quantidade AS Value FROM EncomendaPartes WHERE Encomenda = @encomenda";
+        string conteudoSql = "SELECT Parte AS Key, Quantidade AS Value FROM ConteudoEncomendaPartes WHERE Encomenda = @encomenda";
         foreach (EncomendaPartesModel model in lista)
         {
             List<KeyValuePair<int, int>> tuplos = await BaseDeDados.Instancia.LerDados<KeyValuePair<int, int>, dynamic>(conteudoSql, new
