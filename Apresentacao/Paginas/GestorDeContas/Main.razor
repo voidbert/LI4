@@ -1,0 +1,101 @@
+@page "/GestorDeContas"
+
+@using LI4.Negocio
+@using LI4.Negocio.Utilizadores
+@using LI4.Negocio.Encomendas
+@using LI4.Negocio.Stock
+
+@namespace LI4.Apresentacao.Paginas.GestorDeContas
+
+@inject UtilizadoresService UtilizadoresService
+@inject StockService StockService
+@inject EncomendasService EncomendasService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+
+Histórico de Transações
+
+<table>
+    <tr>
+        <th>Data e hora</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+    </tr>
+
+    @foreach (Transacao transacao in Transacoes)
+    {
+        <tr>
+            <td>@transacao.Instante</td>
+            <td>@transacao.Descricao</td>
+            <td>@String.Format("{0:F2} €", transacao.Valor)</td>
+        </tr>
+    }
+</table>
+
+<button @onclick="Logout">Terminar Sessão</button>
+
+@code {
+    private record Transacao
+    {
+        public required DateTime Instante { get; set; }
+        public required string Descricao { get; set; }
+        public required double Valor { get; set; }
+    }
+
+    private List<Transacao> Transacoes { get; set; } = new List<Transacao>();
+    private SessaoController? SessaoController { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeContas);
+
+            foreach (EncomendaPartes encomenda in await StockService.ObterTodasAsEncomendasPartes())
+            {
+                Transacoes.Add(new Transacao
+                {
+                    Instante = encomenda.InstanteRealizacao,
+                    Descricao = String.Format("Encomenda de partes {0}", encomenda.Identificador),
+                    Valor = -encomenda.Preco
+                });
+            }
+
+            foreach (EncomendaEVAs encomenda in await EncomendasService.ObterTodasAsEncomendasEVAs())
+            {
+                if (encomenda.InstanteEntrega != null)
+                {
+                    Transacoes.Add(new Transacao
+                    {
+                        Instante = encomenda.InstanteEntrega.Value,
+                        Descricao = String.Format("Entrega da encomenda {0}", encomenda.Identificador),
+                        Valor = encomenda.Preco
+                    });
+                }
+
+                if (encomenda.InstanteDevolucao != null)
+                {
+                    Transacoes.Add(new Transacao
+                    {
+                        Instante = encomenda.InstanteDevolucao.Value,
+                        Descricao = String.Format("Devolucao da encomenda {0}", encomenda.Identificador),
+                        Valor = -encomenda.Preco
+                    });
+                }
+            }
+
+            Transacoes.Sort((t1, t2) => t2.Instante.CompareTo(t1.Instante));
+            StateHasChanged();
+        }
+    }
+
+    private async Task Logout() {
+        await SessaoController!.TerminarSessao();
+        NavigationManager.NavigateTo("/");
+    }
+}
