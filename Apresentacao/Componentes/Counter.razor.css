@@ -1,0 +1,39 @@
+.counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    background-color: #ffffff;
+    border: 1px solid #8b8b8b;
+    border-radius: 5px;
+
+    width: 95px;
+    height: 30px;
+    font-family: Arial, sans-serif;
+}
+
+.counter button {
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    background-color: #8b8b8b;
+
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.counter button:hover {
+    background-color: #535252;
+}
+
+.counter span {
+    flex: 1;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}

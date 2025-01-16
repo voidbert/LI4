@@ -1,18 +1,21 @@
-.menu-button button {
-    width: 200px;
+.link-button {
+    width: 160px;
     padding: 10px 20px;
-    margin-bottom: 15px;
     background-color: #333333;
-    color: #ffffff;
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
     text-align: center;
+    cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
 
-.menu-button button:hover {
+.link-button a {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.link-button:hover {
     background-color: #555555;
 }

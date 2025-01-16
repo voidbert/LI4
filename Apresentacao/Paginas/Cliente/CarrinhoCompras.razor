@@ -1,52 +1,8 @@
-@page "/cliente/carrinho-compras"
+@page "/Cliente/Carrinho"
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
+@using LI4.Apresentacao.Componentes
 
-    h1 {
-        font-size: 24px;
-        color: #555;
-        margin: 20px;
-    }
-
-    table {
-        width: 90%;
-        margin: 20px auto;
-        border-collapse: collapse;
-        border: 1px solid #ccc;
-        background-color: #fff;
-    }
-
-    table th, table td {
-        padding: 15px;
-        text-align: center;
-        border-bottom: 1px solid #ddd;
-    }
-
-    table th {
-        background-color: #f3f3f3;
-        font-weight: bold;
-    }
-
-    table td img {
-        width: 50px;
-        height: 50px;
-        border-radius: 8px;
-        background-color: #f5caca;
-    }
-
-    .total {
-        margin: 20px auto;
-        font-size: 20px;
-        font-weight: bold;
-        text-align: center;
-    }
-</style>
+@namespace LI4.Apresentacao.Paginas.Cliente
 
 <PageTitle>Carrinho de Compras</PageTitle>
 <h1>Carrinho de Compras</h1>
@@ -64,16 +20,15 @@
         {
             <tr>
                 <td>
-                  <LI4.Pages.Componentes.ImageComp Url="@order.ImageUrl" Alt="@order.AltText" Width="100px" Height="50px" />
+                  <img src="@order.ImageUrl" alt="@order.AltText" width="100px" height="50px" />
                 </td>
                 <td>@order.Preco$</td>
                 <td>
-                    <LI4.Pages.Componentes.CounterComp Value="@order.Quantidade" 
-                                          				ValueChanged="(newValue) => order.Quantidade = newValue" />
+                    <Counter Value="@order.Quantidade" ValueChanged="(newValue) => order.Quantidade = newValue" />
                 </td>
                 <td>@(order.Preco * order.Quantidade)$</td>
                 <td>
-                  <LI4.Pages.Componentes.XComp AoClicar="() => ApagarItem(order)" />
+                  <XComp AoClicar="() => ApagarItem(order)" />
                 </td>
             </tr>
         }
@@ -82,22 +37,16 @@
 <div class="total">Preço Final: @PrecoFinal$</div>
 <div>
     <div>
-      <LI4.Pages.Componentes.InserirTextoComp 
-        Label="Morada de Entrega:" 
-        Id="address" 
+      <InputField
         Placeholder="Selecionar morada de entrega" 
-        Value="@MoradaEntrega" 
-        Style="width: 70%;" 
       />
     </div>
     <div class="general-button">
-      <LI4.Pages.Componentes.BotaoComp Text="Finalizar Pedido" 
-                                         Style="width: 200px; top: 150px; left: 200px;" 
-                                         OnClick="FinalizarPedido" />
+	    <ActionButton Title="Finalizar Pedido" Callback=@FinalizarPedido></ActionButton>
     </div>
 </div>
 <div class="back-button">
-    <LI4.Pages.Componentes.VoltarComp Href="/" />
+    <LinkButton Title="Retroceder" Href="/"></LinkButton>
 </div>
 
 @code {
@@ -132,24 +81,23 @@
         public string ImageUrl { get; set; } = string.Empty; 
         public string AltText { get; set; } = string.Empty;
         public int Preco { get; set; }
-		private int quantidade;
+		private int _quantidade;
         public int Quantidade{
-			get => quantidade;
+			get => _quantidade;
 	    	set{
-		        quantidade = value;
-				Total = Preco * quantidade; // Recalcula o total
+		        _quantidade = value;
+				Total = Preco * _quantidade; // Recalcula o total
 			}
     	}
         public int Total { get; private set; }
 		public Order(){
-        	this.Total = this.Preco * this.quantidade;
+        	this.Total = this.Preco * this._quantidade;
     	}
     }
-    private void ApagarItem(Order order){
-        if (Carrinho != null){
-            // Remover o item da lista
-            Carrinho.Remove(order);
-        }
+    private void ApagarItem(Order order)
+    {
+	    // Remover o item da lista
+	    Carrinho.Remove(order);
     }
 
     private decimal PrecoFinal => Carrinho.Sum(item => item.Preco * item.Quantidade);
@@ -161,5 +109,5 @@
     private void FinalizarPedido(){
         Console.WriteLine("Pedido finalizado!");
     }
-
 }
+

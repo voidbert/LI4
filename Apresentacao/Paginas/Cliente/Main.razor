@@ -2,6 +2,7 @@
 
 @using LI4.Negocio
 @using LI4.Negocio.Utilizadores
+@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
@@ -10,41 +11,39 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
 
-<InputText id="search" placeholder="Pesquisar" @bind-Value=@Pesquisa @oninput=@Pesquisar />
-
-<br/>
-<InputRadioGroup @bind-Value="@Ordem">
-    @foreach (string ordem in Ordens.Keys)
-    {
-        <InputRadio id=@ordem Value=@ordem @oninput=@Reordenar />
-        <label for=@ordem>@ordem</label>
-        <br />
-    }
-</InputRadioGroup>
-
-@foreach (EVA eva in EVAs)
-{
-    @if (eva.Nome.Contains(Pesquisa))
-    {
-        <div>
-            <img src="@eva.Imagem" asp-append-version="true" width="200rem" />
-            @eva.Nome
-            @String.Format("{0:F2} €", eva.Preco)
+<main class="catalog-layout">
+    <!-- Left sidebar -->
+    <aside class="left-sidebar">
+        <InputField Placeholder="Pesquisar" Value=@Pesquisa Callback=@Pesquisar />
+        <div class="filters">
+            <InputRadioGroup @bind-Value="@Ordem">
+                @foreach (string ordem in Ordens.Keys)
+                {
+                    <label for=@ordem>
+                        <InputRadio id=@ordem Value=@ordem @oninput=@Reordenar /> @ordem
+                    </label>
+                }
+            </InputRadioGroup>
         </div>
-    }
-}
+    </aside>
 
-Olá, @NomeCivil!
+    <div class="catalog-container">
+        @foreach (EVA eva in EVAs)
+        {
+            @if (eva.Nome.Contains(Pesquisa))
+            {
+                <ProductCard Imagem="@eva.Imagem" Nome="@eva.Nome" Preco="@eva.Preco"/>
+            }
+        }
+    </div>
 
-<a href="/Cliente/Carrinho">
-    <button>Ver Carrinho</button>
-</a>
-
-<a href="/Cliente/Encomendas">
-    <button>Ver Encomendas</button>
-</a>
-
-<button @onclick="Logout">Terminar Sessão</button>
+    <aside class="right-sidebar">
+        <h2>Olá, @NomeCivil!</h2>
+        <LinkButton Href="/Cliente/Carrinho" Title="Ver Carrinho"></LinkButton>
+        <LinkButton Href="/Cliente/Encomendas" Title="Ver Encomendas"></LinkButton>
+        <ActionButton Callback="Logout" Title="Terminar Sessão"></ActionButton>
+    </aside>
+</main>
 
 @code {
     private Dictionary<string, Comparison<EVA>> Ordens = new Dictionary<string, Comparison<EVA>>

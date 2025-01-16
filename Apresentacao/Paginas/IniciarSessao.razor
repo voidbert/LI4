@@ -10,18 +10,16 @@
 @inject ProtectedLocalStorage ProtectedLocalStorage
 @inject IJSRuntime JSRuntime
 
-<div class="text-center">
-    <EditForm Model="@FormModel" OnSubmit="@Autenticar" FormName="Autenticar">
-        <InputText class="form-control" id="email" placeholder="Endereço eletrónico" @bind-Value=@FormModel!.EnderecoEletronico />
-        <InputText type="password" class="form-control" id="password" placeholder="Palavra passe" @bind-Value=@FormModel!.PalavraPasse />
+<main>
+    <form class="form" @onsubmit="Autenticar">
+        <input id="email" class="form-control" placeholder="Endereço eletrónico" @bind="FormModel!.EnderecoEletronico" />
+        <input type="password" id="password" class="form-control" placeholder="Palavra passe" @bind="FormModel!.PalavraPasse" />
 
-        <a href="/Cliente/CriarConta">
-            <button>Registar-se</button>
-        </a>
 
-        <button type="submit" id="login">Iniciar Sessão</button>
-    </EditForm>
-</div>
+        <a href="/"><button class="btn">Regressar</button></a>
+        <button type="submit" id="register" class="btn">Continuar</button>
+    </form>
+</main>
 
 @code {
     private class CredenciaisModel {

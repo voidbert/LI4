@@ -1,0 +1,44 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f3f3f3;
+    font-weight: bold;
+}
+
+.valor-positivo {
+    color: green;
+    font-weight: bold;
+}
+
+.valor-negativo {
+    color: red;
+    font-weight: bold;
+}
+
+.terminar-sessao {
+    margin-top: 20px;
+    display: block;
+    width: 150px;
+    padding: 10px;
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.terminar-sessao:hover {
+    background-color: #444;
+}

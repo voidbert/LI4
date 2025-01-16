@@ -2,17 +2,24 @@
 
 <div class="product-card">
     <div class="product-image">
-        <div class="image-placeholder"></div>
+        @if (Imagem != null)
+        {
+            <img src="@Imagem" asp-append-version="true" alt="@Nome"/>
+        }
+        else
+        {
+            <div class="image-placeholder"></div>
+        }
     </div>
     <div class="product-details">
-        <span class="product-name">@Name</span>
-        <span class="product-price">@Price.ToString("F2")€</span>
+        <span class="product-name">@Nome</span>
+        <span class="product-price">@String.Format("{0:F2} €", Preco)</span>
     </div>
     <button class="add-to-cart-button">Adicionar ao carrinho</button>
 </div>
 
 @code {
-    [Parameter] public string Name { get; set; } = "Template";
-    [Parameter] public decimal Price { get; set; } = 0.0m;
-    [Parameter] public string ImageUrl { get; set; } = "";
+    [Parameter] public string Nome { get; set; } = "";
+    [Parameter] public double Preco { get; set; } = 0.0;
+    [Parameter] public string? Imagem { get; set; }
 }

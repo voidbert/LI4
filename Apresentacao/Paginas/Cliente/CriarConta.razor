@@ -9,19 +9,17 @@
 @inject ProtectedLocalStorage ProtectedLocalStorage
 @inject IJSRuntime JSRuntime
 
-<div class="text-center">
-    <EditForm Model="@FormModel" OnSubmit="@Registar" FormName="Registar">
-        <InputText id="name" placeholder="Nome civil" @bind-Value=@FormModel!.NomeCivil />
-        <InputText class="form-control" id="email" placeholder="Endereço eletrónico" @bind-Value=@FormModel!.EnderecoEletronico />
-        <InputText type="password" class="form-control" id="password" placeholder="Palavra passe" @bind-Value=@FormModel!.PalavraPasse />
-
-        <a href="/">
-            <button>Regressar</button>
-        </a>
-
-        <button type="submit" id="register">Continuar</button>
-    </EditForm>
-</div>
+<main>
+    <form class="form" @onsubmit="Registar">
+        <input id="name" class="form-control" placeholder="Nome civil" @bind="FormModel!.NomeCivil" />
+        <input id="email" class="form-control" placeholder="Endereço eletrónico" @bind="FormModel!.EnderecoEletronico" />
+        <input type="password" id="password" class="form-control" placeholder="Palavra passe" @bind="FormModel!.PalavraPasse" />
+        
+        
+        <a href="/"><button class="btn">Regressar</button></a>
+        <button type="submit" id="register" class="btn">Continuar</button>
+    </form>
+</main>
 
 @code {
     private class ContaModel {

@@ -1,0 +1,16 @@
+@namespace LI4.Apresentacao.Componentes
+
+<div class="link-button">
+    <a class=@Classes href=@Href>@Title</a>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Placeholder";
+    
+    [Parameter]
+    public string? Classes { get; set; }
+
+    [Parameter]
+    public string Href { get; set; } = "";
+}
