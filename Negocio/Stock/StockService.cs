@@ -21,6 +21,12 @@ public class StockService
         return modelos.Select(model => Parte.DeModel(model)).ToList();
     }
 
+    public async Task<List<EncomendaPartes>> ObterTodasAsEncomendasPartes()
+    {
+        List<EncomendaPartesModel> modelos = await EncomendaPartesRepository.Instancia.ObterTodas();
+        return modelos.Select(model => EncomendaPartes.DeModel(model)).ToList();
+    }
+
     public async Task ColocarEncomenda(EncomendaPartes encomenda)
     {
         if (encomenda.Conteudo.Count == 0)

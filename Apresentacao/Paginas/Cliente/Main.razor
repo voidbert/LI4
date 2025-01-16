@@ -2,6 +2,7 @@
 
 @using LI4.Negocio
 @using LI4.Negocio.Utilizadores
+@using LI4.Negocio.Encomendas
 @using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.Cliente
@@ -36,7 +37,7 @@
             }
         }
     </div>
-
+    
     <aside class="right-sidebar">
         <h2>Olá, @NomeCivil!</h2>
         <LinkButton Href="/Cliente/Carrinho" Title="Ver Carrinho"></LinkButton>
@@ -59,6 +60,7 @@
     private List<EVA> EVAs { get; set; } = new List<EVA>();
     private String? NomeCivil { get; set; } = "";
     private SessaoController? SessaoController { get; set; }
+    private Utilizador? Cliente { get; set; }
 
     protected override void OnInitialized()
     {
@@ -71,13 +73,7 @@
         {
             await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.Cliente);
 
-            Utilizador? utilizador = await SessaoController!.GetUtilizadorComSessaoIniciada();
-            if (utilizador == null)
-            {
-                return;
-            }
-
-            NomeCivil = utilizador.NomeCivil;
+            Cliente = await SessaoController!.GetUtilizadorComSessaoIniciada();
             EVAs = await ComumService.ObterTodasAsEVAs();
             StateHasChanged();
         }
@@ -98,9 +94,18 @@
 
     private void Reordenar(ChangeEventArgs e)
     {
-        Ordem = e.Value!.ToString();
-        EVAs.Sort(Ordens[Ordem]);
+        Ordem = e.Value!.ToString()!;
+        EVAs.Sort(Ordens[Ordem]!);
         StateHasChanged();
+    }
+
+    private async Task AdicionarCarrinho(EVA eva)
+    {
+        CarrinhoCompras carrinho = await EncomendasService.ObterCarrinho(Cliente!.EnderecoEletronico);
+
+        int quantidade = carrinho!.Conteudo.GetValueOrDefault(eva.Identificador, 0);
+        carrinho.DefinirQuantidadeDeEVA(eva, quantidade + 1);
+        await EncomendasService.AtualizarCarrinho(carrinho);
     }
 
     private async Task Logout() {
