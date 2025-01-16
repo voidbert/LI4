@@ -1,25 +1,25 @@
 namespace LI4.Dados;
 
-public class UtilizadoresRepository
+public class UtilizadorRepository
 {
-    private static UtilizadoresRepository? _Instancia;
+    private static UtilizadorRepository? _Instancia;
 
-    private UtilizadoresRepository() { }
+    private UtilizadorRepository() { }
 
-    public static UtilizadoresRepository Instancia
+    public static UtilizadorRepository Instancia
     {
         get
         {
-            if (UtilizadoresRepository._Instancia == null)
-                UtilizadoresRepository._Instancia = new UtilizadoresRepository();
-            return UtilizadoresRepository._Instancia;
+            if (UtilizadorRepository._Instancia == null)
+                UtilizadorRepository._Instancia = new UtilizadorRepository();
+            return UtilizadorRepository._Instancia;
         }
     }
 
-    public async Task<UtilizadorModel?> Obter(string enderecoEletronico)
+    public UtilizadorModel? Obter(string enderecoEletronico)
     {
         string sql = "SELECT * FROM Utilizador WHERE EnderecoEletronico=@enderecoEletronico";
-        List<UtilizadorModel> lista = await BaseDeDados.Instancia.LerDados<UtilizadorModel, dynamic>(sql, new
+        List<UtilizadorModel> lista = BaseDeDados.Instancia.LerDados<UtilizadorModel, dynamic>(sql, new
         {
             enderecoEletronico = enderecoEletronico
         });
@@ -29,18 +29,18 @@ public class UtilizadoresRepository
         return lista[0];
     }
 
-    public async Task<List<UtilizadorModel>> ObterTodos()
+    public List<UtilizadorModel> ObterTodos()
     {
         string sql = "SELECT * FROM Utilizador";
-        List<UtilizadorModel> lista = await BaseDeDados.Instancia.LerDados<UtilizadorModel, dynamic>(sql, new { });
+        List<UtilizadorModel> lista = BaseDeDados.Instancia.LerDados<UtilizadorModel, dynamic>(sql, new { });
         return lista;
     }
 
-    public async Task Adicionar(UtilizadorModel model)
+    public void Adicionar(UtilizadorModel model)
     {
         string sql = "INSERT INTO Utilizador (EnderecoEletronico, NomeCivil, PalavraPasse, TipoDeConta, PossivelIniciarSessao) VALUES (@enderecoEletronico, @nomeCivil, @palavraPasse, @tipoDeConta, @possivelIniciarSessao)";
 
-        await BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
+        BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
         {
             enderecoEletronico = model.EnderecoEletronico,
             nomeCivil = model.NomeCivil,
@@ -50,11 +50,11 @@ public class UtilizadoresRepository
         });
     }
 
-    public async Task Atualizar(UtilizadorModel model)
+    public void Atualizar(UtilizadorModel model)
     {
         string sql = "UPDATE Utilizador SET NomeCivil=@nomeCivil, PalavraPasse=@palavraPasse, TipoDeConta=@tipoDeConta, PossivelIniciarSessao=@PossivelIniciarSessao WHERE EnderecoEletronico=@enderecoEletronico";
 
-        await BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
+        BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
         {
             enderecoEletronico = model.EnderecoEletronico,
             nomeCivil = model.NomeCivil,
