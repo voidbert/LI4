@@ -11,5 +11,10 @@
   </ItemGroup>
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Apresentacao\Paginas\GestorStock\ArmazemPartes.razor" />
+    <_ContentIncludedByDefault Remove="Apresentacao\Paginas\GestorProducao\ArmazemEVAs.razor" />
+    <_ContentIncludedByDefault Remove="Apresentacao\Paginas\GestorProducao\GestaoEncomendas.razor" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Apresentacao\Paginas\GestorStock\ArmazemPartes.razor" />
   </ItemGroup>
 </Project>

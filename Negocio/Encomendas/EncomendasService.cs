@@ -4,7 +4,7 @@ namespace LI4.Negocio.Encomendas;
 
 public class EncomendasService
 {
-    public async Task<CarrinhoCompras> ObterCarrinho(string cliente)
+    public static async Task<CarrinhoCompras> ObterCarrinho(string cliente)
     {
         CarrinhoComprasModel model = await CarrinhoComprasRepository.Instancia.Obter(cliente);
         return CarrinhoCompras.DeModel(model);
@@ -16,7 +16,7 @@ public class EncomendasService
         return modelos.Select(model => EncomendaEVAs.DeModel(model)).ToList();
     }
 
-    public async Task AtualizarCarrinho(CarrinhoCompras carrinho)
+    public static async Task AtualizarCarrinho(CarrinhoCompras carrinho)
     {
         CarrinhoComprasModel model = new CarrinhoComprasModel
         {
