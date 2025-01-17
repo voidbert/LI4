@@ -38,10 +38,10 @@
                     @String.Format("{0:F2} €", eva.Preco)
                 </td>
                 <td>
-                    <Counter Value="@CarrinhoCompras!.Conteudo.GetValueOrDefault(eva.Identificador, 0)" Decrementar="@(() => DecrementarQuantidade(eva))" Incrementar="@(() => IncrementarQuantidade(eva))"/>
+                    <Counter Value="@CarrinhoCompras!.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0)" Decrementar="@(() => DecrementarQuantidade(eva))" Incrementar="@(() => IncrementarQuantidade(eva))"/>
                 </td>
                 <td>
-                    @String.Format("{0:F2} €", eva.Preco * CarrinhoCompras!.Conteudo[eva.Identificador])
+                    @String.Format("{0:F2} €", eva.Preco * CarrinhoCompras!.ConteudoRaw[eva.Identificador])
                 </td>
                 <td>
                     <XComp AoClicar="@(() => RemoverEVA(eva))" />
@@ -96,7 +96,7 @@
 
             CarrinhoCompras = EncomendasService.ObterCarrinho(Cliente!.EnderecoEletronico);
             EVAs = CarrinhoCompras.Conteudo.Keys.ToList();
-            EVAs.Sort((e1, e2) => e1.Nome.CompareTo(e2.Nome));
+            EVAs.Sort((e1, e2) => String.Compare(e1.Nome, e2.Nome, StringComparison.Ordinal));
 
             Preco = CarrinhoCompras!.CalcularPreco();
             StateHasChanged();
