@@ -42,7 +42,7 @@ public class EVA
     public string Nome { get; set; }
     public string Imagem { get; set; }
     public double Preco { get; set; }
-    public int QuantidadeArmazem { get; }
+    public int QuantidadeArmazem { get; set; }
     private Dictionary<int, int> _PartesRaw;
 
     public Dictionary<int, int> PartesRaw
