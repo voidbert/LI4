@@ -42,4 +42,19 @@ public class ProducaoService
         (new EncomendasService()).TentarSatisfazerTodasAsEncomendas();
         BaseDeDados.Instancia.CommitTransacao();
     }
+
+    public void RegistarOrdemProducaoComoVisualizada(int identificador)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+        OrdemProducaoModel? model = OrdemProducaoRepository.Instancia.Obter(identificador);
+
+        if (model == null)
+        {
+            BaseDeDados.Instancia.AbortarTransacao();
+            throw new OrdemProducaoInexistenteException();
+        }
+
+        OrdemProducaoRepository.Instancia.Atualizar(model with { Visualizada = true });
+        BaseDeDados.Instancia.CommitTransacao();
+    }
 }

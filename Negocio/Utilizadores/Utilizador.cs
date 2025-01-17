@@ -100,7 +100,7 @@ public abstract class Utilizador
             case Tipo.GestorDeStock:
                 return new GestorDeStock(model.EnderecoEletronico, model.NomeCivil, model.PalavraPasse, model.PossivelIniciarSessao);
             case Tipo.GestorDeProducao:
-                return new GestorDeProducao(model.EnderecoEletronico, model.NomeCivil, model.PalavraPasse, model.PossivelIniciarSessao);
+                return new GestorDeProducao(model.EnderecoEletronico, model.NomeCivil, model.PalavraPasse, model.PossivelIniciarSessao, model.OrdensProducao!);
             case Tipo.GestorDeContas:
             default:
                 return new GestorDeContas(model.EnderecoEletronico, model.NomeCivil, model.PalavraPasse, model.PossivelIniciarSessao);
@@ -118,7 +118,7 @@ public abstract class Utilizador
             case Tipo.GestorDeStock:
                 return new GestorDeStock(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);
             case Tipo.GestorDeProducao:
-                return new GestorDeProducao(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);
+                return new GestorDeProducao(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao, new List<int>());
             case Tipo.GestorDeContas:
             default:
                 return new GestorDeContas(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);

@@ -8,13 +8,13 @@ public class Cliente : Utilizador
     public Cliente(string enderecoEletronico, string nomeCivil, byte[] palavraPasse, bool possivelIniciarSessao, List<int> encomendas)
         : base(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao)
     {
-        this._EncomendasRaw = encomendas;
+        this._EncomendasRaw = encomendas.ToList();
     }
 
     public Cliente(string enderecoEletronico, string nomeCivil, string palavraPasse, bool possivelIniciarSessao, List<int> encomendas)
         : base(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao)
     {
-        this._EncomendasRaw = encomendas;
+        this._EncomendasRaw = encomendas.ToList();
     }
 
     private List<int> _EncomendasRaw { get; set; }

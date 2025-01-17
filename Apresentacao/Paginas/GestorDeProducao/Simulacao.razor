@@ -1,0 +1,58 @@
+@page "/GestorDeProducao/Simulacao"
+
+@using LI4.Apresentacao.Componentes
+@using LI4.Negocio.Utilizadores
+@using LI4.Negocio.Producao
+
+@namespace LI4.Apresentacao.Paginas.GestorDeStock
+
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject ProducaoService ProducaoService
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
+<Alerta @bind-Mensagem=@MensagemAlerta />
+
+@if (OrdemProducao != null)
+{
+    <span>VER ORDEM DE PRODUÇÃO AQUI!</span>
+}
+
+<a href="/GestorDeProducao">
+    <button>Voltar</button>
+</a>
+
+@code
+{
+    private OrdemProducao? OrdemProducao { get; set; }
+    private string? MensagemAlerta { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            SessaoController sessoes = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+            GestorDeProducao utilizador = (GestorDeProducao) (await sessoes.ObterUtilizadorComSessaoIniciada())!;
+
+            OrdemProducao = utilizador.OrdensProducao.MaxBy(o => o.InstanteEmissao);
+            if (OrdemProducao == null)
+            {
+                MensagemAlerta = "Sem ordens de produção para visualizar";
+                StateHasChanged();
+                return;
+            }
+
+            if (OrdemProducao!.Visualizada)
+            {
+                MensagemAlerta = "Última ordem de produção já foi visualizada";
+                OrdemProducao = null;
+                StateHasChanged();
+                return;
+            }
+
+            ProducaoService.RegistarOrdemProducaoComoVisualizada(OrdemProducao.Identificador!.Value);
+            StateHasChanged();
+        }
+    }
+}

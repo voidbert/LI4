@@ -8,4 +8,5 @@ public record UtilizadorModel
     public required string TipoDeConta { get; set; }
     public required bool PossivelIniciarSessao { get; set; }
     public List<int>? Encomendas { get; set; }
+    public List<int>? OrdensProducao { get; set; }
 }
