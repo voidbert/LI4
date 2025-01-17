@@ -146,4 +146,23 @@ public class EncomendaEVAsRepository
 
         BaseDeDados.Instancia.CommitTransacao();
     }
+
+    public void Eliminar(int identificador)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        string conteudosSql = "DELETE FROM ConteudoEncomendaEVAs WHERE Encomenda = @encomenda";
+        BaseDeDados.Instancia.EscreverDados<dynamic>(conteudosSql, new
+        {
+            encomenda = identificador
+        });
+
+        string sql = "DELETE FROM EncomendaEVAs WHERE Identificador = @identificador";
+        BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
+        {
+            identificador = identificador
+        });
+
+        BaseDeDados.Instancia.CommitTransacao();
+    }
 }

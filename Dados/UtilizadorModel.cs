@@ -7,4 +7,5 @@ public record UtilizadorModel
     public required byte[] PalavraPasse { get; set; }
     public required string TipoDeConta { get; set; }
     public required bool PossivelIniciarSessao { get; set; }
+    public List<int>? Encomendas { get; set; }
 }

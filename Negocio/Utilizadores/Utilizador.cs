@@ -83,7 +83,8 @@ public abstract class Utilizador
             NomeCivil = this.NomeCivil,
             PalavraPasse = this.PalavraPasse,
             TipoDeConta = Utilizador.StringDeTipo(this.TipoDeConta),
-            PossivelIniciarSessao = this.PossivelIniciarSessao
+            PossivelIniciarSessao = this.PossivelIniciarSessao,
+            Encomendas = (this is Cliente) ? ((Cliente)this).EncomendasRaw : null
         };
     }
 
@@ -93,7 +94,7 @@ public abstract class Utilizador
         switch (tipo)
         {
             case Tipo.Cliente:
-                return new Cliente(model.EnderecoEletronico, model.NomeCivil, model.PalavraPasse, model.PossivelIniciarSessao);
+                return new Cliente(model.EnderecoEletronico, model.NomeCivil, model.PalavraPasse, model.PossivelIniciarSessao, model.Encomendas!);
             case Tipo.Administrador:
                 return new Administrador(model.EnderecoEletronico, model.NomeCivil, model.PalavraPasse, model.PossivelIniciarSessao);
             case Tipo.GestorDeStock:
@@ -111,7 +112,7 @@ public abstract class Utilizador
         switch (tipoDeConta)
         {
             case Tipo.Cliente:
-                return new Cliente(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);
+                return new Cliente(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao, new List<int>());
             case Tipo.Administrador:
                 return new Administrador(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);
             case Tipo.GestorDeStock:

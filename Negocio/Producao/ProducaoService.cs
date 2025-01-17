@@ -1,4 +1,5 @@
 using LI4.Dados;
+using LI4.Negocio.Encomendas;
 using LI4.Negocio.Stock;
 
 namespace LI4.Negocio.Producao;
@@ -38,8 +39,7 @@ public class ProducaoService
         // Registar ordem de producao
         OrdemProducaoRepository.Instancia.Adicionar(ordemProducao.ParaModel());
 
-        // TODO - suprir encomendas
-
+        (new EncomendasService()).TentarSatisfazerTodasAsEncomendas();
         BaseDeDados.Instancia.CommitTransacao();
     }
 }

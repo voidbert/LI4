@@ -103,11 +103,11 @@ public class EncomendaEVAs
     public bool Aprovada { get; set; }
     private Dictionary<int, int> _ConteudoRaw;
 
-    public Utilizador Cliente
+    public Cliente Cliente
     {
         get
         {
-            return Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.ClienteRaw)!);
+            return (Cliente)Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.ClienteRaw)!);
         }
         set
         {

@@ -76,6 +76,62 @@ public class EncomendasService
         BaseDeDados.Instancia.CommitTransacao();
     }
 
+    public void CancelarEncomenda(int identificador)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        EncomendaEVAsModel? model = EncomendaEVAsRepository.Instancia.Obter(identificador);
+        if (model == null)
+        {
+            BaseDeDados.Instancia.AbortarTransacao();
+            throw new EncomendaNaoEncontradaException();
+        }
+
+        EncomendaEVAs encomenda = EncomendaEVAs.DeModel(model);
+
+        if (encomenda.Estado != EncomendaEVAs.EstadoEncomenda.Colocada && encomenda.Estado != EncomendaEVAs.EstadoEncomenda.Aprovada)
+        {
+            BaseDeDados.Instancia.AbortarTransacao();
+            throw new EstadoInvalidoException();
+        }
+
+        encomenda.InstanteCancelamento = DateTime.Now;
+        EncomendaEVAsRepository.Instancia.Atualizar(encomenda.ParaModel());
+        BaseDeDados.Instancia.CommitTransacao();
+    }
+
+    public void DevolverEncomenda(int identificador)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        EncomendaEVAsModel? model = EncomendaEVAsRepository.Instancia.Obter(identificador);
+        if (model == null)
+        {
+            BaseDeDados.Instancia.AbortarTransacao();
+            throw new EncomendaNaoEncontradaException();
+        }
+
+        EncomendaEVAs encomenda = EncomendaEVAs.DeModel(model);
+
+        if (encomenda.Estado != EncomendaEVAs.EstadoEncomenda.Entregue || (DateTime.Now - encomenda.InstanteEntrega)!.Value.TotalDays > (365 * 3))
+        {
+            BaseDeDados.Instancia.AbortarTransacao();
+            throw new EstadoInvalidoException();
+        }
+
+        encomenda.InstanteDevolucao = DateTime.Now;
+        EncomendaEVAsRepository.Instancia.Atualizar(encomenda.ParaModel());
+
+        foreach (KeyValuePair<EVA, int> entrada in encomenda.Conteudo)
+        {
+            entrada.Key.QuantidadeArmazem += entrada.Value;
+            EVARepository.Instancia.Atualizar(entrada.Key.ParaModel());
+        }
+
+        this.TentarSatisfazerTodasAsEncomendas();
+        BaseDeDados.Instancia.CommitTransacao();
+    }
+
     private void TentarSatisfazerEncomenda(EncomendaEVAs encomenda)
     {
         BaseDeDados.Instancia.IniciarTransacao();
@@ -92,6 +148,25 @@ public class EncomendasService
             }
 
             encomenda.InstanteEntrega = DateTime.Now;
+        }
+
+        BaseDeDados.Instancia.CommitTransacao();
+    }
+
+    public void TentarSatisfazerTodasAsEncomendas()
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        List<EncomendaEVAs> encomendas = this.ObterTodasAsEncomendasEVAs();
+        encomendas.Sort((e1, e2) => e1.InstanteColocacao.CompareTo(e2.InstanteColocacao));
+
+        foreach (EncomendaEVAs encomenda in encomendas)
+        {
+            if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Aprovada)
+            {
+                this.TentarSatisfazerEncomenda(encomenda);
+                EncomendaEVAsRepository.Instancia.Atualizar(encomenda.ParaModel());
+            }
         }
 
         BaseDeDados.Instancia.CommitTransacao();

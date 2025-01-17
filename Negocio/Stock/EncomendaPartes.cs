@@ -70,11 +70,11 @@ public class EncomendaPartes
     public string FuncionarioRaw { get; set; }
     private Dictionary<int, int> _ConteudoRaw { get; set; }
 
-    public Utilizador Funcionario
+    public GestorDeStock Funcionario
     {
         get
         {
-            return Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.FuncionarioRaw)!);
+            return (GestorDeStock)Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.FuncionarioRaw)!);
         }
         set
         {

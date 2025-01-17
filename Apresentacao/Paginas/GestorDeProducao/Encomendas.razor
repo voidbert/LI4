@@ -42,7 +42,6 @@
                             <th>Identificador</th>
                             <th>Quantidade</th>
                         </tr>
-
                         
                         @foreach (KeyValuePair<EVA, int> eva in Conteudos[i])
                         {
@@ -88,7 +87,7 @@
     private void AtualizarPagina()
     {
         EncomendasEVAs = EncomendasService.ObterTodasAsEncomendasEVAs();
-        EncomendasEVAs.Sort((e1, e2) => e2.InstanteColocacao.CompareTo(e2.InstanteColocacao));
+        EncomendasEVAs.Sort((e1, e2) => e2.InstanteColocacao.CompareTo(e1.InstanteColocacao));
 
         foreach (EncomendaEVAs encomenda in EncomendasEVAs)
         {
