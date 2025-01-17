@@ -74,7 +74,6 @@ Carrinho de Compras
     private string Morada { get; set; } = "";
     private string? MensagemAlerta { get; set; }
 
-    private SessaoController? SessaoController { get; set; }
     private Utilizador? Cliente { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -82,7 +81,7 @@ Carrinho de Compras
         if (firstRender)
         {
             SessaoController sessoes = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
-            Cliente = await SessaoController!.ObterUtilizadorComSessaoIniciada();
+            Cliente = await sessoes.ObterUtilizadorComSessaoIniciada();
 
             CarrinhoCompras = EncomendasService.ObterCarrinho(Cliente!.EnderecoEletronico);
             EVAs = CarrinhoCompras.Conteudo.Keys.ToList();
@@ -95,6 +94,12 @@ Carrinho de Compras
 
     private void FinalizarPedido()
     {
+        if (Morada == "")
+        {
+            MensagemAlerta = "Morada não pode estar vazia";
+            return;
+        }
+
         EncomendaEVAs encomenda = new EncomendaEVAs(Cliente!.EnderecoEletronico, Morada, Preco, DateTime.Now, CarrinhoCompras!.ConteudoRaw);
         try
         {
@@ -102,7 +107,8 @@ Carrinho de Compras
         }
         catch (CarrinhoVazioException)
         {
-            MensagemAlerta = "Carrinho de compras vazio";
+            MensagemAlerta = "Carrinho de compras não pode estar vazio";
+            return;
         }
 
         CarrinhoCompras!.ConteudoRaw = new Dictionary<int, int>();
