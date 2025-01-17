@@ -1,14 +1,17 @@
 @page "/Cliente/CriarConta"
 
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio.Utilizadores
 @using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
-@inject UtilizadoresService UtilizadoresService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject IJSRuntime JSRuntime
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@null />
+<Alerta @bind-Mensagem=@MensagemAlerta />
 
 <main>
     <HeaderTitle>Criar Conta</HeaderTitle>
@@ -23,7 +26,8 @@
     </form>
 </main>
 
-@code {
+@code
+{
     private class ContaModel {
         public string NomeCivil { get; set; } = "";
         public string EnderecoEletronico { get; set; } = "";
@@ -32,6 +36,7 @@
 
     [SupplyParameterFromForm]
     private ContaModel? FormModel { get; set; }
+    private string? MensagemAlerta { get; set; }
 
     private SessaoController? SessaoController { get; set; }
 
@@ -41,29 +46,21 @@
         SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await SessaoController!.RedirecionarConformeTipo(null);
-        }
-    }
-
     private async Task Registar()
     {
         try
         {
-            await UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, Utilizador.Tipo.Cliente);
+            UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, Utilizador.Tipo.Cliente);
             await SessaoController!.IniciarSessao(FormModel!.EnderecoEletronico, FormModel!.PalavraPasse);
             await SessaoController!.RedirecionarConformeTipo(null);
         }
         catch (EnderecoEletronicoInvalidoException)
         {
-            (new Alert(JSRuntime)).Launch("Endereço eletrónico inválido");
+            MensagemAlerta = "Endereço eletrónico inválido";
         }
-        catch (EnderecoEletronicoExistenteException)
+        catch (UtilizadorExistenteException)
         {
-            (new Alert(JSRuntime)).Launch("Endereço eletrónico já se encontra registado");
+            MensagemAlerta = "Endereço eletrónico já se encontra registado";
         }
     }
 }

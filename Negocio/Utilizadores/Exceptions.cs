@@ -1,6 +1,14 @@
 namespace LI4.Negocio.Utilizadores;
 
 [Serializable]
+public class TipoDeContaInexistenteException : Exception
+{
+    public TipoDeContaInexistenteException() { }
+    public TipoDeContaInexistenteException(string message) : base(message) { }
+    public TipoDeContaInexistenteException(string message, Exception innerException) : base(message, innerException) { }
+}
+
+[Serializable]
 public class UtilizadorNaoEncontradoException : Exception
 {
     public UtilizadorNaoEncontradoException() { }
@@ -33,9 +41,9 @@ public class EnderecoEletronicoInvalidoException : Exception
 }
 
 [Serializable]
-public class EnderecoEletronicoExistenteException : Exception
+public class UtilizadorExistenteException : Exception
 {
-    public EnderecoEletronicoExistenteException() { }
-    public EnderecoEletronicoExistenteException(string message) : base(message) { }
-    public EnderecoEletronicoExistenteException(string message, Exception innerException) : base(message, innerException) { }
+    public UtilizadorExistenteException() { }
+    public UtilizadorExistenteException(string message) : base(message) { }
+    public UtilizadorExistenteException(string message, Exception innerException) : base(message, innerException) { }
 }

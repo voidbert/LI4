@@ -1,0 +1,24 @@
+@using LI4.Negocio.Utilizadores
+
+@namespace LI4.Apresentacao.Componentes
+
+@inject UtilizadoresService UtilizadoresService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+
+@code
+{
+    [Parameter]
+    public Utilizador.Tipo? TipoDeConta { get; set; }
+
+    private SessaoController? SessaoController { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+            await SessaoController!.RedirecionarConformeTipo(TipoDeConta);
+        }
+    }
+}

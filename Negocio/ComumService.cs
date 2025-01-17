@@ -4,9 +4,9 @@ namespace LI4.Negocio;
 
 public class ComumService
 {
-    public async Task<EVA?> ObterEVA(int identificador)
+    public EVA? ObterEVA(int identificador)
     {
-        EVAModel? model = await EVARepository.Instancia.Obter(identificador);
+        EVAModel? model = EVARepository.Instancia.Obter(identificador);
         if (model == null)
         {
             return null;
@@ -15,9 +15,8 @@ public class ComumService
         return EVA.DeModel(model);
     }
 
-    public async Task<List<EVA>> ObterTodasAsEVAs()
+    public List<EVA> ObterTodasAsEVAs()
     {
-        List<EVAModel> modelos = await EVARepository.Instancia.ObterTodas();
-        return modelos.Select(model => EVA.DeModel(model)).ToList();
+        return EVARepository.Instancia.ObterTodas().Select(model => EVA.DeModel(model)).ToList();
     }
 }

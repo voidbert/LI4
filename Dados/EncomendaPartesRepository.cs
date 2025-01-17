@@ -16,17 +16,17 @@ public class EncomendaPartesRepository
         }
     }
 
-    public async Task<List<EncomendaPartesModel>> ObterTodas()
+    public List<EncomendaPartesModel> ObterTodas()
     {
         BaseDeDados.Instancia.IniciarTransacao();
 
         string sql = "SELECT * FROM EncomendaPartes";
-        List<EncomendaPartesModel> lista = await BaseDeDados.Instancia.LerDados<EncomendaPartesModel, dynamic>(sql, new { });
+        List<EncomendaPartesModel> lista = BaseDeDados.Instancia.LerDados<EncomendaPartesModel, dynamic>(sql, new { });
 
         string conteudoSql = "SELECT Parte AS [Key], Quantidade AS Value FROM ConteudoEncomendaPartes WHERE Encomenda = @encomenda";
         foreach (EncomendaPartesModel model in lista)
         {
-            List<KeyValuePair<int, int>> tuplos = await BaseDeDados.Instancia.LerDados<KeyValuePair<int, int>, dynamic>(conteudoSql, new
+            List<KeyValuePair<int, int>> tuplos = BaseDeDados.Instancia.LerDados<KeyValuePair<int, int>, dynamic>(conteudoSql, new
             {
                 encomenda = model.Identificador
             });
@@ -38,12 +38,12 @@ public class EncomendaPartesRepository
         return lista;
     }
 
-    public async Task<EncomendaPartesModel> Adicionar(EncomendaPartesModel model)
+    public EncomendaPartesModel Adicionar(EncomendaPartesModel model)
     {
         BaseDeDados.Instancia.IniciarTransacao();
 
         string sql = "INSERT INTO EncomendaPartes(InstanteRealizacao, Preco, Funcionario) VALUES (@instanteRealizacao, @preco, @funcionario)";
-        await BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
+        BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
         {
             instanteRealizacao = model.InstanteRealizacao,
             preco = model.Preco,
@@ -51,14 +51,14 @@ public class EncomendaPartesRepository
         });
 
         string idSql = "SELECT MAX(Identificador) FROM EncomendaPartes";
-        int identificador = (await BaseDeDados.Instancia.LerDados<int, dynamic>(idSql, new { }))[0];
+        int identificador = BaseDeDados.Instancia.LerDados<int, dynamic>(idSql, new { })[0];
 
         string conteudosSql = "INSERT INTO ConteudoEncomendaPartes (Encomenda, Parte, Quantidade) VALUES (@encomenda, @parte, @quantidade)";
         foreach (KeyValuePair<int, int> entrada in model.Conteudo)
         {
             if (entrada.Value > 0)
             {
-                await BaseDeDados.Instancia.EscreverDados<dynamic>(conteudosSql, new
+                BaseDeDados.Instancia.EscreverDados<dynamic>(conteudosSql, new
                 {
                     encomenda = identificador,
                     parte = entrada.Key,

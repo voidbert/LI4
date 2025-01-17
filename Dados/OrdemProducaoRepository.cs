@@ -16,12 +16,12 @@ public class OrdemProducaoRepository
         }
     }
 
-    public async Task<OrdemProducaoModel> Adicionar(OrdemProducaoModel model)
+    public OrdemProducaoModel Adicionar(OrdemProducaoModel model)
     {
         BaseDeDados.Instancia.IniciarTransacao();
 
         string sql = "INSERT INTO OrdemProducao(Funcionario, InstanteEmissao, Visualizada) VALUES (@funcionario, @instanteEmissao, @visualizada)";
-        await BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
+        BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
         {
             funcionario = model.Funcionario,
             instanteEmissao = model.InstanteEmissao,
@@ -29,14 +29,14 @@ public class OrdemProducaoRepository
         });
 
         string idSql = "SELECT MAX(Identificador) FROM OrdemProducao";
-        int identificador = (await BaseDeDados.Instancia.LerDados<int, dynamic>(idSql, new { }))[0];
+        int identificador = BaseDeDados.Instancia.LerDados<int, dynamic>(idSql, new { })[0];
 
         string conteudosSql = "INSERT INTO ConteudoOrdemProducao (OrdemProducao, EVA, Quantidade) VALUES (@ordemProducao, @eva, @quantidade)";
         foreach (KeyValuePair<int, int> entrada in model.Conteudo)
         {
             if (entrada.Value > 0)
             {
-                await BaseDeDados.Instancia.EscreverDados<dynamic>(conteudosSql, new
+                BaseDeDados.Instancia.EscreverDados<dynamic>(conteudosSql, new
                 {
                     ordemProducao = identificador,
                     eva = entrada.Key,

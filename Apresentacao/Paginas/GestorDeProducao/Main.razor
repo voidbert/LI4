@@ -1,13 +1,16 @@
 @page "/GestorDeProducao"
 
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio.Utilizadores
 @using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.GestorDeProducao
 
-@inject UtilizadoresService UtilizadoresService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 
 <main>
     <HeaderTitle>Olá, @NomeCivil!</HeaderTitle>
@@ -17,8 +20,9 @@
     <ActionButton Callback="@Logout" Title="Terminar Sessão"/>
 </main>
 
-@code {
-    private String? NomeCivil { get; set; } = "";
+@code
+{
+    private string NomeCivil { get; set; } = "";
     private SessaoController? SessaoController { get; set; }
 
     protected override void OnInitialized()
@@ -30,9 +34,7 @@
     {
         if (firstRender)
         {
-            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeProducao);
-
-            Utilizador? utilizador = await SessaoController!.GetUtilizadorComSessaoIniciada();
+            Utilizador? utilizador = await SessaoController!.ObterUtilizadorComSessaoIniciada();
             if (utilizador == null)
             {
                 return;

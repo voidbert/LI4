@@ -1,19 +1,20 @@
 @page "/GestorDeProducao/Armazem"
 
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio
 @using LI4.Negocio.Producao
 @using LI4.Negocio.Utilizadores
-@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.GestorDeProducao
 
-@inject UtilizadoresService UtilizadoresService
-@inject ProducaoService ProducaoService
 @inject ComumService ComumService
+@inject ProducaoService ProducaoService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject IJSRuntime JSRuntime
+@inject UtilizadoresService UtilizadoresService
 
+<Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
+<Alerta @bind-Mensagem=@MensagemAlerta />
 
 <main>
     <HeaderTitle>Armazém de EVAs</HeaderTitle>
@@ -34,18 +35,18 @@
                 <td>@eva.Identificador</td>
                 <td>@eva.Nome</td>
 
-                @if (OrdemProducao != null)
-                {
-                    <td>
-                        <button @onclick="@(() => DecrementarQuantidade(eva))">-</button>
-                        @OrdemProducao.Conteudo.GetValueOrDefault(eva.Identificador, 0).ToString()
-                        <button @onclick="@(() => IncrementarQuantidade(eva))">+</button>
-                    </td>
-                }
-                <td>@eva.QuantidadeArmazem</td>
-            </tr>
-        }
-    </table>
+            @if (OrdemProducao != null)
+            {
+                <td>
+                    <button @onclick="@(() => DecrementarQuantidade(eva))">-</button>
+                    @OrdemProducao.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0).ToString()
+                    <button @onclick="@(() => IncrementarQuantidade(eva))">+</button>
+                </td>
+            }
+            <td>@eva.QuantidadeArmazem</td>
+        </tr>
+    }
+</table>
 
     <div class="action-buttons">
         @if (OrdemProducao == null)
@@ -68,25 +69,21 @@
     </div>
 </main>
 
-@code {
+@code
+{
     private List<EVA> EVAs { get; set; } = new List<EVA>();
     private OrdemProducao? OrdemProducao { get; set; }
-    private SessaoController? SessaoController { get; set; }
     private Utilizador? GestorDeProducao { get; set; }
-
-    protected override void OnInitialized()
-    {
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
-    }
+    private string? MensagemAlerta { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeProducao);
+            SessaoController sessoes = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+            GestorDeProducao = await sessoes.ObterUtilizadorComSessaoIniciada();
 
-            GestorDeProducao = await SessaoController!.GetUtilizadorComSessaoIniciada();
-            EVAs = await ComumService.ObterTodasAsEVAs();
+            EVAs = ComumService.ObterTodasAsEVAs();
             EVAs.Sort((e1, e2) => e1.Nome.CompareTo(e2.Nome));
             StateHasChanged();
         }
@@ -102,34 +99,34 @@
         OrdemProducao = null;
     }
 
-    private async Task ColocarOrdemProducao()
+    private void ColocarOrdemProducao()
     {
         OrdemProducao!.InstanteEmissao = DateTime.Now;
         try
         {
-            await ProducaoService.ColocarOrdemProducao(OrdemProducao!);
+            ProducaoService.ColocarOrdemProducao(OrdemProducao!);
             NavigationManager.NavigateTo("/GestorDeStock");
         }
         catch (OrdemProducaoVaziaException)
         {
-            (new Alert(JSRuntime)).Launch("Ordem de produção vazia não pode ser colocada");
+            MensagemAlerta = "Ordem de produção vazia não pode ser colocada";
         }
         catch (SemPartesException)
         {
-            (new Alert(JSRuntime)).Launch("Sem partes suficientes");
+            MensagemAlerta = "Sem partes suficientes";
         }
     }
 
     private void IncrementarQuantidade(EVA eva)
     {
-        int quantidade = OrdemProducao!.Conteudo.GetValueOrDefault(eva.Identificador, 0);
+        int quantidade = OrdemProducao!.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0);
         OrdemProducao!.DefinirQuantidadeDeEVA(eva, quantidade + 1);
         StateHasChanged();
     }
 
     private void DecrementarQuantidade(EVA eva)
     {
-        int quantidade = OrdemProducao!.Conteudo.GetValueOrDefault(eva.Identificador, 0);
+        int quantidade = OrdemProducao!.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0);
         if (quantidade == 0)
             return;
 

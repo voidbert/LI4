@@ -33,6 +33,12 @@ public abstract class Utilizador
         this.PossivelIniciarSessao = possivelIniciarSessao;
     }
 
+    public bool PalavraPasseCorreta(string palavraPasse)
+    {
+        byte[] hash = Utilizador.HashDaPalavraPasse(palavraPasse);
+        return Enumerable.SequenceEqual(hash, this.PalavraPasse);
+    }
+
     public static byte[] HashDaPalavraPasse(string palavraPasse)
     {
         byte[] bytes = Encoding.UTF8.GetBytes(palavraPasse);
@@ -41,7 +47,7 @@ public abstract class Utilizador
 
     public static Tipo TipoDeString(string tipo)
     {
-        Dictionary<string, Tipo> strings = new Dictionary<string, Tipo> {
+        Dictionary<string, Tipo> tipos = new Dictionary<string, Tipo> {
             {"C", Tipo.Cliente},
             {"A", Tipo.Administrador},
             {"GS", Tipo.GestorDeStock},
@@ -49,7 +55,11 @@ public abstract class Utilizador
             {"GC", Tipo.GestorDeContas}
         };
 
-        return strings[tipo];
+        if (!tipos.ContainsKey(tipo))
+        {
+            throw new TipoDeContaInexistenteException();
+        }
+        return tipos[tipo];
     }
 
     public static string StringDeTipo(Tipo tipo)
@@ -63,6 +73,18 @@ public abstract class Utilizador
         };
 
         return strings[tipo];
+    }
+
+    public UtilizadorModel ParaModel()
+    {
+        return new UtilizadorModel
+        {
+            EnderecoEletronico = this.EnderecoEletronico,
+            NomeCivil = this.NomeCivil,
+            PalavraPasse = this.PalavraPasse,
+            TipoDeConta = Utilizador.StringDeTipo(this.TipoDeConta),
+            PossivelIniciarSessao = this.PossivelIniciarSessao
+        };
     }
 
     public static Utilizador DeModel(UtilizadorModel model)
@@ -81,6 +103,24 @@ public abstract class Utilizador
             case Tipo.GestorDeContas:
             default:
                 return new GestorDeContas(model.EnderecoEletronico, model.NomeCivil, model.PalavraPasse, model.PossivelIniciarSessao);
+        }
+    }
+
+    public static Utilizador Criar(string enderecoEletronico, string nomeCivil, string palavraPasse, bool possivelIniciarSessao, Tipo tipoDeConta)
+    {
+        switch (tipoDeConta)
+        {
+            case Tipo.Cliente:
+                return new Cliente(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);
+            case Tipo.Administrador:
+                return new Administrador(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);
+            case Tipo.GestorDeStock:
+                return new GestorDeStock(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);
+            case Tipo.GestorDeProducao:
+                return new GestorDeProducao(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);
+            case Tipo.GestorDeContas:
+            default:
+                return new GestorDeContas(enderecoEletronico, nomeCivil, palavraPasse, possivelIniciarSessao);
         }
     }
 

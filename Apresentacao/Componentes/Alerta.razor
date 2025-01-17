@@ -1,0 +1,24 @@
+@namespace LI4.Apresentacao.Componentes
+
+@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject IJSRuntime JSRuntime
+
+@code
+{
+    [Parameter]
+    public string? Mensagem { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> MensagemChanged { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Mensagem != null)
+        {
+            await JSRuntime!.InvokeVoidAsync("alert", Mensagem);
+
+            Mensagem = null;
+            await MensagemChanged.InvokeAsync(Mensagem);
+        }
+    }
+}

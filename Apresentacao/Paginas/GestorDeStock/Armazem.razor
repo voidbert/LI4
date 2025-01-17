@@ -1,16 +1,18 @@
 @page "/GestorDeStock/Armazem"
 
+@using LI4.Apresentacao.Componentes
 @using LI4.Negocio.Stock
 @using LI4.Negocio.Utilizadores
-@using LI4.Apresentacao.Componentes
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
-@inject UtilizadoresService UtilizadoresService
-@inject StockService StockService
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject IJSRuntime JSRuntime
+@inject StockService StockService
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeStock />
+<Alerta @bind-Mensagem=@MensagemAlerta />
 
 <main>
     <HeaderTitle>Armazém de Partes</HeaderTitle>
@@ -32,20 +34,20 @@
                 <td>@parte.Identificador</td>
                 <td>@parte.Nome</td>
 
-                @if (Encomenda != null)
-                {
-                    <td>@String.Format("{0:F2} €", parte.Preco)</td>
-                    <td>
-                        <button @onclick="@(() => DecrementarQuantidade(parte))">-</button>
-                        @Encomenda.Conteudo.GetValueOrDefault(parte.Identificador, 0).ToString()
-                        <button @onclick="@(() => IncrementarQuantidade(parte))">+</button>
-                    </td>
-                }
-                <td>@parte.QuantidadeArmazem</td>
-            </tr>
-        }
+            @if (Encomenda != null)
+            {
+                <td>@String.Format("{0:F2} €", parte.Preco)</td>
+                <td>
+                    <button @onclick="@(() => DecrementarQuantidade(parte))">-</button>
+                    @Encomenda.ConteudoRaw.GetValueOrDefault(parte.Identificador, 0).ToString()
+                    <button @onclick="@(() => IncrementarQuantidade(parte))">+</button>
+                </td>
+            }
+            <td>@parte.QuantidadeArmazem</td>
+        </tr>
+    }
     </table>
-
+    
     <div class="action-buttons">
         @if (Encomenda == null)
         {
@@ -67,9 +69,12 @@
     </div>
 </main>
 
-@code {
+@code
+{
     private List<Parte> Partes { get; set; } = new List<Parte>();
     private EncomendaPartes? Encomenda { get; set; }
+    private string? MensagemAlerta { get; set; }
+
     private SessaoController? SessaoController { get; set; }
     private Utilizador? GestorDeStock { get; set; }
 
@@ -84,8 +89,8 @@
         {
             await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeStock);
 
-            GestorDeStock = await SessaoController!.GetUtilizadorComSessaoIniciada();
-            Partes = await StockService.ObterTodasAsPartes();
+            GestorDeStock = await SessaoController!.ObterUtilizadorComSessaoIniciada();
+            Partes = StockService.ObterTodasAsPartes();
             Partes.Sort((p1, p2) => p1.Nome.CompareTo(p2.Nome));
             StateHasChanged();
         }
@@ -93,7 +98,7 @@
 
     private void ComecarEncomenda()
     {
-        Encomenda = new EncomendaPartes(DateTime.Now, GestorDeStock!);
+        Encomenda = new EncomendaPartes(DateTime.Now, GestorDeStock!.EnderecoEletronico);
     }
 
     private void CancelarEncomenda()
@@ -101,30 +106,30 @@
         Encomenda = null;
     }
 
-    private async Task ColocarEncomenda()
+    private void ColocarEncomenda()
     {
         Encomenda!.InstanteRealizacao = DateTime.Now;
         try
         {
-            await StockService.ColocarEncomenda(Encomenda!);
+            StockService.ColocarEncomenda(Encomenda!);
             NavigationManager.NavigateTo("/GestorDeStock");
         }
         catch (EncomendaVaziaException)
         {
-            (new Alert(JSRuntime)).Launch("Encomenda vazia não pode ser colocada");
+            MensagemAlerta = "Encomenda vazia não pode ser colocada";
         }
     }
 
     private void IncrementarQuantidade(Parte parte)
     {
-        int quantidade = Encomenda!.Conteudo.GetValueOrDefault(parte.Identificador, 0);
+        int quantidade = Encomenda!.ConteudoRaw.GetValueOrDefault(parte.Identificador, 0);
         Encomenda!.DefinirQuantidadeDeParte(parte, quantidade + 1);
         StateHasChanged();
     }
 
     private void DecrementarQuantidade(Parte parte)
     {
-        int quantidade = Encomenda!.Conteudo.GetValueOrDefault(parte.Identificador, 0);
+        int quantidade = Encomenda!.ConteudoRaw.GetValueOrDefault(parte.Identificador, 0);
         if (quantidade == 0)
             return;
 
