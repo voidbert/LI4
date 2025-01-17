@@ -16,6 +16,34 @@ public class EncomendaEVAsRepository
         }
     }
 
+    public EncomendaEVAsModel? Obter(int identificador)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        string sql = "SELECT * FROM EncomendaEVAs WHERE Identificador = @identificador";
+        List<EncomendaEVAsModel> lista = BaseDeDados.Instancia.LerDados<EncomendaEVAsModel, dynamic>(sql, new
+        {
+            identificador = identificador
+        });
+
+        if (lista.Count == 0)
+        {
+            return null;
+        }
+
+        EncomendaEVAsModel model = lista[0];
+
+        string conteudoSql = "SELECT EVA AS [Key], Quantidade AS Value FROM ConteudoEncomendaEVAs WHERE Encomenda = @encomenda";
+        List<KeyValuePair<int, int>> tuplos = BaseDeDados.Instancia.LerDados<KeyValuePair<int, int>, dynamic>(conteudoSql, new
+        {
+            encomenda = identificador
+        });
+        model.Conteudo = new Dictionary<int, int>(tuplos);
+
+        BaseDeDados.Instancia.CommitTransacao();
+        return model;
+    }
+
     public List<EncomendaEVAsModel> ObterTodas()
     {
         BaseDeDados.Instancia.IniciarTransacao();
@@ -75,5 +103,66 @@ public class EncomendaEVAsRepository
 
         BaseDeDados.Instancia.CommitTransacao();
         return model with { Identificador = identificador };
+    }
+
+    public void Atualizar(EncomendaEVAsModel model)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        string sql = "UPDATE EncomendaEVAs SET Cliente = @cliente, Morada = @morada, Preco = @preco, InstanteColocacao = @instanteColocacao, InstanteConfirmacao = @instanteConfirmacao, InstanteEntrega = @instanteEntrega, InstanteCancelamento = @instanteCancelamento, InstanteDevolucao = @instanteDevolucao, Aprovada = @aprovada WHERE Identificador = @identificador";
+        BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
+        {
+            identificador = model.Identificador,
+            cliente = model.Cliente,
+            morada = model.Morada,
+            preco = model.Preco,
+            instanteColocacao = model.InstanteColocacao,
+            instanteConfirmacao = model.InstanteConfirmacao,
+            instanteEntrega = model.InstanteEntrega,
+            instanteCancelamento = model.InstanteCancelamento,
+            instanteDevolucao = model.InstanteDevolucao,
+            aprovada = model.Aprovada
+        });
+
+        string apagarSql = "DELETE FROM ConteudoEncomendaEVAs WHERE Encomenda = @encomenda";
+        BaseDeDados.Instancia.EscreverDados<dynamic>(apagarSql, new
+        {
+            encomenda = model.Identificador
+        });
+
+        string conteudosSql = "INSERT INTO ConteudoEncomendaEVAs (Encomenda, EVA, Quantidade) VALUES (@encomenda, @eva, @quantidade)";
+        foreach (KeyValuePair<int, int> entrada in model.Conteudo)
+        {
+            if (entrada.Value > 0)
+            {
+                BaseDeDados.Instancia.EscreverDados<dynamic>(conteudosSql, new
+                {
+                    encomenda = model.Identificador,
+                    eva = entrada.Key,
+                    quantidade = entrada.Value
+                });
+            }
+        }
+
+        BaseDeDados.Instancia.CommitTransacao();
+    }
+
+    public void Eliminar(int identificador)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+
+        string conteudosSql = "DELETE FROM ConteudoEncomendaEVAs WHERE Encomenda = @encomenda";
+        BaseDeDados.Instancia.EscreverDados<dynamic>(conteudosSql, new
+        {
+            encomenda = identificador
+        });
+
+        string sql = "DELETE FROM EncomendaEVAs WHERE Identificador = @identificador";
+        BaseDeDados.Instancia.EscreverDados<dynamic>(sql, new
+        {
+            identificador = identificador
+        });
+
+        BaseDeDados.Instancia.CommitTransacao();
     }
 }

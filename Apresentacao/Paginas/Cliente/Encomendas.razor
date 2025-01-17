@@ -1,0 +1,149 @@
+@page "/Cliente/Encomendas"
+
+@using LI4.Apresentacao.Componentes
+@using LI4.Negocio
+@using LI4.Negocio.Encomendas
+@using LI4.Negocio.Utilizadores
+
+@namespace LI4.Apresentacao.Paginas.Cliente
+
+@inject ComumService ComumService
+@inject EncomendasService EncomendasService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject UtilizadoresService UtilizadoresService
+
+<Autorizador TipoDeConta=@Utilizador.Tipo.Cliente />
+
+<table>
+    <tr>
+        <th>Data de colocação</th>
+        <th>Estado</th>
+        <th>Conteúdos</th>
+        <th>Preço</th>
+        <th>Tracking</th>
+        <th>Ação</th>
+    </tr>
+
+    @for (int i = 0; i < EncomendasEVAs.Count; ++i)
+    {
+        EncomendaEVAs encomenda = EncomendasEVAs[i];
+
+        <tr>
+            <td>@encomenda.InstanteColocacao.ToString()</td>
+            <td>@encomenda.Estado.ToString()</td>
+            <td>
+                <table>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Quantidade</th>
+                    </tr>
+
+                    @foreach (KeyValuePair<string, int> entrada in Conteudos[i])
+                    {
+                        <tr>
+                            <td>@entrada.Key</td>
+                            <td>@entrada.Value</td>
+                        </tr>
+                    }
+                </table>
+            </td>
+            <td>@String.Format("{0:F2} €", encomenda.Preco)</td>
+            <td>
+                <ul>
+                    @if (encomenda.InstanteConfirmacao != null)
+                    {
+                        @if (encomenda.Aprovada)
+                        {
+                            <li>Aprovada a: @encomenda.InstanteConfirmacao</li>
+                        }
+                        else
+                        {
+                            <li>Rejeitada a: @encomenda.InstanteConfirmacao</li>
+                        }
+                    }
+
+                    @if (encomenda.InstanteCancelamento != null)
+                    {
+                        <li>Cancelada a: @encomenda.InstanteCancelamento</li>
+                    }
+
+                    @if (encomenda.InstanteEntrega != null)
+                    {
+                        <li>Entregue a: @encomenda.InstanteEntrega</li>
+                    }
+
+                    @if (encomenda.InstanteDevolucao != null)
+                    {
+                        <li>Devolvida a: @encomenda.InstanteDevolucao</li>
+                    }
+                </ul>
+            </td>
+            <td>
+                @if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Colocada || encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Aprovada)
+                {
+                    <button @onclick="() => CancelarEncomenda(encomenda)">Cancelar</button>
+                }
+                else if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Entregue && (DateTime.Now - encomenda.InstanteEntrega)!.Value.TotalDays < (365 * 3))
+                {
+                    <button @onclick="() => DevolverEncomenda(encomenda)">Devolver encomenda</button>
+                }
+            </td>
+        </tr>
+    }
+</table>
+
+<a href="/Cliente">
+    <button>Voltar</button>
+</a>
+
+@code
+{
+    private List<EncomendaEVAs> EncomendasEVAs { get; set; } = new List<EncomendaEVAs>();
+    private List<List<KeyValuePair<string, int>>> Conteudos { get; set; } = new List<List<KeyValuePair<string, int>>>();
+    private Cliente? Cliente { get; set; }
+
+    private SessaoController? SessaoController { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AtualizarPagina();
+        }
+    }
+
+    private async Task AtualizarPagina()
+    {
+        Cliente = (Cliente) (await SessaoController!.ObterUtilizadorComSessaoIniciada())!;
+        EncomendasEVAs = Cliente!.Encomendas;
+        EncomendasEVAs.Sort((e1, e2) => e2.InstanteColocacao.CompareTo(e1.InstanteColocacao));
+
+        Conteudos = new List<List<KeyValuePair<string, int>>>();
+        foreach (EncomendaEVAs encomenda in EncomendasEVAs)
+        {
+            List<KeyValuePair<string, int>> conteudosEncomenda = encomenda.Conteudo.ToDictionary(entrada => entrada.Key.Nome, entrada => entrada.Value).ToList();
+            conteudosEncomenda.Sort((e1, e2) => e1.Key.CompareTo(e2.Key));
+            Conteudos.Add(conteudosEncomenda);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task CancelarEncomenda(EncomendaEVAs encomenda)
+    {
+        EncomendasService.CancelarEncomenda(encomenda.Identificador!.Value);
+        await AtualizarPagina();
+    }
+
+    private async Task DevolverEncomenda(EncomendaEVAs encomenda)
+    {
+        EncomendasService.DevolverEncomenda(encomenda.Identificador!.Value);
+        await AtualizarPagina();
+    }
+}

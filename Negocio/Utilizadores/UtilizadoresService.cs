@@ -70,6 +70,19 @@ public class UtilizadoresService
 
         model.PossivelIniciarSessao = false;
         UtilizadorRepository.Instancia.Atualizar(model);
+
+        if (model.TipoDeConta == "C")
+        {
+            foreach (int encomendaIdentificador in model.Encomendas!)
+            {
+                EncomendaEVAsModel encomendaModel = EncomendaEVAsRepository.Instancia.Obter(encomendaIdentificador)!;
+                if (encomendaModel.InstanteEntrega == null)
+                {
+                    EncomendaEVAsRepository.Instancia.Eliminar(encomendaIdentificador);
+                }
+            }
+        }
+
         BaseDeDados.Instancia.CommitTransacao();
     }
 }

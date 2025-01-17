@@ -63,11 +63,11 @@ public class OrdemProducao
     public bool Visualizada { get; set; }
     private Dictionary<int, int> _ConteudoRaw { get; set; }
 
-    public Utilizador Funcionario
+    public GestorDeProducao Funcionario
     {
         get
         {
-            return Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.FuncionarioRaw)!);
+            return (GestorDeProducao)Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.FuncionarioRaw)!);
         }
         set
         {
