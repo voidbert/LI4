@@ -1,4 +1,5 @@
 .link-button {
+    display: inline-block;
     width: 160px;
     padding: 10px 20px;
     background-color: #333333;
@@ -6,14 +7,9 @@
     border-radius: 8px;
     text-align: center;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-}
-
-.link-button a {
-    color: #ffffff;
     font-size: 1rem;
     font-weight: 500;
-    text-decoration: none;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .link-button:hover {
