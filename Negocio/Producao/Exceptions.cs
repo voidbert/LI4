@@ -15,3 +15,11 @@ public class SemPartesException : Exception
     public SemPartesException(string message) : base(message) { }
     public SemPartesException(string message, Exception innerException) : base(message, innerException) { }
 }
+
+[Serializable]
+public class OrdemProducaoInexistenteException : Exception
+{
+    public OrdemProducaoInexistenteException() { }
+    public OrdemProducaoInexistenteException(string message) : base(message) { }
+    public OrdemProducaoInexistenteException(string message, Exception innerException) : base(message, innerException) { }
+}

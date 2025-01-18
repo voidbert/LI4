@@ -17,10 +17,15 @@ public class EncomendaEVAs
 
     public EncomendaEVAs(string cliente, string morada, double preco, DateTime instanteColocacao, Dictionary<int, int> conteudo)
     {
+        this.Identificador = null;
         this.ClienteRaw = cliente;
         this.Morada = morada;
         this.Preco = preco;
         this.InstanteColocacao = instanteColocacao;
+        this.InstanteEntrega = null;
+        this.InstanteCancelamento = null;
+        this.InstanteDevolucao = null;
+        this.Aprovada = false;
         this._ConteudoRaw = conteudo.ToDictionary(entrada => entrada.Key, entrada => entrada.Value);
     }
 
@@ -35,6 +40,7 @@ public class EncomendaEVAs
         this.InstanteEntrega = instanteEntrega;
         this.InstanteCancelamento = instanteCancelamento;
         this.InstanteDevolucao = instanteDevolucao;
+        this.Aprovada = aprovada;
         this._ConteudoRaw = conteudo;
     }
 
@@ -47,6 +53,7 @@ public class EncomendaEVAs
     {
         return new EncomendaEVAsModel
         {
+            Identificador = this.Identificador,
             Cliente = this.ClienteRaw,
             Morada = this.Morada,
             Preco = this.Preco,
@@ -96,11 +103,11 @@ public class EncomendaEVAs
     public bool Aprovada { get; set; }
     private Dictionary<int, int> _ConteudoRaw;
 
-    public Utilizador Cliente
+    public Cliente Cliente
     {
         get
         {
-            return Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.ClienteRaw)!);
+            return (Cliente)Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.ClienteRaw)!);
         }
         set
         {

@@ -1,0 +1,115 @@
+@page "/GestorDeProducao/Encomendas"
+
+@using LI4.Apresentacao.Componentes
+@using LI4.Negocio
+@using LI4.Negocio.Producao
+@using LI4.Negocio.Encomendas
+@using LI4.Negocio.Utilizadores
+
+@namespace LI4.Apresentacao.Paginas.GestorDeProducao
+
+@inject ComumService ComumService
+@inject EncomendasService EncomendasService
+
+<Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
+
+<table>
+    <tr>
+        <th>Identificador</th>
+        <th>Cliente</th>
+        <th>Data de colocação</th>
+        <th>Estado</th>
+        <th>Conteúdo</th>
+        <th>Preço</th>
+        <th>Ação</th>
+    </tr>
+
+    @for (int i = 0; i < EncomendasEVAs.Count; ++i)
+    {
+        EncomendaEVAs encomenda = EncomendasEVAs[i];
+
+        @if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Colocada || encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Aprovada)
+        {
+            <tr>
+                <td>@encomenda.Identificador</td>
+                <td>@Clientes[i]</td>
+                <td>@encomenda.InstanteColocacao.ToString()</td>
+                <td>@encomenda.Estado.ToString()</td>
+                <td>
+                    <table>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Identificador</th>
+                            <th>Quantidade</th>
+                        </tr>
+                        
+                        @foreach (KeyValuePair<EVA, int> eva in Conteudos[i])
+                        {
+                            <tr>
+                                <td>@eva.Key.Nome</td>
+                                <td>@eva.Key.Identificador</td>
+                                <td>@eva.Value</td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+                <td>@String.Format("{0:F2} €", encomenda.Preco)</td>
+                <td>
+                @if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Colocada)
+                {
+                    <button @onclick="() => Rejeitar(encomenda)">Rejeitar</button>
+                    <button @onclick="() => Aprovar(encomenda)">Aprovar</button>
+                }
+                </td>
+            </tr>
+        }
+    }
+</table>
+
+<a href="/GestorDeProducao">
+    <button>Voltar</button>
+</a>
+
+@code
+{
+    private List<EncomendaEVAs> EncomendasEVAs { get; set; } = new List<EncomendaEVAs>();
+    private List<string> Clientes { get; set; } = new List<string>();
+    private List<List<KeyValuePair<EVA, int>>> Conteudos { get; set; } = new List<List<KeyValuePair<EVA, int>>>();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AtualizarPagina();
+        }
+    }
+
+    private void AtualizarPagina()
+    {
+        EncomendasEVAs = EncomendasService.ObterTodasAsEncomendasEVAs();
+        EncomendasEVAs.Sort((e1, e2) => e2.InstanteColocacao.CompareTo(e1.InstanteColocacao));
+
+        foreach (EncomendaEVAs encomenda in EncomendasEVAs)
+        {
+            Clientes.Add(encomenda.Cliente.NomeCivil);
+
+            List<KeyValuePair<EVA, int>> conteudo = encomenda.Conteudo.ToList();
+            conteudo.Sort((e1, e2) => e1.Key.Nome.CompareTo(e2.Key.Nome));
+            Conteudos.Add(conteudo);
+        }
+
+        StateHasChanged();
+    }
+
+    private void Rejeitar(EncomendaEVAs encomenda)
+    {
+        EncomendasService.RejeitarEncomenda(encomenda.Identificador!.Value);
+        AtualizarPagina();
+    }
+
+    private void Aprovar(EncomendaEVAs encomenda)
+    {
+        EncomendasService.AprovarEncomenda(encomenda.Identificador!.Value);
+        AtualizarPagina();
+    }
+}

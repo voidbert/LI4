@@ -1,4 +1,5 @@
 using LI4.Dados;
+using LI4.Negocio.Encomendas;
 using LI4.Negocio.Stock;
 
 namespace LI4.Negocio.Producao;
@@ -38,8 +39,22 @@ public class ProducaoService
         // Registar ordem de producao
         OrdemProducaoRepository.Instancia.Adicionar(ordemProducao.ParaModel());
 
-        // TODO - suprir encomendas
+        (new EncomendasService()).TentarSatisfazerTodasAsEncomendas();
+        BaseDeDados.Instancia.CommitTransacao();
+    }
 
+    public void RegistarOrdemProducaoComoVisualizada(int identificador)
+    {
+        BaseDeDados.Instancia.IniciarTransacao();
+        OrdemProducaoModel? model = OrdemProducaoRepository.Instancia.Obter(identificador);
+
+        if (model == null)
+        {
+            BaseDeDados.Instancia.AbortarTransacao();
+            throw new OrdemProducaoInexistenteException();
+        }
+
+        OrdemProducaoRepository.Instancia.Atualizar(model with { Visualizada = true });
         BaseDeDados.Instancia.CommitTransacao();
     }
 }
