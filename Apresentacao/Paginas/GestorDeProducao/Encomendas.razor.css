@@ -38,3 +38,39 @@ main {
 .production-deliveries td:last-child {
     text-align: right;
 }
+
+
+.production-eva-deliveries th,
+.production-eva-deliveries td {
+    border-bottom: 0 solid #bbb;
+    padding: 10px 15px;
+    text-align: left;
+}
+
+/* Header styling */
+.production-eva-deliveries th {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+/* Highlight hover */
+.production-eva-deliveries tr:hover {
+    background-color: #fafafa;
+}
+
+/* Value Head column styling */
+.production-eva-deliveries th:last-child {
+    text-align: right;
+}
+
+/* Value column styling */
+.production-eva-deliveries td:last-child {
+    text-align: right;
+}
+
+.choice-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

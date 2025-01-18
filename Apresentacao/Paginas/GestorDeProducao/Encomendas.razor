@@ -37,7 +37,7 @@
                     <td>@encomenda.InstanteColocacao.ToString()</td>
                     <td>@encomenda.Estado.ToString()</td>
                     <td>
-                        <table>
+                        <table class="production-eva-deliveries">
                             <tr>
                                 <th>Nome</th>
                                 <th>Identificador</th>
@@ -58,8 +58,10 @@
                     <td>
                         @if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Colocada)
                         {
-                            <button @onclick="() => Rejeitar(encomenda)">Rejeitar</button>
-                            <button @onclick="() => Aprovar(encomenda)">Aprovar</button>
+                            <div class="choice-buttons">
+                                <ActionButton Callback="() => Rejeitar(encomenda)" Title="Rejeitar" />
+                                <ActionButton Callback="() => Aprovar(encomenda)" Title="Aprovar" />
+                            </div>
                         }
                     </td>
                 </tr>

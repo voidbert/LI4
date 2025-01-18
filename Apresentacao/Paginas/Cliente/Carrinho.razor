@@ -60,7 +60,7 @@
         <div class="finalization">
             <!-- Address Input -->
             <div class="address-input">
-                <InputField Placeholder="Morada de Entrega" Value="@Morada" />
+                <InputField Placeholder="Morada de Entrega" Value="@Morada" Callback="@OnInputChange"/>
             </div>
             <!-- Final Price and Button -->
             <div class="finalization-details">
@@ -85,6 +85,18 @@
     private string? MensagemAlerta { get; set; }
 
     private Utilizador? Cliente { get; set; }
+
+    private void OnInputChange(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            String? valor = e.Value.ToString();
+            if (valor != null)
+            {
+                Morada = valor;
+            }
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
