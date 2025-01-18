@@ -15,87 +15,87 @@
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.Cliente />
 
-<table>
-    <tr>
-        <th>Data de colocação</th>
-        <th>Estado</th>
-        <th>Conteúdos</th>
-        <th>Preço</th>
-        <th>Tracking</th>
-        <th>Ação</th>
-    </tr>
-
-    @for (int i = 0; i < EncomendasEVAs.Count; ++i)
-    {
-        EncomendaEVAs encomenda = EncomendasEVAs[i];
-
+<main>
+    <table class="deliveries">
         <tr>
-            <td>@encomenda.InstanteColocacao.ToString()</td>
-            <td>@encomenda.Estado.ToString()</td>
-            <td>
-                <table>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Quantidade</th>
-                    </tr>
-
-                    @foreach (KeyValuePair<string, int> entrada in Conteudos[i])
-                    {
-                        <tr>
-                            <td>@entrada.Key</td>
-                            <td>@entrada.Value</td>
-                        </tr>
-                    }
-                </table>
-            </td>
-            <td>@String.Format("{0:F2} €", encomenda.Preco)</td>
-            <td>
-                <ul>
-                    @if (encomenda.InstanteConfirmacao != null)
-                    {
-                        @if (encomenda.Aprovada)
-                        {
-                            <li>Aprovada a: @encomenda.InstanteConfirmacao</li>
-                        }
-                        else
-                        {
-                            <li>Rejeitada a: @encomenda.InstanteConfirmacao</li>
-                        }
-                    }
-
-                    @if (encomenda.InstanteCancelamento != null)
-                    {
-                        <li>Cancelada a: @encomenda.InstanteCancelamento</li>
-                    }
-
-                    @if (encomenda.InstanteEntrega != null)
-                    {
-                        <li>Entregue a: @encomenda.InstanteEntrega</li>
-                    }
-
-                    @if (encomenda.InstanteDevolucao != null)
-                    {
-                        <li>Devolvida a: @encomenda.InstanteDevolucao</li>
-                    }
-                </ul>
-            </td>
-            <td>
-                @if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Colocada || encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Aprovada)
-                {
-                    <button @onclick="() => CancelarEncomenda(encomenda)">Cancelar</button>
-                }
-                else if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Entregue && (DateTime.Now - encomenda.InstanteEntrega)!.Value.TotalDays < (365 * 3))
-                {
-                    <button @onclick="() => DevolverEncomenda(encomenda)">Devolver encomenda</button>
-                }
-            </td>
+            <th>Data de colocação</th>
+            <th>Estado</th>
+            <th>Conteúdos</th>
+            <th>Preço</th>
+            <th>Tracking</th>
+            <th>Ação</th>
         </tr>
-    }
-</table>
 
-<a href="/Cliente">
-    <button>Voltar</button>
-</a>
+        @for (int i = 0; i < EncomendasEVAs.Count; ++i)
+        {
+            EncomendaEVAs encomenda = EncomendasEVAs[i];
+
+            <tr>
+                <td>@encomenda.InstanteColocacao.ToString()</td>
+                <td>@encomenda.Estado.ToString()</td>
+                <td>
+                    <table>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Quantidade</th>
+                        </tr>
+
+                        @foreach (KeyValuePair<string, int> entrada in Conteudos[i])
+                        {
+                            <tr>
+                                <td>@entrada.Key</td>
+                                <td>@entrada.Value</td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+                <td>@String.Format("{0:F2} €", encomenda.Preco)</td>
+                <td>
+                    <ul>
+                        @if (encomenda.InstanteConfirmacao != null)
+                        {
+                            @if (encomenda.Aprovada)
+                            {
+                                <li>Aprovada a: @encomenda.InstanteConfirmacao</li>
+                            }
+                            else
+                            {
+                                <li>Rejeitada a: @encomenda.InstanteConfirmacao</li>
+                            }
+                        }
+
+                        @if (encomenda.InstanteCancelamento != null)
+                        {
+                            <li>Cancelada a: @encomenda.InstanteCancelamento</li>
+                        }
+
+                        @if (encomenda.InstanteEntrega != null)
+                        {
+                            <li>Entregue a: @encomenda.InstanteEntrega</li>
+                        }
+
+                        @if (encomenda.InstanteDevolucao != null)
+                        {
+                            <li>Devolvida a: @encomenda.InstanteDevolucao</li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    @if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Colocada || encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Aprovada)
+                    {
+                        <ActionButton @Callback="() => CancelarEncomenda(encomenda)" Title="Cancelar" />
+                    }
+                    else if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Entregue && (DateTime.Now - encomenda.InstanteEntrega)!.Value.TotalDays < (365 * 3))
+                    {
+                        <ActionButton @Callback="() => DevolverEncomenda(encomenda)" Title="Devolver encomenda" />
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+    
+    <LinkButton Href="/Cliente" Title="Voltar" />
+</main>
 
 @code
 {
