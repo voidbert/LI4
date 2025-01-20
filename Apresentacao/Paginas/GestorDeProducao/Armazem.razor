@@ -16,35 +16,24 @@
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
-Armazém de EVAs
-
-@if (OrdemProducao == null)
-{
-    <a href="/GestorDeProducao">
-        <button>Voltar</button>
-    </a>
-}
-else
-{
-    <button @onclick=@CancelarOrdemProducao>Cancelar Ordem de Produção</button>
-}
-
-<table>
-    <tr>
-        <th>Identificador</th>
-        <th>Nome</th>
-        @if (OrdemProducao != null)
-        {
-            <th>Quantidade</th>
-        }
-        <th>Número de Exemplares</th>
-    </tr>
-
-    @foreach(EVA eva in EVAs)
-    {
+<main>
+    <HeaderTitle>Armazém de EVAs</HeaderTitle>
+    <table class="warehouse">
         <tr>
-            <td>@eva.Identificador</td>
-            <td>@eva.Nome</td>
+            <th>Identificador</th>
+            <th>Nome</th>
+            @if (OrdemProducao != null)
+            {
+                <th>Quantidade</th>
+            }
+            <th>Número de Exemplares</th>
+        </tr>
+
+        @foreach(EVA eva in EVAs)
+        {
+            <tr>
+                <td>@eva.Identificador</td>
+                <td>@eva.Nome</td>
 
             @if (OrdemProducao != null)
             {
@@ -59,16 +48,26 @@ else
     }
 </table>
 
-@if (OrdemProducao == null)
-{
-    <button @onclick=@ComecarOrdemProducao>Começar Ordem de Produção</button>
-}
-else
-{
-    <button @onclick=@ColocarOrdemProducao>
-        Colocar Ordem de Producao
-    </button>
-}
+    <div class="action-buttons">
+        @if (OrdemProducao == null)
+        {
+            <LinkButton Href="/GestorDeProducao" Title="Voltar" />
+        }
+        else
+        {
+            <ActionButton Callback="@CancelarOrdemProducao" Title="Cancelar Ordem de Produção" />
+        }
+
+        @if (OrdemProducao == null)
+        {
+            <ActionButton Callback="@ComecarOrdemProducao" Title="Começar Ordem de Produção" />
+        }
+        else
+        {
+            <ActionButton Callback="@ColocarOrdemProducao" Title="Colocar Ordem de Produção" />
+        }
+    </div>
+</main>
 
 @code
 {

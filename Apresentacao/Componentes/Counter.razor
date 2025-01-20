@@ -1,0 +1,19 @@
+@namespace LI4.Apresentacao.Componentes
+
+<div class="counter">
+    <button @onclick="Decrementar">-</button>
+    <span>@Value</span>
+    <button @onclick="Incrementar">+</button>
+</div>
+
+@code {
+    [Parameter]  
+    public int Value { get; set; }
+    [Parameter]
+    public EventCallback<int> ValueChanged { get; set; }
+    [Parameter]
+    public EventCallback Decrementar { get; set; }
+    [Parameter]
+    public EventCallback Incrementar { get; set; }
+  
+}

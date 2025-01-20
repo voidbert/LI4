@@ -11,17 +11,12 @@
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeStock />
 
-Olá, @NomeCivil!
-
-<a href="/GestorDeStock/EVAs">
-    <button>Consultar EVAs</button>
-</a>
-
-<a href="/GestorDeStock/Armazem">
-    <button>Consultar Armazém</button>
-</a>
-
-<button @onclick="Logout">Terminar Sessão</button>
+<main>
+    <HeaderTitle>Olá, @NomeCivil!</HeaderTitle>
+    <LinkButton Href="/GestorDeStock/EVAs" Title="Consultar EVAs"/>
+    <LinkButton Href="/GestorDeStock/Armazem" Title="Consultar Armazém"/>
+    <ActionButton Callback="@Logout" Title="Terminar Sessão"/>
+</main>
 
 @code
 {

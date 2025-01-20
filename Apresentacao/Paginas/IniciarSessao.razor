@@ -12,18 +12,17 @@
 <Autorizador TipoDeConta=@null />
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
-<div class="text-center">
-    <EditForm Model="@FormModel" OnSubmit="@Autenticar" FormName="Autenticar">
-        <InputText class="form-control" id="email" placeholder="Endereço eletrónico" @bind-Value=@FormModel!.EnderecoEletronico />
-        <InputText type="password" class="form-control" id="password" placeholder="Palavra passe" @bind-Value=@FormModel!.PalavraPasse />
+<main>
+    <HeaderTitle>Iniciar Sessão</HeaderTitle>
+    <form class="form" @onsubmit="Autenticar">
+        <input id="email" class="form-control" placeholder="Endereço eletrónico" @bind="FormModel!.EnderecoEletronico"/>
+        <input type="password" id="password" class="form-control" placeholder="Palavra passe" @bind="FormModel!.PalavraPasse"/>
 
-        <a href="/Cliente/CriarConta">
-            <button>Registar-se</button>
-        </a>
 
-        <button type="submit" id="login">Iniciar Sessão</button>
-    </EditForm>
-</div>
+        <a href="/Cliente/CriarConta"><button class="btn">Registar</button></a>
+        <button type="submit" id="register" class="btn">Iniciar Sessão</button>
+    </form>
+</main>
 
 @code
 {

@@ -3,9 +3,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnableCssIsolation>true</EnableCssIsolation>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Apresentacao\Paginas\GestorStock\ArmazemPartes.razor" />
+    <_ContentIncludedByDefault Remove="Apresentacao\Paginas\GestorProducao\ArmazemEVAs.razor" />
+    <_ContentIncludedByDefault Remove="Apresentacao\Paginas\GestorProducao\GestaoEncomendas.razor" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Apresentacao\Paginas\GestorStock\ArmazemPartes.razor" />
   </ItemGroup>
 </Project>

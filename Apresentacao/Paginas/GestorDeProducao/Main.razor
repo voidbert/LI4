@@ -11,21 +11,13 @@
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 
-Olá, @NomeCivil!
-
-<a href="/GestorDeProducao/Encomendas">
-    <button>Gerir Encomendas</button>
-</a>
-
-<a href="/GestorDeProducao/Simulacao">
-    <button>Simulação Gráfica</button>
-</a>
-
-<a href="/GestorDeProducao/Armazem">
-    <button>Ordenar Producao</button>
-</a>
-
-<button @onclick="Logout">Terminar Sessão</button>
+<main>
+    <HeaderTitle>Olá, @NomeCivil!</HeaderTitle>
+    <LinkButton Href="/GestorDeProducao/Encomendas" Title="Gerir Encomendas"/>
+    <LinkButton Href="/GestorDeProducao/Armazem" Title="Consultar Armazém"/>
+    <LinkButton Href="/GestorDeProducao/Simulacao" Title="Simulação Gráfica"/>
+    <ActionButton Callback="@Logout" Title="Terminar Sessão"/>
+</main>
 
 @code
 {

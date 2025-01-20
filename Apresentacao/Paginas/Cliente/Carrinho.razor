@@ -16,54 +16,64 @@
 <Autorizador TipoDeConta=@Utilizador.Tipo.Cliente />
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
-Carrinho de Compras
-
-<table>
-    <tr>
-        <th>Item</th>
-        <th>Preço</th>
-        <th>Quantidade</th>
-        <th>Total</th>
-        <th></th>
-    </tr>
-
-    @foreach (EVA eva in EVAs)
-    {
+<main>
+    <HeaderTitle>Carrinho de Compras</HeaderTitle>
+    <table class="cart">
         <tr>
-            <td>
-                <img src="@eva.Imagem" asp-append-version="true" width="200rem" />
-                @eva.Nome
-            </td>
-            <td>
-                @String.Format("{0:F2} €", eva.Preco)
-            </td>
-            <td>
-                <button @onclick="@(() => DecrementarQuantidade(eva))">-</button>
-                @CarrinhoCompras!.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0).ToString()
-                <button @onclick="@(() => IncrementarQuantidade(eva))">+</button>
-            </td>
-            <td>
-                @String.Format("{0:F2} €", eva.Preco * CarrinhoCompras!.ConteudoRaw[eva.Identificador])
-            </td>
-            <td>
-                <button @onclick="@(() => RemoverEVA(eva))">Remover</button>
-            </td>
+            <th>Item</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+            <th>Total</th>
+            <th></th>
         </tr>
-    }
 
-</table>
+        @foreach (EVA eva in EVAs)
+        {
+            <tr>
+                <td class="eva">
+                    <img src="@eva.Imagem" asp-append-version="true" width="200rem" />
+                    <span>@eva.Nome</span>
+                </td>
+                <td>
+                    @String.Format("{0:F2} €", eva.Preco)
+                </td>
+                <td>
+                    <Counter Value="@CarrinhoCompras!.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0)" Decrementar="@(() => DecrementarQuantidade(eva))" Incrementar="@(() => IncrementarQuantidade(eva))"/>
+                </td>
+                <td>
+                    @String.Format("{0:F2} €", eva.Preco * CarrinhoCompras!.ConteudoRaw[eva.Identificador])
+                </td>
+                <td>
+                    <XComp AoClicar="@(() => RemoverEVA(eva))" />
+                </td>
+            </tr>
+        }
+    </table>
 
-<a href="/Cliente">
-    <button>Voltar</button>
-</a>
+    <div class="checkout-container">
+        <!-- Row 1: Back Button -->
+            <div class="left-button">
+                <LinkButton Href="/Cliente" Title="Voltar" />
+            </div>
 
-<span>
-    @String.Format("{0:F2} €", Preco)
-</span>
-
-<InputText placeholder="Morada" @bind-Value=@Morada />
-
-<button @onclick=@FinalizarPedido>Finalizar Pedido</button>
+        <!-- Row 2: Finalization Section -->
+        <div class="finalization">
+            <!-- Address Input -->
+            <div class="address-input">
+                <InputField Placeholder="Morada de Entrega" Value="@Morada" Callback="@OnInputChange"/>
+            </div>
+            <!-- Final Price and Button -->
+            <div class="finalization-details">
+                <div class="final-price">
+                    Preço Final: <span>@String.Format("{0:F2} €", Preco)</span>
+                </div>
+                <div class="finalize-button">
+                    <ActionButton Callback="@FinalizarPedido" Title="Finalizar Pedido" />
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 
 @code
 {
@@ -76,6 +86,18 @@ Carrinho de Compras
 
     private Utilizador? Cliente { get; set; }
 
+    private void OnInputChange(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            String? valor = e.Value.ToString();
+            if (valor != null)
+            {
+                Morada = valor;
+            }
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -85,7 +107,7 @@ Carrinho de Compras
 
             CarrinhoCompras = EncomendasService.ObterCarrinho(Cliente!.EnderecoEletronico);
             EVAs = CarrinhoCompras.Conteudo.Keys.ToList();
-            EVAs.Sort((e1, e2) => e1.Nome.CompareTo(e2.Nome));
+            EVAs.Sort((e1, e2) => String.Compare(e1.Nome, e2.Nome, StringComparison.Ordinal));
 
             Preco = CarrinhoCompras!.CalcularPreco();
             StateHasChanged();

@@ -16,26 +16,26 @@
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeContas />
 
-Histórico de Transações
-
-<table>
-    <tr>
-        <th>Data e hora</th>
-        <th>Descrição</th>
-        <th>Valor</th>
-    </tr>
-
-    @foreach (Transacao transacao in Transacoes)
-    {
+<main>
+    <HeaderTitle>Histórico de Transações</HeaderTitle>
+    <table class="transactions">
         <tr>
-            <td>@transacao.Instante</td>
-            <td>@transacao.Descricao</td>
-            <td>@String.Format("{0:F2} €", transacao.Valor)</td>
+            <th>Data e hora</th>
+            <th>Descrição</th>
+            <th>Valor</th>
         </tr>
-    }
-</table>
 
-<button @onclick="Logout">Terminar Sessão</button>
+        @foreach (Transacao transacao in Transacoes)
+        {
+            <tr class="@((transacao.Valor >= 0) ? "positive" : "negative")">
+                <td>@transacao.Instante</td>
+                <td>@transacao.Descricao</td>
+                <td>@String.Format("{0:F2} €", transacao.Valor)</td>
+            </tr>
+        }
+    </table>
+    <ActionButton Callback="@Logout" Title="Terminar Sessão" />
+</main>
 
 @code
 {

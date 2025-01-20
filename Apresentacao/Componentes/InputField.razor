@@ -1,0 +1,22 @@
+@namespace LI4.Apresentacao.Componentes
+
+<div class="input">
+    <input @attributes="AdditionalAttributes" id="@Id" placeholder="@Placeholder" value=@Value @oninput=@Callback />
+</div>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+    
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    [Parameter]
+    public string Value { get; set; } = "";
+    
+    [Parameter]
+    public EventCallback<ChangeEventArgs> Callback { get; set; }
+    
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

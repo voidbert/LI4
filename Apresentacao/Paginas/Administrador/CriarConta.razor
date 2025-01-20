@@ -11,25 +11,24 @@
 <Autorizador TipoDeConta=@Utilizador.Tipo.Administrador />
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
-<div class="text-center">
-    <EditForm Model="@FormModel" OnSubmit="@Registar" FormName="Registar">
-        <InputText id="name" placeholder="Nome civil" @bind-Value=@FormModel!.NomeCivil />
-        <InputText id="email" placeholder="Endereço eletrónico" @bind-Value=@FormModel!.EnderecoEletronico />
-        <InputText type="password" class="form-control" id="password" placeholder="Palavra passe" @bind-Value=@FormModel!.PalavraPasse />
+<main>
+    <HeaderTitle>Criar Conta</HeaderTitle>
+    <form class="form" @onsubmit="Registar">
+        <input id="name" class="form-control" placeholder="Nome civil" @bind="FormModel!.NomeCivil"/>
+        <input id="email" class="form-control" placeholder="Endereço eletrónico" @bind="FormModel!.EnderecoEletronico"/>
+        <input type="password" id="password" class="form-control" placeholder="Palavra passe" @bind="FormModel!.PalavraPasse"/>
 
-        <InputSelect id="type" @bind-Value=@FormModel!.TipoDeConta>
-            <option value="A" selected="">Administrador</option>
+        <select id="type" name="type" class="form-control" @bind="FormModel!.TipoDeConta">
+            <option value="A" selected>Administrador</option>
             <option value="GS">Gestor de Stock</option>
-            <option value="GP">Gestor de Producao</option>
+            <option value="GP">Gestor de Produção</option>
             <option value="GC">Gestor de Contas</option>
-        </InputSelect>
+        </select>
 
-        <a href="/Administrador">
-            <button>Cancelar</button>
-        </a>
-        <button type="submit" id="register">Criar conta</button>
-    </EditForm>
-</div>
+        <a href="/Administrador"><button class="btn">Cancelar</button></a>
+        <button type="submit" id="register" class="btn">Criar Conta</button>
+    </form>
+</main>
 
 @code
 {
