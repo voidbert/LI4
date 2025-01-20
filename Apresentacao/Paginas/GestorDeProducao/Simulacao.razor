@@ -14,14 +14,32 @@
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
-@if (OrdemProducao != null)
-{
-    <span>VER ORDEM DE PRODUÇÃO AQUI!</span>
-}
+<main>
+    <section class="eva-images">
+        <img style="visibility: hidden" src="eva01.webp"/>
+        <img src="eva01.webp"/>
+        <img src="eva01.webp"/>
+        <img src="eva01.webp"/>
+    </section>
 
-<a href="/GestorDeProducao">
-    <button>Voltar</button>
-</a>
+    <section class="graph">
+        <div id="section1">
+            <p>Cabeça</p>
+            <div class="section"></div>
+        </div>
+        <div id="section2">
+            <p>Braços</p>
+            <div class="section"></div>
+        </div>
+        <div id="section3">
+            <p>Pernas</p>
+            <div class="section"></div>
+        </div>
+        <div id="base"></div>
+    </section>
+
+    <LinkButton Href="/GestorDeProducao" Title="Voltar"/>
+</main>
 
 @code
 {
