@@ -8,6 +8,9 @@ main {
 .eva-images {
     width: 100%;
     height: 90%;
+    position: absolute;
+    top: 0;
+    left: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,9 +20,6 @@ main {
 .graph {
     width: 100%;
     height: 90%;
-    position: absolute;
-    top: 0;
-    left: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -33,8 +33,7 @@ main {
     z-index: -1;
     position: relative;
     top: 180px;
-    right: 70px;
-    width: 1000px;
+    width: 900px;
     height: 30px;
     background-color: gray;
     border-radius: 5px;
@@ -48,21 +47,21 @@ main {
 }
 
 #section1 {
-    position: relative;
-    top: 0;
-    left: 310px;
+    position: absolute;
+    bottom: -10px;
+    left: 5%;
 }
 
 #section2 {
-    position: relative;
-    top: 0;
-    left: 510px;
+    position: absolute;
+    bottom: -10px;
+    left: 36%;
 }
 
 #section3 {
-    position: relative;
-    top: 0;
-    left: 710px;
+    position: absolute;
+    bottom: -10px;
+    left: 68%;
 }
 
 p {
