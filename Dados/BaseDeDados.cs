@@ -13,7 +13,7 @@ public class BaseDeDados
 
     private BaseDeDados()
     {
-        this.Conexao = new SqlConnection("Server=localhost;User Id=SA;Password=V3ry$3cur3Pa$$w0rd;Database=WeaponsRUs;Encrypt=false;MultipleActiveResultSets=False");
+        this.Conexao = new SqlConnection("Server=localhost;User Id=WeaponsRUsApp;Password=V3ry$3cur3Pa$$w0rd;Database=WeaponsRUs;Encrypt=false;MultipleActiveResultSets=False");
         this.Conexao.Open();
         this.TransacaoAtual = null;
         this.TransacoesAninhadas = 0;
