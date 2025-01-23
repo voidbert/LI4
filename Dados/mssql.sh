@@ -17,7 +17,6 @@ docker run                                                 \
 trap 'trap - EXIT; docker stop "sql"; exit' EXIT TERM INT HUP
 
 DOCKER_ARGS="/opt/mssql-tools18/bin/sqlcmd -No -S localhost -U SA -P $PASSWORD"
-DOCKER_ARGS="/bin/bash"
 
 # Wait for MSSQL server to start
 while :; do
