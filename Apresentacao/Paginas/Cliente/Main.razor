@@ -42,7 +42,14 @@
     </div>
     
     <aside class="right-sidebar">
-        <HeaderTitle>Olá, (deu merda aqui)</HeaderTitle>
+        @if (Cliente != null)
+        {
+            <HeaderTitle>Olá, @Cliente.NomeCivil!</HeaderTitle>
+        }
+        else
+        {
+            <HeaderTitle>Olá, !</HeaderTitle>
+        }
         <LinkButton Href="/Cliente/Carrinho" Title="Ver Carrinho"></LinkButton>
         <LinkButton Href="/Cliente/Encomendas" Title="Ver Encomendas"></LinkButton>
         <ActionButton Callback="Logout" Title="Terminar Sessão"></ActionButton>
