@@ -3,6 +3,7 @@
 @using LI4.Apresentacao.Componentes
 @using LI4.Negocio.Utilizadores
 @using LI4.Negocio.Producao
+@using LI4.Negocio
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
@@ -14,10 +15,23 @@
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
+@if (OrdemProducao != null)
+{
+<script>
+    $(".animate").each(function(index){
+        $(this).css({
+            'animation-delay' : 2*(1+index) + 's'
+        });
+    });
+</script>
+
 <main>
-    <div class="center-change-this-name">
-        <img class="animate" src="eva03.webp"/>
-    </div>
+    @foreach(EVA eva in EVAs)
+    {
+        <div class="center-change-this-name">
+            <img class="animate" src="@eva.Imagem"/>
+        </div>
+    }
 
     <section class="graph">
         <div id="section1">
@@ -35,13 +49,16 @@
         <div id="base"></div>
     </section>
 </main>
+}
 
-<div>
+<main>
     <LinkButton Href="/GestorDeProducao" Title="Voltar"/>
-</div>
+</main>
+
 
 @code
 {
+    private List<EVA> EVAs { get; set; } = new List<EVA>();
     private OrdemProducao? OrdemProducao { get; set; }
     private string? MensagemAlerta { get; set; }
 
@@ -66,6 +83,14 @@
                 OrdemProducao = null;
                 StateHasChanged();
                 return;
+            }
+
+            foreach(KeyValuePair<EVA, int> pair in OrdemProducao.Conteudo)
+            {
+                for(int i = 0; i < pair.Value; i++)
+                {
+                    EVAs.Add(pair.Key);
+                }
             }
 
             ProducaoService.RegistarOrdemProducaoComoVisualizada(OrdemProducao.Identificador!.Value);
