@@ -18,7 +18,7 @@
 <main class="catalog-layout">
     <!-- Left sidebar -->
     <aside class="left-sidebar">
-        <InputField Placeholder="Pesquisar" Value=@Pesquisa Callback=@Pesquisar />
+        <SearchField Placeholder="Pesquisar" Value=@Pesquisa Callback=@Pesquisar />
         <div class="filters">
             <InputRadioGroup @bind-Value="@Ordem">
                 @foreach (string ordem in Ordens.Keys)

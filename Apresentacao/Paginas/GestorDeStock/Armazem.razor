@@ -38,9 +38,7 @@
             {
                 <td>@String.Format("{0:F2} €", parte.Preco)</td>
                 <td>
-                    <button @onclick="@(() => DecrementarQuantidade(parte))">-</button>
-                    @Encomenda.ConteudoRaw.GetValueOrDefault(parte.Identificador, 0).ToString()
-                    <button @onclick="@(() => IncrementarQuantidade(parte))">+</button>
+                    <Counter Value="@Encomenda.ConteudoRaw.GetValueOrDefault(parte.Identificador, 0)" Decrementar="@(() => DecrementarQuantidade(parte))" Incrementar="@(() => IncrementarQuantidade(parte))"/>
                 </td>
             }
             <td>@parte.QuantidadeArmazem</td>
@@ -48,24 +46,38 @@
     }
     </table>
     
-    <div class="action-buttons">
-        @if (Encomenda == null)
-        {
-            <LinkButton Href="/GestorDeStock" Title="Voltar" />
-        }
-        else
-        {
-            <ActionButton Callback="@CancelarEncomenda" Title="Cancelar Encomenda" />
-        }
-        @if (Encomenda == null)
-        {
-            <ActionButton Callback="@ComecarEncomenda" Title="Começar Encomenda" />
-        }
-        else
-        {
-            <span>Total &colon; @String.Format("{0:F2} €", Encomenda.Preco)</span>
-            <ActionButton Callback="@ColocarEncomenda" Title="Colocar Encomenda" />
-        }
+    <div class="checkout-container">
+        <div class="left-button">
+            @if (Encomenda == null)
+            {
+                <LinkButton Href="/GestorDeStock" Title="Voltar" />
+            }
+            else
+            {
+                <ActionButton Callback="@CancelarEncomenda" Title="Cancelar Encomenda" />
+            }
+        </div>
+
+        <div class="finalization">
+            <div class="finalization-details">
+
+                @if (Encomenda != null)
+                {
+                    <div class="final-price">Total &colon; @String.Format("{0:F2} €", Encomenda.Preco)</div>
+                }
+
+                <div class="finalize-button">
+                    @if (Encomenda == null)
+                    {
+                        <ActionButton Callback="@ComecarEncomenda" Title="Começar Encomenda" />
+                    }
+                    else
+                    {
+                        <ActionButton Callback="@ColocarEncomenda" Title="Colocar Encomenda" />
+                    }
+                    </div>
+            </div>
+        </div>
     </div>
 </main>
 

@@ -39,7 +39,37 @@ main {
     text-align: right;
 }
 
-.action-buttons {
+.checkout-container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
+}
+
+/* Finalization section */
+.finalization {
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Address input spans the whole width */
+.address-input {
+    margin-bottom: 0.5rem;
+}
+
+/* Final price and button are in a column */
+.finalization-details {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: end;
+    gap: 1rem;
+}
+
+.final-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: end;
+}
+
+.final-price span {
+    text-decoration: underline;
 }

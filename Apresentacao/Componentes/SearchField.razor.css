@@ -1,0 +1,14 @@
+.input input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #dcdcdc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+input:placeholder-shown {
+    background: no-repeat url("/search.svg");
+    background-size: contain;
+    background-position: center right;
+}

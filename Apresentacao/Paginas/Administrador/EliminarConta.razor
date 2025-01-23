@@ -15,15 +15,15 @@
     <HeaderTitle>Eliminar Contas</HeaderTitle>
     
     <div class="search">
-        <InputField Id="search" Placeholder="Pesquisar" Value="@Pesquisa" Callback="@Pesquisar" />
+        <SearchField class="search-textbox" Id="search" Placeholder="Pesquisar" Value="@Pesquisa" Callback="@Pesquisar" />
     </div>
 
     <table class="accounts">
         <tr>
             <th>Nome</th>
-            <th>Endereco Eletronico</th>
+            <th>Endereço Eletrónico</th>
             <th>Tipo de Conta</th>
-            <th>Eliminar</th>
+            <th></th>
         </tr>
 
         @foreach(Utilizador utilizador in Utilizadores)
@@ -42,7 +42,6 @@
     
     <LinkButton Href="/Administrador" Title="Voltar" />
 </main>
-
 
 @code
 {

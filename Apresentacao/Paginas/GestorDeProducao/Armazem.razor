@@ -38,9 +38,7 @@
             @if (OrdemProducao != null)
             {
                 <td>
-                    <button @onclick="@(() => DecrementarQuantidade(eva))">-</button>
-                    @OrdemProducao.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0).ToString()
-                    <button @onclick="@(() => IncrementarQuantidade(eva))">+</button>
+                    <Counter Value="@OrdemProducao.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0)" Decrementar="@(() => DecrementarQuantidade(eva))" Incrementar="@(() => IncrementarQuantidade(eva))"/>
                 </td>
             }
             <td>@eva.QuantidadeArmazem</td>
