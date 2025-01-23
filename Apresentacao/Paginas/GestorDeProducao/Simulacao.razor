@@ -15,10 +15,30 @@
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
 <main>
-    <div class="animate">
-        <img style="clip-path: circle(50%);" src="eva01.webp"/>
+    <div class="center-change-this-name">
+        <img class="animate" src="eva03.webp"/>
     </div>
+
+    <section class="graph">
+        <div id="section1">
+            <p>Cabeça</p>
+            <div class="section"></div>
+        </div>
+        <div id="section2">
+            <p>Braços</p>
+            <div class="section"></div>
+        </div>
+        <div id="section3">
+            <p>Pernas</p>
+            <div class="section"></div>
+        </div>
+        <div id="base"></div>
+    </section>
 </main>
+
+<div>
+    <LinkButton Href="/GestorDeProducao" Title="Voltar"/>
+</div>
 
 @code
 {

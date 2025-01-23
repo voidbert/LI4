@@ -1,27 +1,97 @@
 main {
     font-family: Arial, sans-serif;
     width: 100vw;
-    height: 100vh;
+    height: 90vh;
+}
+
+.center-change-this-name {
+    display: flex;
+    position: absolute;
+    top: 28%;
+    left: 21%;
+    justify-content: left;
 }
 
 .animate {
-  animation-duration: 5s;
-  animation-name: slide;
-  animation-fill-mode: forwards;
+    clip-path: polygon(0% 0%, 0% 0%, 0% 0%, 0% 0%);
+    animation-timing-function: linear;
+    animation-duration: 10s;
+    animation-name: slide;
+    animation-fill-mode: forwards;
 }
 
 @keyframes slide {
-  30% {
-    transform: translate(30%, 0);
-  }
-  60% {
-    transform: translate(50%, 0);
-  }
-  100% {
-    transform: translate(70%, 0);
-  }
+    33% {
+        transform: translate(250px, 0);
+        clip-path: polygon(1% 0%, 0% 0%, 100% 0%, 100% 23%, 0 23%);
+    }
+    66% {
+        transform: translate(500px, 0);
+        clip-path: polygon(1% 0%, 2% 0%, 0% 0%, 100% 0%, 100% 66%, 0 66%);
+    }
+    100% {
+        transform: translate(750px, 0);
+        clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    }
 }
 
 img {
     max-height: 300px;
+}
+
+.graph {
+    width: 100%;
+    height: 90%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#base {
+    z-index: -1;
+    position: relative;
+    top: 180px;
+    right: 70px;
+    width: 1000px;
+    height: 30px;
+    background-color: gray;
+    border-radius: 5px;
+}
+
+.section {
+    width: 60px;
+    height: 375px;
+    background-color: black;
+    border-radius: 5px;
+}
+
+#section1 {
+    position: relative;
+    top: 0;
+    left: 310px;
+}
+
+#section2 {
+    position: relative;
+    top: 0;
+    left: 510px;
+}
+
+#section3 {
+    position: relative;
+    top: 0;
+    left: 710px;
+}
+
+p {
+    z-index: 1;
+    position: relative;
+    top: 200px;
+    rotate: 90deg;
+    font-size: larger;
+    font-weight: bold;
+    color: #fff;
 }
