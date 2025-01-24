@@ -2,16 +2,14 @@
 
 @using LI4.Apresentacao.Componentes
 @using LI4.Negocio
-@using LI4.Negocio.Encomendas
+@using LI4.Negocio.Producao
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
-@inject ComumService ComumService
-@inject EncomendasService EncomendasService
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.Cliente />
 
@@ -108,7 +106,7 @@
 
     protected override void OnInitialized()
     {
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -138,13 +136,13 @@
 
     private async Task CancelarEncomenda(EncomendaEVAs encomenda)
     {
-        EncomendasService.CancelarEncomenda(encomenda.Identificador!.Value);
+        CamadaNegocio.CancelarEncomendaEVAs(encomenda.Identificador!.Value);
         await AtualizarPagina();
     }
 
     private async Task DevolverEncomenda(EncomendaEVAs encomenda)
     {
-        EncomendasService.DevolverEncomenda(encomenda.Identificador!.Value);
+        CamadaNegocio.DevolverEncomendaEVAs(encomenda.Identificador!.Value);
         await AtualizarPagina();
     }
 }

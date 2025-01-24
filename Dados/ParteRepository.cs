@@ -1,6 +1,6 @@
 namespace LI4.Dados;
 
-public class ParteRepository
+public class ParteRepository : IParteRepository
 {
     private static ParteRepository? _Instancia;
 

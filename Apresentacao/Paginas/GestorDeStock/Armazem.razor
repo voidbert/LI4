@@ -1,15 +1,15 @@
 @page "/GestorDeStock/Armazem"
 
 @using LI4.Apresentacao.Componentes
+@using LI4.Negocio
 @using LI4.Negocio.Stock
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject StockService StockService
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeStock />
 <Alerta @bind-Mensagem=@MensagemAlerta />
@@ -92,7 +92,7 @@
 
     protected override void OnInitialized()
     {
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -102,7 +102,7 @@
             await SessaoController!.RedirecionarConformeTipo(Utilizador.Tipo.GestorDeStock);
 
             GestorDeStock = await SessaoController!.ObterUtilizadorComSessaoIniciada();
-            Partes = StockService.ObterTodasAsPartes();
+            Partes = CamadaNegocio.ObterTodasAsPartes();
             Partes.Sort((p1, p2) => p1.Nome.CompareTo(p2.Nome));
             StateHasChanged();
         }
@@ -123,7 +123,7 @@
         Encomenda!.InstanteRealizacao = DateTime.Now;
         try
         {
-            StockService.ColocarEncomenda(Encomenda!);
+            CamadaNegocio.ColocarEncomendaPartes(Encomenda!);
             NavigationManager.NavigateTo("/GestorDeStock");
         }
         catch (EncomendaVaziaException)

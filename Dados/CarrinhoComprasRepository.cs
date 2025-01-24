@@ -1,6 +1,6 @@
 namespace LI4.Dados;
 
-public class CarrinhoComprasRepository
+public class CarrinhoComprasRepository : ICarrinhoComprasRepository
 {
     private static CarrinhoComprasRepository? _Instancia;
 

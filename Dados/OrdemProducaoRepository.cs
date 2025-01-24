@@ -1,6 +1,6 @@
 namespace LI4.Dados;
 
-public class OrdemProducaoRepository
+public class OrdemProducaoRepository : IOrdemProducaoRepository
 {
     private static OrdemProducaoRepository? _Instancia;
 

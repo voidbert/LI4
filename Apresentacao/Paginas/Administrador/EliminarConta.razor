@@ -1,13 +1,14 @@
 @page "/Administrador/EliminarConta"
 
 @using LI4.Apresentacao.Componentes
+@using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Administrador
 
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.Administrador />
 
@@ -54,14 +55,14 @@
 
     protected override void OnInitialized()
     {
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Utilizadores = UtilizadoresService.ObterTodos();
+            Utilizadores = CamadaNegocio.ObterTodosOsUtilizadores();
             Administrador = await SessaoController!.ObterUtilizadorComSessaoIniciada();
             StateHasChanged();
         }
@@ -97,11 +98,11 @@
     {
         try
         {
-            UtilizadoresService.RegistarComoImpedidoDeIniciarSessao(enderecoEletronico);
+            CamadaNegocio.RegistarComoImpedidoDeIniciarSessao(enderecoEletronico);
         }
         catch (UtilizadorNaoEncontradoException) {}
 
-        Utilizadores = UtilizadoresService.ObterTodos();
+        Utilizadores = CamadaNegocio.ObterTodosOsUtilizadores();
         StateHasChanged();
     }
 }

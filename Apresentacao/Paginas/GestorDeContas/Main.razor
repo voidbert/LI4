@@ -3,16 +3,14 @@
 @using LI4.Apresentacao.Componentes
 @using LI4.Negocio
 @using LI4.Negocio.Utilizadores
-@using LI4.Negocio.Encomendas
+@using LI4.Negocio.Producao
 @using LI4.Negocio.Stock
 
 @namespace LI4.Apresentacao.Paginas.GestorDeContas
 
-@inject EncomendasService EncomendasService
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject StockService StockService
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeContas />
 
@@ -51,14 +49,14 @@
 
     protected override void OnInitialized()
     {
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            foreach (EncomendaPartes encomenda in StockService.ObterTodasAsEncomendasPartes())
+            foreach (EncomendaPartes encomenda in CamadaNegocio.ObterTodasAsEncomendasPartes())
             {
                 Transacoes.Add(new Transacao
                 {
@@ -68,7 +66,7 @@
                 });
             }
 
-            foreach (EncomendaEVAs encomenda in EncomendasService.ObterTodasAsEncomendasEVAs())
+            foreach (EncomendaEVAs encomenda in CamadaNegocio.ObterTodasAsEncomendasEVAs())
             {
                 if (encomenda.InstanteEntrega != null)
                 {

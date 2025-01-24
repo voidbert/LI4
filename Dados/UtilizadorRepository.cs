@@ -1,6 +1,6 @@
 namespace LI4.Dados;
 
-public class UtilizadorRepository
+public class UtilizadorRepository : IUtilizadorRepository
 {
     private static UtilizadorRepository? _Instancia;
 

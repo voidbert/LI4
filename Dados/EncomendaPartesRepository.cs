@@ -1,6 +1,6 @@
 namespace LI4.Dados;
 
-public class EncomendaPartesRepository
+public class EncomendaPartesRepository : IEncomendaPartesRepository
 {
     private static EncomendaPartesRepository? _Instancia;
 

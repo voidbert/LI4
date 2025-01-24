@@ -66,7 +66,7 @@ public class EncomendaPartes
 
     public int? Identificador { get; init; }
     public DateTime InstanteRealizacao { get; set; }
-    public double Preco { get; set; }
+    public double Preco { get; private set; }
     public string FuncionarioRaw { get; set; }
     private Dictionary<int, int> _ConteudoRaw { get; set; }
 

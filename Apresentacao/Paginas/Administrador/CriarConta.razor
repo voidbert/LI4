@@ -1,10 +1,11 @@
 @page "/Administrador/CriarConta"
 
 @using LI4.Apresentacao.Componentes
+@using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
-@inject UtilizadoresService UtilizadoresService
 
 @namespace LI4.Apresentacao.Paginas.Administrador
 
@@ -55,7 +56,7 @@
         try
         {
             Utilizador.Tipo tipo = Utilizador.TipoDeString(FormModel!.TipoDeConta);
-            UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, tipo);
+            CamadaNegocio.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, tipo);
             NavigationManager.NavigateTo("/Administrador");
         }
         catch (EnderecoEletronicoInvalidoException)

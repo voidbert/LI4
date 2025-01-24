@@ -4,11 +4,23 @@ using LI4.Dados;
 
 namespace LI4.Negocio.Utilizadores;
 
-public class UtilizadoresService
+public class UtilizadoresService : IGestaoUtilizadores
 {
+    public UtilizadoresService()
+    {
+        this.BaseDeDados = LI4.Dados.BaseDeDados.Instancia;
+        this.Utilizadores = UtilizadorRepository.Instancia;
+        this.Encomendas = EncomendaEVAsRepository.Instancia;
+    }
+
+    public List<Utilizador> ObterTodosOsUtilizadores()
+    {
+        return this.Utilizadores.ObterTodos().Select(model => Utilizador.DeModel(model)).ToList();
+    }
+
     public Utilizador IniciarSessao(string enderecoEletronico, string palavraPasse)
     {
-        UtilizadorModel? utilizadorModel = UtilizadorRepository.Instancia.Obter(enderecoEletronico);
+        UtilizadorModel? utilizadorModel = this.Utilizadores.Obter(enderecoEletronico);
         if (utilizadorModel == null)
         {
             throw new UtilizadorNaoEncontradoException();
@@ -40,49 +52,48 @@ public class UtilizadoresService
             throw new EnderecoEletronicoInvalidoException();
         }
 
-        BaseDeDados.Instancia.IniciarTransacao();
+        this.BaseDeDados.IniciarTransacao();
 
-        if (UtilizadorRepository.Instancia.Obter(enderecoEletronico) != null)
+        if (this.Utilizadores.Obter(enderecoEletronico) != null)
         {
             throw new UtilizadorExistenteException();
         }
 
         Utilizador novoUtilizador = Utilizador.Criar(enderecoEletronico, nomeCivil, palavraPasse, true, tipoDeConta);
         UtilizadorModel novoUtilizadorModel = novoUtilizador.ParaModel();
-        UtilizadorRepository.Instancia.Adicionar(novoUtilizadorModel);
-        BaseDeDados.Instancia.CommitTransacao();
-    }
-
-    public List<Utilizador> ObterTodos()
-    {
-        return UtilizadorRepository.Instancia.ObterTodos().Select(model => Utilizador.DeModel(model)).ToList();
+        this.Utilizadores.Adicionar(novoUtilizadorModel);
+        this.BaseDeDados.CommitTransacao();
     }
 
     public void RegistarComoImpedidoDeIniciarSessao(string enderecoEletronico)
     {
-        BaseDeDados.Instancia.IniciarTransacao();
+        this.BaseDeDados.IniciarTransacao();
 
-        UtilizadorModel? model = UtilizadorRepository.Instancia.Obter(enderecoEletronico);
+        UtilizadorModel? model = this.Utilizadores.Obter(enderecoEletronico);
         if (model == null)
         {
             throw new UtilizadorNaoEncontradoException();
         }
 
         model.PossivelIniciarSessao = false;
-        UtilizadorRepository.Instancia.Atualizar(model);
+        this.Utilizadores.Atualizar(model);
 
         if (model.TipoDeConta == "C")
         {
             foreach (int encomendaIdentificador in model.Encomendas!)
             {
-                EncomendaEVAsModel encomendaModel = EncomendaEVAsRepository.Instancia.Obter(encomendaIdentificador)!;
+                EncomendaEVAsModel encomendaModel = this.Encomendas.Obter(encomendaIdentificador)!;
                 if (encomendaModel.InstanteEntrega == null)
                 {
-                    EncomendaEVAsRepository.Instancia.Eliminar(encomendaIdentificador);
+                    this.Encomendas.Eliminar(encomendaIdentificador);
                 }
             }
         }
 
-        BaseDeDados.Instancia.CommitTransacao();
+        this.BaseDeDados.CommitTransacao();
     }
+
+    private IBaseDeDados BaseDeDados;
+    private IUtilizadorRepository Utilizadores;
+    private IEncomendaEVAsRepository Encomendas;
 }

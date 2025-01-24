@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 
 namespace LI4.Dados;
 
-public class BaseDeDados
+public class BaseDeDados : IBaseDeDados
 {
     private static BaseDeDados? _Instancia = null;
 

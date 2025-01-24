@@ -1,13 +1,14 @@
 @page "/GestorDeProducao"
 
 @using LI4.Apresentacao.Componentes
+@using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.GestorDeProducao
 
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 
@@ -26,7 +27,7 @@
 
     protected override void OnInitialized()
     {
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
