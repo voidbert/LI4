@@ -3,6 +3,7 @@
 @using LI4.Apresentacao.Componentes
 @using LI4.Negocio.Utilizadores
 @using LI4.Negocio.Producao
+@using LI4.Negocio
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
@@ -14,17 +15,47 @@
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
-@if (OrdemProducao != null)
-{
-    <span>VER ORDEM DE PRODUÇÃO AQUI!</span>
-}
+<main>
+    @if (OrdemProducao != null)
+    {
+        @foreach (var element in EVAs.Select((eva, index) => new { eva, index }))
+        {
+            <div class="place-animation-start">
+                <div style="animation-delay: @($"{element.index * 3 + 10}s")" class="go-off-screen">
+                    <img
+                        style="animation-delay: @($"{element.index * 3}s")"
+                        class="animate"
+                        src="@element.eva.Imagem"
+                    />
+                </div>
+            </div>
+        }
+    }
 
-<a href="/GestorDeProducao">
-    <button>Voltar</button>
-</a>
+    <section class="graph">
+        <div id="section1">
+            <p>Cabeça</p>
+            <div class="section"></div>
+        </div>
+        <div id="section2">
+            <p>Braços</p>
+            <div class="section"></div>
+        </div>
+        <div id="section3">
+            <p>Pernas</p>
+            <div class="section"></div>
+        </div>
+        <img class="base" src="conveyor-belt.png"/>
+    </section>
+
+    <div style="z-index: 1">
+        <LinkButton Href="/GestorDeProducao" Title="Voltar"/>
+    </div>
+</main>
 
 @code
 {
+    private List<EVA> EVAs { get; set; } = new List<EVA>();
     private OrdemProducao? OrdemProducao { get; set; }
     private string? MensagemAlerta { get; set; }
 
@@ -49,6 +80,14 @@
                 OrdemProducao = null;
                 StateHasChanged();
                 return;
+            }
+
+            foreach(KeyValuePair<EVA, int> pair in OrdemProducao.Conteudo)
+            {
+                for(int i = 0; i < pair.Value; i++)
+                {
+                    EVAs.Add(pair.Key);
+                }
             }
 
             ProducaoService.RegistarOrdemProducaoComoVisualizada(OrdemProducao.Identificador!.Value);
