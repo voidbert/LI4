@@ -18,14 +18,14 @@
 <main>
     @if (OrdemProducao != null)
     {
-        @foreach (var eva in EVAs.Select((eva, index) => new { eva, index }))
+        @foreach (var element in EVAs.Select((eva, index) => new { eva, index }))
         {
-            <div class="center-change-this-name">
-                <div style="animation-delay: @($"{eva.index * 3 + 10}s")" class="go-off-screen">
+            <div class="place-animation-start">
+                <div style="animation-delay: @($"{element.index * 3 + 10}s")" class="go-off-screen">
                     <img
-                        style="animation-delay: @($"{eva.index * 3}s")"
+                        style="animation-delay: @($"{element.index * 3}s")"
                         class="animate"
-                        src="@eva.eva.Imagem"
+                        src="@element.eva.Imagem"
                     />
                 </div>
             </div>
