@@ -17,19 +17,17 @@
 
 @if (OrdemProducao != null)
 {
-<script>
-    $(".animate").each(function(index){
-        $(this).css({
-            'animation-delay' : 2*(1+index) + 's'
-        });
-    });
-</script>
-
 <main>
-    @foreach(EVA eva in EVAs)
+    @foreach (var eva in EVAs.Select((eva, index) => new { eva, index }))
     {
         <div class="center-change-this-name">
-            <img class="animate" src="@eva.Imagem"/>
+            <div style="animation-delay: @($"{eva.index * 3 + 10}s")" class="go-off-screen">
+                <img
+                    style="animation-delay: @($"{eva.index * 3}s")"
+                    class="animate"
+                    src="@eva.eva.Imagem"
+                />
+            </div>
         </div>
     }
 
@@ -51,9 +49,9 @@
 </main>
 }
 
-<main>
+<div style="font-family: Arial, sans-serif">
     <LinkButton Href="/GestorDeProducao" Title="Voltar"/>
-</main>
+</div>
 
 
 @code

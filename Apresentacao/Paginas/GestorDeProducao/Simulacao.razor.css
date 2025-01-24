@@ -20,18 +20,41 @@ main {
     animation-fill-mode: forwards;
 }
 
+.go-off-screen {
+    animation-duration: 4s;
+    animation-name: jump;
+    animation-fill-mode: forwards;
+}
+
+@keyframes jump {
+    30%{
+        transform: translate(0, -200px);
+        opacity: 1;
+    }
+    100%{
+        transform: translate(0, 300px);
+        opacity: 0;
+    }
+}
+
 @keyframes slide {
     33% {
         transform: translate(250px, 0);
-        clip-path: polygon(1% 0%, 0% 0%, 100% 0%, 100% 23%, 0 23%);
+        /* clip-path: polygon(1% 0%, 0% 0%, 100% 0%, 100% 23%, 0 23%); */
+        clip-path: polygon(22.77% 5.3%, 60.39% 1.79%, 60.39% 10.02%, 54.46% 19.5%, 32.81% 21.2%);
     }
     66% {
         transform: translate(500px, 0);
-        clip-path: polygon(1% 0%, 2% 0%, 0% 0%, 100% 0%, 100% 66%, 0 66%);
+        /* clip-path: polygon(1% 0%, 2% 0%, 0% 0%, 100% 0%, 100% 66%, 0 66%); */
+        clip-path: polygon(0% 0%, 100% 0%, 100% 56.92%, 84.4% 60.63%, 80.58% 57.1%, 75.12% 57.03%,
+                            69.66% 56.92%, 64.82% 54.46%, 58.08% 57.35%, 51.67% 51.43%,
+                            44.71% 50.19%, 29.94% 57.6%, 0% 56.9%);
     }
     100% {
         transform: translate(750px, 0);
-        clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        /* clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); */
+        clip-path: polygon(0% 0%, 100% 0%, 100% 56.92%, 100% 79.93%, 100% 66.54%, 100% 100%,
+                            0% 100%);
     }
 }
 
