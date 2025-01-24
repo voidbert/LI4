@@ -15,20 +15,21 @@
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
-@if (OrdemProducao != null)
-{
 <main>
-    @foreach (var eva in EVAs.Select((eva, index) => new { eva, index }))
+    @if (OrdemProducao != null)
     {
-        <div class="center-change-this-name">
-            <div style="animation-delay: @($"{eva.index * 3 + 10}s")" class="go-off-screen">
-                <img
-                    style="animation-delay: @($"{eva.index * 3}s")"
-                    class="animate"
-                    src="@eva.eva.Imagem"
-                />
+        @foreach (var eva in EVAs.Select((eva, index) => new { eva, index }))
+        {
+            <div class="center-change-this-name">
+                <div style="animation-delay: @($"{eva.index * 3 + 10}s")" class="go-off-screen">
+                    <img
+                        style="animation-delay: @($"{eva.index * 3}s")"
+                        class="animate"
+                        src="@eva.eva.Imagem"
+                    />
+                </div>
             </div>
-        </div>
+        }
     }
 
     <section class="graph">
@@ -44,15 +45,13 @@
             <p>Pernas</p>
             <div class="section"></div>
         </div>
-        <div id="base"></div>
+        <img class="base" src="conveyor-belt.png"/>
     </section>
+
+    <div style="z-index: 1">
+        <LinkButton Href="/GestorDeProducao" Title="Voltar"/>
+    </div>
 </main>
-}
-
-<div style="font-family: Arial, sans-serif">
-    <LinkButton Href="/GestorDeProducao" Title="Voltar"/>
-</div>
-
 
 @code
 {
