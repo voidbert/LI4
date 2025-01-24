@@ -10,13 +10,13 @@ main {
 
 .catalog-container {
     width: 100%;
-    height: fit-content;
+    height: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 10px;
     padding: 10px;
-    justify-content: center;
-    align-items: start;
+    justify-items: center;
+    align-items: center;
 }
 
 .left-sidebar {

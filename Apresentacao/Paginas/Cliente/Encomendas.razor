@@ -88,7 +88,7 @@
                     }
                     else if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Entregue && (DateTime.Now - encomenda.InstanteEntrega)!.Value.TotalDays < (365 * 3))
                     {
-                        <ActionButton Callback="() => DevolverEncomenda(encomenda)" Title="Devolver encomenda" />
+                        <ActionButton Callback="() => DevolverEncomenda(encomenda)" Title="Devolver" />
                     }
                 </td>
             </tr>

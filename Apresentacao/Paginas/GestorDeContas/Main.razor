@@ -30,7 +30,7 @@
             <tr class="@((transacao.Valor >= 0) ? "positive" : "negative")">
                 <td>@transacao.Instante</td>
                 <td>@transacao.Descricao</td>
-                <td>@String.Format("{0:F2} €", transacao.Valor)</td>
+                <td>@String.Format("{0:+ 0.00##;- 0.00##;0.00} €", transacao.Valor)</td>
             </tr>
         }
     </table>
