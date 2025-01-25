@@ -1,26 +1,27 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
+using LI4.Negocio;
 using LI4.Negocio.Utilizadores;
 
 namespace LI4.Apresentacao;
 
 public class SessaoController
 {
-    private UtilizadoresService UtilizadoresService;
+    private ICamadaNegocio CamadaNegocio;
     private ProtectedLocalStorage ProtectedLocalStorage;
     private NavigationManager NavigationManager;
 
-    public SessaoController(UtilizadoresService UtilizadoresService, ProtectedLocalStorage ProtectedLocalStorage, NavigationManager NavigationManager)
+    public SessaoController(ICamadaNegocio CamadaNegocio, ProtectedLocalStorage ProtectedLocalStorage, NavigationManager NavigationManager)
     {
-        this.UtilizadoresService = UtilizadoresService;
+        this.CamadaNegocio = CamadaNegocio;
         this.ProtectedLocalStorage = ProtectedLocalStorage;
         this.NavigationManager = NavigationManager;
     }
 
     public async Task<Utilizador> IniciarSessao(string enderecoEletronico, string palavraPasse)
     {
-        Utilizador utilizador = UtilizadoresService.IniciarSessao(enderecoEletronico, palavraPasse);
+        Utilizador utilizador = CamadaNegocio.IniciarSessao(enderecoEletronico, palavraPasse);
 
         await ProtectedLocalStorage.SetAsync("enderecoEletronico", enderecoEletronico);
         await ProtectedLocalStorage.SetAsync("palavraPasse", palavraPasse);

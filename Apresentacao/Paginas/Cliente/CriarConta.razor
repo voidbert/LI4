@@ -1,13 +1,14 @@
 @page "/Cliente/CriarConta"
 
 @using LI4.Apresentacao.Componentes
+@using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@null />
 <Alerta @bind-Mensagem=@MensagemAlerta />
@@ -42,14 +43,14 @@
     protected override void OnInitialized()
     {
         FormModel ??= new ContaModel();
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
     }
 
     private async Task Registar()
     {
         try
         {
-            UtilizadoresService.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, Utilizador.Tipo.Cliente);
+            CamadaNegocio.RegistarUtilizador(FormModel!.EnderecoEletronico, FormModel!.NomeCivil, FormModel!.PalavraPasse, Utilizador.Tipo.Cliente);
             await SessaoController!.IniciarSessao(FormModel!.EnderecoEletronico, FormModel!.PalavraPasse);
             await SessaoController!.RedirecionarConformeTipo(null);
         }

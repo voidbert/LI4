@@ -1,6 +1,6 @@
 namespace LI4.Dados;
 
-public class EVARepository
+public class EVARepository : IEVARepository
 {
     private static EVARepository? _Instancia;
 

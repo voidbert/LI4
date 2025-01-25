@@ -3,17 +3,17 @@
 @using LI4.Apresentacao.Componentes
 @using LI4.Negocio
 @using LI4.Negocio.Producao
-@using LI4.Negocio.Encomendas
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.GestorDeProducao
 
-@inject ComumService ComumService
-@inject EncomendasService EncomendasService
+@inject ICamadaNegocio CamadaNegocio
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 
 <main>
+    <HeaderTitle>Gestão de Encomendas</HeaderTitle>
+
     <table class="production-deliveries">
         <tr>
             <th>Identificador</th>
@@ -89,7 +89,7 @@
 
     private void AtualizarPagina()
     {
-        EncomendasEVAs = EncomendasService.ObterTodasAsEncomendasEVAs();
+        EncomendasEVAs = CamadaNegocio.ObterTodasAsEncomendasEVAs();
         EncomendasEVAs.Sort((e1, e2) => e2.InstanteColocacao.CompareTo(e1.InstanteColocacao));
 
         foreach (EncomendaEVAs encomenda in EncomendasEVAs)
@@ -106,13 +106,13 @@
 
     private void Rejeitar(EncomendaEVAs encomenda)
     {
-        EncomendasService.RejeitarEncomenda(encomenda.Identificador!.Value);
+        CamadaNegocio.RejeitarEncomendaEVAs(encomenda.Identificador!.Value);
         AtualizarPagina();
     }
 
     private void Aprovar(EncomendaEVAs encomenda)
     {
-        EncomendasService.AprovarEncomenda(encomenda.Identificador!.Value);
+        CamadaNegocio.AprovarEncomendaEVAs(encomenda.Identificador!.Value);
         AtualizarPagina();
     }
 }

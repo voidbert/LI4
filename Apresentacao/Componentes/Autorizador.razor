@@ -1,8 +1,9 @@
+@using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Componentes
 
-@inject UtilizadoresService UtilizadoresService
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
 
@@ -17,7 +18,7 @@
     {
         if (firstRender)
         {
-            SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+            SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
             await SessaoController!.RedirecionarConformeTipo(TipoDeConta);
         }
     }

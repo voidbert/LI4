@@ -29,11 +29,6 @@ main {
     background-color: #fafafa;
 }
 
-/* Value Head column styling */
-.eva-warehouse th:last-child {
-    text-align: right;
-}
-
 /* Value column styling */
 .eva-warehouse td:last-child {
     text-align: right;

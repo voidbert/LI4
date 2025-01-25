@@ -1,5 +1,5 @@
 using LI4.Dados;
-using LI4.Negocio.Encomendas;
+using LI4.Negocio.Producao;
 
 namespace LI4.Negocio.Utilizadores;
 

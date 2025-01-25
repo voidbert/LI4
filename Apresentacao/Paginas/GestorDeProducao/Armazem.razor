@@ -7,11 +7,9 @@
 
 @namespace LI4.Apresentacao.Paginas.GestorDeProducao
 
-@inject ComumService ComumService
-@inject ProducaoService ProducaoService
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 <Alerta @bind-Mensagem=@MensagemAlerta />
@@ -38,9 +36,7 @@
             @if (OrdemProducao != null)
             {
                 <td>
-                    <button @onclick="@(() => DecrementarQuantidade(eva))">-</button>
-                    @OrdemProducao.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0).ToString()
-                    <button @onclick="@(() => IncrementarQuantidade(eva))">+</button>
+                    <Counter Value="@OrdemProducao.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0)" Decrementar="@(() => DecrementarQuantidade(eva))" Incrementar="@(() => IncrementarQuantidade(eva))"/>
                 </td>
             }
             <td>@eva.QuantidadeArmazem</td>
@@ -80,10 +76,10 @@
     {
         if (firstRender)
         {
-            SessaoController sessoes = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+            SessaoController sessoes = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
             GestorDeProducao = await sessoes.ObterUtilizadorComSessaoIniciada();
 
-            EVAs = ComumService.ObterTodasAsEVAs();
+            EVAs = CamadaNegocio.ObterTodasAsEVAs();
             EVAs.Sort((e1, e2) => e1.Nome.CompareTo(e2.Nome));
             StateHasChanged();
         }
@@ -104,7 +100,7 @@
         OrdemProducao!.InstanteEmissao = DateTime.Now;
         try
         {
-            ProducaoService.ColocarOrdemProducao(OrdemProducao!);
+            CamadaNegocio.ColocarOrdemProducao(OrdemProducao!);
             NavigationManager.NavigateTo("/GestorDeStock");
         }
         catch (OrdemProducaoVaziaException)

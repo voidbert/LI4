@@ -1,7 +1,7 @@
 using LI4.Dados;
 using LI4.Negocio.Utilizadores;
 
-namespace LI4.Negocio.Encomendas;
+namespace LI4.Negocio.Producao;
 
 public class EncomendaEVAs
 {
@@ -94,7 +94,7 @@ public class EncomendaEVAs
     public int? Identificador { get; init; }
     public string ClienteRaw { get; set; }
     public string Morada { get; set; }
-    public double Preco { get; set; }
+    public double Preco { get; private set; }
     public DateTime InstanteColocacao { get; set; }
     public DateTime? InstanteConfirmacao { get; set; }
     public DateTime? InstanteEntrega { get; set; }

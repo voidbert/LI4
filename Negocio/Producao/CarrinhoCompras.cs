@@ -2,7 +2,7 @@ using LI4.Dados;
 using LI4.Negocio;
 using LI4.Negocio.Utilizadores;
 
-namespace LI4.Negocio.Encomendas;
+namespace LI4.Negocio.Producao;
 
 public class CarrinhoCompras
 {

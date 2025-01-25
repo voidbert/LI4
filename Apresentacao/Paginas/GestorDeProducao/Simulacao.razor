@@ -1,16 +1,15 @@
 @page "/GestorDeProducao/Simulacao"
 
 @using LI4.Apresentacao.Componentes
+@using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 @using LI4.Negocio.Producao
-@using LI4.Negocio
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject ProducaoService ProducaoService
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeProducao />
 <Alerta @bind-Mensagem=@MensagemAlerta />
@@ -63,7 +62,7 @@
     {
         if (firstRender)
         {
-            SessaoController sessoes = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+            SessaoController sessoes = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
             GestorDeProducao utilizador = (GestorDeProducao) (await sessoes.ObterUtilizadorComSessaoIniciada())!;
 
             OrdemProducao = utilizador.OrdensProducao.MaxBy(o => o.InstanteEmissao);
@@ -90,7 +89,7 @@
                 }
             }
 
-            ProducaoService.RegistarOrdemProducaoComoVisualizada(OrdemProducao.Identificador!.Value);
+            CamadaNegocio.RegistarOrdemProducaoComoVisualizada(OrdemProducao.Identificador!.Value);
             StateHasChanged();
         }
     }

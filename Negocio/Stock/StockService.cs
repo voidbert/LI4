@@ -2,47 +2,48 @@ using LI4.Dados;
 
 namespace LI4.Negocio.Stock;
 
-public class StockService
+public class StockService : IGestaoStock
 {
-    public Parte? ObterParte(int identificador)
+    public StockService()
     {
-        ParteModel? model = ParteRepository.Instancia.Obter(identificador);
-        if (model == null)
-        {
-            return null;
-        }
-
-        return Parte.DeModel(model);
+        this.BaseDeDados = LI4.Dados.BaseDeDados.Instancia;
+        this.Partes = ParteRepository.Instancia;
+        this.Encomendas = EncomendaPartesRepository.Instancia;
     }
 
     public List<Parte> ObterTodasAsPartes()
     {
-        return ParteRepository.Instancia.ObterTodas().Select(model => Parte.DeModel(model)).ToList();
+        return this.Partes.ObterTodas().Select(model => Parte.DeModel(model)).ToList();
     }
 
     public List<EncomendaPartes> ObterTodasAsEncomendasPartes()
     {
-        return EncomendaPartesRepository.Instancia.ObterTodas().Select(model => EncomendaPartes.DeModel(model)).ToList();
+        return this.Encomendas.ObterTodas().Select(model => EncomendaPartes.DeModel(model)).ToList();
     }
 
-    public void ColocarEncomenda(EncomendaPartes encomenda)
+    public void ColocarEncomendaPartes(EncomendaPartes encomenda)
     {
+        encomenda.InstanteRealizacao = DateTime.Now;
         if (encomenda.Conteudo.Count == 0)
         {
             throw new EncomendaVaziaException();
         }
 
-        BaseDeDados.Instancia.IniciarTransacao();
+        this.BaseDeDados.IniciarTransacao();
 
         foreach (KeyValuePair<Parte, int> entrada in encomenda.Conteudo)
         {
             ParteModel parte = entrada.Key.ParaModel();
             ParteModel novaParte = parte with { QuantidadeArmazem = parte.QuantidadeArmazem + entrada.Value };
-            ParteRepository.Instancia.Atualizar(novaParte);
+            this.Partes.Atualizar(novaParte);
         }
 
         EncomendaPartesModel encomendaPartesModel = encomenda.ParaModel();
-        EncomendaPartesRepository.Instancia.Adicionar(encomendaPartesModel);
-        BaseDeDados.Instancia.CommitTransacao();
+        Encomendas.Adicionar(encomendaPartesModel);
+        this.BaseDeDados.CommitTransacao();
     }
+
+    private IBaseDeDados BaseDeDados;
+    private IParteRepository Partes;
+    private IEncomendaPartesRepository Encomendas;
 }

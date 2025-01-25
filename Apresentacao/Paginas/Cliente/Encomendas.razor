@@ -2,20 +2,19 @@
 
 @using LI4.Apresentacao.Componentes
 @using LI4.Negocio
-@using LI4.Negocio.Encomendas
+@using LI4.Negocio.Producao
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
-@inject ComumService ComumService
-@inject EncomendasService EncomendasService
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.Cliente />
 
 <main>
+    <HeaderTitle>As Minhas Encomendas</HeaderTitle>
     <table class="deliveries">
         <tr>
             <th>Data de colocação</th>
@@ -23,7 +22,7 @@
             <th>Conteúdos</th>
             <th>Preço</th>
             <th>Tracking</th>
-            <th>Ação</th>
+            <th></th>
         </tr>
 
         @for (int i = 0; i < EncomendasEVAs.Count; ++i)
@@ -35,6 +34,11 @@
                 <td>@encomenda.Estado.ToString()</td>
                 <td>
                     <table class="eva-deliveries">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Quantidade</th>
+                        </tr>
+
                         @foreach (KeyValuePair<string, int> entrada in Conteudos[i])
                         {
                             <tr>
@@ -82,7 +86,7 @@
                     }
                     else if (encomenda.Estado == EncomendaEVAs.EstadoEncomenda.Entregue && (DateTime.Now - encomenda.InstanteEntrega)!.Value.TotalDays < (365 * 3))
                     {
-                        <ActionButton Callback="() => DevolverEncomenda(encomenda)" Title="Devolver encomenda" />
+                        <ActionButton Callback="() => DevolverEncomenda(encomenda)" Title="Devolver" />
                     }
                 </td>
             </tr>
@@ -102,7 +106,7 @@
 
     protected override void OnInitialized()
     {
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -132,13 +136,13 @@
 
     private async Task CancelarEncomenda(EncomendaEVAs encomenda)
     {
-        EncomendasService.CancelarEncomenda(encomenda.Identificador!.Value);
+        CamadaNegocio.CancelarEncomendaEVAs(encomenda.Identificador!.Value);
         await AtualizarPagina();
     }
 
     private async Task DevolverEncomenda(EncomendaEVAs encomenda)
     {
-        EncomendasService.DevolverEncomenda(encomenda.Identificador!.Value);
+        CamadaNegocio.DevolverEncomendaEVAs(encomenda.Identificador!.Value);
         await AtualizarPagina();
     }
 }

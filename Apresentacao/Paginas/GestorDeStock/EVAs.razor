@@ -2,13 +2,12 @@
 
 @using LI4.Apresentacao.Componentes
 @using LI4.Negocio
-@using LI4.Negocio.Utilizadores
 @using LI4.Negocio.Stock
+@using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.GestorDeStock
 
-@inject StockService StockService
-@inject ComumService ComumService
+@inject ICamadaNegocio CamadaNegocio
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.GestorDeStock />
 
@@ -69,7 +68,7 @@
     {
         if (firstRender)
         {
-            Bixos = ComumService.ObterTodasAsEVAs().ToDictionary(eva => eva, eva => eva.Partes);
+            Bixos = CamadaNegocio.ObterTodasAsEVAs().ToDictionary(eva => eva, eva => eva.Partes);
             StateHasChanged();
         }
     }

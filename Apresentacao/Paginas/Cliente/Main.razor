@@ -2,23 +2,21 @@
 
 @using LI4.Apresentacao.Componentes
 @using LI4.Negocio
-@using LI4.Negocio.Encomendas
+@using LI4.Negocio.Producao
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
-@inject ComumService ComumService
-@inject EncomendasService EncomendasService
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.Cliente />
 
 <main class="catalog-layout">
     <!-- Left sidebar -->
     <aside class="left-sidebar">
-        <InputField Placeholder="Pesquisar" Value=@Pesquisa Callback=@Pesquisar />
+        <SearchField Placeholder="Pesquisar" Value=@Pesquisa Callback=@Pesquisar />
         <div class="filters">
             <InputRadioGroup @bind-Value="@Ordem">
                 @foreach (string ordem in Ordens.Keys)
@@ -42,7 +40,14 @@
     </div>
     
     <aside class="right-sidebar">
-        <HeaderTitle>Olá, (deu merda aqui)</HeaderTitle>
+        @if (Cliente != null)
+        {
+            <HeaderTitle>Olá, @Cliente.NomeCivil!</HeaderTitle>
+        }
+        else
+        {
+            <HeaderTitle>Olá, !</HeaderTitle>
+        }
         <LinkButton Href="/Cliente/Carrinho" Title="Ver Carrinho"></LinkButton>
         <LinkButton Href="/Cliente/Encomendas" Title="Ver Encomendas"></LinkButton>
         <ActionButton Callback="Logout" Title="Terminar Sessão"></ActionButton>
@@ -68,7 +73,7 @@
 
     protected override void OnInitialized()
     {
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -76,7 +81,7 @@
         if (firstRender)
         {
             Cliente = await SessaoController!.ObterUtilizadorComSessaoIniciada();
-            EVAs = ComumService.ObterTodasAsEVAs();
+            EVAs = CamadaNegocio.ObterTodasAsEVAs();
             StateHasChanged();
         }
     }
@@ -103,11 +108,11 @@
 
     private void AdicionarCarrinho(EVA eva)
     {
-        CarrinhoCompras carrinho = EncomendasService.ObterCarrinho(Cliente!.EnderecoEletronico);
+        CarrinhoCompras carrinho = CamadaNegocio.ObterCarrinho(Cliente!.EnderecoEletronico);
 
         int quantidade = carrinho!.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0);
         carrinho.DefinirQuantidadeDeEVA(eva, quantidade + 1);
-        EncomendasService.AtualizarCarrinho(carrinho);
+        CamadaNegocio.AtualizarCarrinho(carrinho);
     }
 
     private async Task Logout() {

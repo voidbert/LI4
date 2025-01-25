@@ -164,3 +164,22 @@ CREATE TABLE ConteudoEncomendaPartes (
   CONSTRAINT ConteudoEncomendaPartesQuantidadePositiva CHECK       (Quantidade > 0)
 );
 GO
+
+CREATE LOGIN WeaponsRUsApp WITH PASSWORD = 'V3ry$3cur3Pa$$w0rd';
+GO
+
+CREATE USER WeaponsRUsApp FOR LOGIN WeaponsRUsApp;
+GO
+
+GRANT SELECT, INSERT, UPDATE ON Utilizador              TO WeaponsRUsApp;
+GRANT SELECT, UPDATE         ON EVA                     TO WeaponsRUsApp;
+GRANT SELECT, INSERT, DELETE ON CarrinhoCompras         TO WeaponsRUsApp;
+GRANT SELECT, INSERT, UPDATE ON EncomendaEVAs           TO WeaponsRUsApp;
+GRANT SELECT, INSERT, DELETE ON ConteudoEncomendaEVAs   TO WeaponsRUsApp;
+GRANT SELECT, INSERT, UPDATE ON OrdemProducao           TO WeaponsRUsApp;
+GRANT SELECT, INSERT, DELETE ON ConteudoOrdemProducao   TO WeaponsRUsApp;
+GRANT SELECT, UPDATE         ON Parte                   TO WeaponsRUsApp;
+GRANT SELECT, INSERT, DELETE ON EVAPartes               TO WeaponsRUsApp;
+GRANT SELECT, INSERT         ON EncomendaPartes         TO WeaponsRUsApp;
+GRANT SELECT, INSERT         ON ConteudoEncomendaPartes TO WeaponsRUsApp;
+GO

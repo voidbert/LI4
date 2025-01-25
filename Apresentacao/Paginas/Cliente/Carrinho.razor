@@ -2,16 +2,14 @@
 
 @using LI4.Apresentacao.Componentes
 @using LI4.Negocio
-@using LI4.Negocio.Encomendas
+@using LI4.Negocio.Producao
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Cliente
 
-@inject ComumService ComumService
-@inject EncomendasService EncomendasService
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.Cliente />
 <Alerta @bind-Mensagem=@MensagemAlerta />
@@ -102,10 +100,10 @@
     {
         if (firstRender)
         {
-            SessaoController sessoes = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+            SessaoController sessoes = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
             Cliente = await sessoes.ObterUtilizadorComSessaoIniciada();
 
-            CarrinhoCompras = EncomendasService.ObterCarrinho(Cliente!.EnderecoEletronico);
+            CarrinhoCompras = CamadaNegocio.ObterCarrinho(Cliente!.EnderecoEletronico);
             EVAs = CarrinhoCompras.Conteudo.Keys.ToList();
             EVAs.Sort((e1, e2) => String.Compare(e1.Nome, e2.Nome, StringComparison.Ordinal));
 
@@ -125,7 +123,7 @@
         EncomendaEVAs encomenda = new EncomendaEVAs(Cliente!.EnderecoEletronico, Morada, Preco, DateTime.Now, CarrinhoCompras!.ConteudoRaw);
         try
         {
-            EncomendasService.ColocarEncomenda(encomenda);
+            CamadaNegocio.ColocarEncomendaEVAs(encomenda);
         }
         catch (CarrinhoVazioException)
         {
@@ -134,7 +132,7 @@
         }
 
         CarrinhoCompras!.ConteudoRaw = new Dictionary<int, int>();
-        EncomendasService.AtualizarCarrinho(CarrinhoCompras!);
+        CamadaNegocio.AtualizarCarrinho(CarrinhoCompras!);
 
         EVAs = new List<EVA>(); // Not to crash the renderer while the redirect isn't complete
         NavigationManager.NavigateTo("/Cliente");
@@ -144,7 +142,7 @@
     {
         int quantidade = CarrinhoCompras!.ConteudoRaw.GetValueOrDefault(eva.Identificador, 0);
         CarrinhoCompras!.DefinirQuantidadeDeEVA(eva, quantidade + 1);
-        EncomendasService.AtualizarCarrinho(CarrinhoCompras);
+        CamadaNegocio.AtualizarCarrinho(CarrinhoCompras);
         Preco = CarrinhoCompras!.CalcularPreco();
     }
 
@@ -155,7 +153,7 @@
             return;
 
         CarrinhoCompras!.DefinirQuantidadeDeEVA(eva, quantidade - 1);
-        EncomendasService.AtualizarCarrinho(CarrinhoCompras);
+        CamadaNegocio.AtualizarCarrinho(CarrinhoCompras);
         Preco = CarrinhoCompras!.CalcularPreco();
     }
 
@@ -163,7 +161,7 @@
     {
         CarrinhoCompras!.DefinirQuantidadeDeEVA(eva, 0);
         EVAs.Remove(eva);
-        EncomendasService.AtualizarCarrinho(CarrinhoCompras);
+        CamadaNegocio.AtualizarCarrinho(CarrinhoCompras);
         Preco = CarrinhoCompras!.CalcularPreco();
     }
 }

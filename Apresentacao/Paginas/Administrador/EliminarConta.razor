@@ -1,13 +1,14 @@
 @page "/Administrador/EliminarConta"
 
 @using LI4.Apresentacao.Componentes
+@using LI4.Negocio
 @using LI4.Negocio.Utilizadores
 
 @namespace LI4.Apresentacao.Paginas.Administrador
 
+@inject ICamadaNegocio CamadaNegocio
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStorage
-@inject UtilizadoresService UtilizadoresService
 
 <Autorizador TipoDeConta=@Utilizador.Tipo.Administrador />
 
@@ -15,15 +16,15 @@
     <HeaderTitle>Eliminar Contas</HeaderTitle>
     
     <div class="search">
-        <InputField Id="search" Placeholder="Pesquisar" Value="@Pesquisa" Callback="@Pesquisar" />
+        <SearchField class="search-textbox" Id="search" Placeholder="Pesquisar" Value="@Pesquisa" Callback="@Pesquisar" />
     </div>
 
     <table class="accounts">
         <tr>
             <th>Nome</th>
-            <th>Endereco Eletronico</th>
+            <th>Endereço Eletrónico</th>
             <th>Tipo de Conta</th>
-            <th>Eliminar</th>
+            <th></th>
         </tr>
 
         @foreach(Utilizador utilizador in Utilizadores)
@@ -43,7 +44,6 @@
     <LinkButton Href="/Administrador" Title="Voltar" />
 </main>
 
-
 @code
 {
     private string Pesquisa { get; set; } = "";
@@ -55,14 +55,14 @@
 
     protected override void OnInitialized()
     {
-        SessaoController = new SessaoController(UtilizadoresService, ProtectedLocalStorage, NavigationManager);
+        SessaoController = new SessaoController(CamadaNegocio, ProtectedLocalStorage, NavigationManager);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Utilizadores = UtilizadoresService.ObterTodos();
+            Utilizadores = CamadaNegocio.ObterTodosOsUtilizadores();
             Administrador = await SessaoController!.ObterUtilizadorComSessaoIniciada();
             StateHasChanged();
         }
@@ -98,11 +98,11 @@
     {
         try
         {
-            UtilizadoresService.RegistarComoImpedidoDeIniciarSessao(enderecoEletronico);
+            CamadaNegocio.RegistarComoImpedidoDeIniciarSessao(enderecoEletronico);
         }
         catch (UtilizadorNaoEncontradoException) {}
 
-        Utilizadores = UtilizadoresService.ObterTodos();
+        Utilizadores = CamadaNegocio.ObterTodosOsUtilizadores();
         StateHasChanged();
     }
 }
