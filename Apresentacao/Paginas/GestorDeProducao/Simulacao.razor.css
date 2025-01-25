@@ -1,42 +1,21 @@
 main {
     font-family: Arial, sans-serif;
-    width: 100vw;
-    height: 90vh;
 }
 
 /* Animations: */
 
 .place-animation-start {
-    display: flex;
-    position: absolute;
-    top: 25%;
-    left: 21%;
-    justify-content: left;
+    padding-bottom: 25px;
+    grid-row-start: 1;
+    grid-column-start: 1;
 }
 
 .animate {
     clip-path: polygon(0% 0%, 0% 0%, 0% 0%, 0% 0%);
-    animation-timing-function: linear;
-    animation-duration: 10s;
     animation-name: slide;
+    animation-duration: 10s;
     animation-fill-mode: forwards;
-}
-
-.go-off-screen {
-    animation-duration: 4s;
-    animation-name: jump;
-    animation-fill-mode: forwards;
-}
-
-@keyframes jump {
-    30%{
-        transform: translate(0, -200px);
-        opacity: 1;
-    }
-    100%{
-        transform: translate(0, 300px);
-        opacity: 0;
-    }
+    animation-timing-function: linear;
 }
 
 @keyframes slide {
@@ -63,24 +42,37 @@ main {
     }
 }
 
+.go-off-screen {
+    animation-name: jump;
+    animation-duration: 4s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes jump {
+    30%{
+        transform: translate(0, -200px);
+        opacity: 1;
+    }
+    100%{
+        transform: translate(0, 300px);
+        opacity: 0;
+    }
+}
+
 /* Production Line: */
 
 .graph {
-    width: 100%;
-    height: 90%;
-    display: flex;
+    display: grid;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .base {
-    z-index: -1;
-    position: relative;
-    top: 180px;
-    right: 80px;
     width: 1000px;
     height: 70px;
     border-radius: 5px;
+    grid-row-start: 1;
+    grid-column-start: 1;
 }
 
 .section {
@@ -91,21 +83,21 @@ main {
 }
 
 #section1 {
-    position: relative;
-    top: 0;
-    left: 310px;
+    padding-left: 205px;
+    grid-row-start: 1;
+    grid-column-start: 1;
 }
 
 #section2 {
-    position: relative;
-    top: 0;
-    left: 510px;
+    padding-left: 470px;
+    grid-row-start: 1;
+    grid-column-start: 1;
 }
 
 #section3 {
-    position: relative;
-    top: 0;
-    left: 710px;
+    padding-left: 735px;
+    grid-row-start: 1;
+    grid-column-start: 1;
 }
 
 /* General: */
@@ -115,9 +107,8 @@ img {
 }
 
 p {
-    z-index: 1;
     position: relative;
-    top: 200px;
+    top: 40px;
     rotate: 90deg;
     font-size: larger;
     font-weight: bold;
