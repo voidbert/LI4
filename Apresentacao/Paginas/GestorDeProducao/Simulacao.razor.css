@@ -5,7 +5,9 @@ main {
 /* Animations: */
 
 .place-animation-start {
-    padding-bottom: 25px;
+    z-index: -1;
+    padding-bottom: 35px;
+    padding-left: 50px;
     grid-row-start: 1;
     grid-column-start: 1;
 }
@@ -20,13 +22,13 @@ main {
 
 @keyframes slide {
     33% {
-        transform: translate(250px, 0);
+        transform: translate(300px, 0);
         /* ----------------------- Simpler Cut ----------------------- */
         /* clip-path: polygon(1% 0%, 0% 0%, 100% 0%, 100% 23%, 0 23%); */
         clip-path: polygon(22.77% 5.3%, 60.39% 1.79%, 60.39% 10.02%, 54.46% 19.5%, 32.81% 21.2%);
     }
     66% {
-        transform: translate(500px, 0);
+        transform: translate(550px, 0);
         /* -------------------------- Simpler Cut --------------------------- */
         /* clip-path: polygon(1% 0%, 2% 0%, 0% 0%, 100% 0%, 100% 66%, 0 66%); */
         clip-path: polygon(0% 0%, 100% 0%, 100% 56.92%, 84.4% 60.63%, 80.58% 57.1%, 75.12% 57.03%,
@@ -34,7 +36,7 @@ main {
                             44.71% 50.19%, 29.94% 57.6%, 0% 56.9%);
     }
     100% {
-        transform: translate(750px, 0);
+        transform: translate(800px, 0);
         /* --------------------- Simpler Cut --------------------- */
         /* clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); */
         clip-path: polygon(0% 0%, 100% 0%, 100% 56.92%, 100% 79.93%, 100% 66.54%, 100% 100%,
@@ -68,6 +70,7 @@ main {
 }
 
 .base {
+    z-index: -2;
     width: 1000px;
     height: 70px;
     border-radius: 5px;
@@ -83,18 +86,21 @@ main {
 }
 
 #section1 {
+    z-index: 1;
     padding-left: 205px;
     grid-row-start: 1;
     grid-column-start: 1;
 }
 
 #section2 {
+    z-index: 1;
     padding-left: 470px;
     grid-row-start: 1;
     grid-column-start: 1;
 }
 
 #section3 {
+    z-index: 1;
     padding-left: 735px;
     grid-row-start: 1;
     grid-column-start: 1;
