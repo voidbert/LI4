@@ -20,7 +20,8 @@
         <input type="password" id="password" class="form-control" placeholder="Palavra-passe" @bind="FormModel!.PalavraPasse"/>
 
         <select id="type" name="type" class="form-control" @bind="FormModel!.TipoDeConta">
-            <option value="A" selected>Administrador</option>
+            <option value="" selected>----</option>
+            <option value="A">Administrador</option>
             <option value="GS">Gestor de Stock</option>
             <option value="GP">Gestor de Produção</option>
             <option value="GC">Gestor de Contas</option>
@@ -38,7 +39,7 @@
         public string NomeCivil { get; set; } = "";
         public string EnderecoEletronico { get; set; } = "";
         public string PalavraPasse { get; set; } = "";
-        public string TipoDeConta { get; set; } = "A";
+        public string TipoDeConta { get; set; } = "";
     }
 
     [SupplyParameterFromForm]
@@ -53,6 +54,12 @@
 
     private void Registar()
     {
+        if (FormModel!.TipoDeConta == "")
+        {
+            MensagemAlerta = "Defina antes o cargo do funcionário";
+            return;
+        }
+
         try
         {
             Utilizador.Tipo tipo = Utilizador.TipoDeString(FormModel!.TipoDeConta);
