@@ -15,39 +15,42 @@
 <Alerta @bind-Mensagem=@MensagemAlerta />
 
 <main>
-    @if (OrdemProducao != null)
-    {
-        @foreach (var element in EVAs.Select((eva, index) => new { eva, index }))
-        {
-            <div class="place-animation-start">
-                <div style="animation-delay: @($"{element.index * 3 + 10}s")" class="go-off-screen">
-                    <img
-                        style="animation-delay: @($"{element.index * 3}s")"
-                        class="animate"
-                        src="@element.eva.Imagem"
-                    />
-                </div>
-            </div>
-        }
-    }
-
     <section class="graph">
+        <img class="base" src="conveyor-belt.png"/>
         <div id="section1">
-            <p>Cabeça</p>
-            <div class="section"></div>
+            <div class="section">
+                <p>Cabeça</p>
+            </div>
         </div>
         <div id="section2">
-            <p>Braços</p>
-            <div class="section"></div>
+            <div class="section">
+                <p>Braços</p>
+            </div>
         </div>
         <div id="section3">
-            <p>Pernas</p>
-            <div class="section"></div>
+            <div class="section">
+                <p>Pernas</p>
+            </div>
         </div>
-        <img class="base" src="conveyor-belt.png"/>
+
+        @if (OrdemProducao != null)
+        {
+            @foreach (var element in EVAs.Select((eva, index) => new { eva, index }))
+            {
+                <div class="place-animation-start">
+                    <div style="animation-delay: @($"{element.index * 3 + 10}s")" class="go-off-screen">
+                        <img
+                            style="animation-delay: @($"{element.index * 3}s")"
+                            class="animate"
+                            src="@element.eva.Imagem"
+                        />
+                    </div>
+                </div>
+            }
+        }
     </section>
 
-    <div style="z-index: 1">
+    <div style="padding-top: 20px">
         <LinkButton Href="/GestorDeProducao" Title="Voltar"/>
     </div>
 </main>
