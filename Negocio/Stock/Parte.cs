@@ -36,5 +36,5 @@ public class Parte
     public int Identificador { get; init; }
     public string Nome { get; set; }
     public double Preco { get; set; }
-    public int QuantidadeArmazem { get; }
+    public int QuantidadeArmazem { get; set; }
 }
