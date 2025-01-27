@@ -56,6 +56,7 @@ public class UtilizadoresService : IGestaoUtilizadores
 
         if (this.Utilizadores.Obter(enderecoEletronico) != null)
         {
+            this.BaseDeDados.AbortarTransacao();
             throw new UtilizadorExistenteException();
         }
 
@@ -72,6 +73,7 @@ public class UtilizadoresService : IGestaoUtilizadores
         UtilizadorModel? model = this.Utilizadores.Obter(enderecoEletronico);
         if (model == null)
         {
+            this.BaseDeDados.AbortarTransacao();
             throw new UtilizadorNaoEncontradoException();
         }
 

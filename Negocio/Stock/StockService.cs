@@ -23,11 +23,11 @@ public class StockService : IGestaoStock
 
     public void ColocarEncomendaPartes(EncomendaPartes encomenda)
     {
-        encomenda.InstanteRealizacao = DateTime.Now;
-        if (encomenda.Conteudo.Count == 0)
+        if (encomenda.ConteudoRaw.Count == 0)
         {
             throw new EncomendaVaziaException();
         }
+        encomenda.InstanteRealizacao = DateTime.Now;
 
         this.BaseDeDados.IniciarTransacao();
 

@@ -26,7 +26,7 @@ public class CarrinhoCompras
         };
     }
 
-    public string ClienteRaw { get; set; }
+    public string ClienteRaw { get; init; }
     private Dictionary<int, int> _ConteudoRaw;
 
     public void DefinirQuantidadeDeEVA(EVA eva, int quantidade)
@@ -61,10 +61,6 @@ public class CarrinhoCompras
         get
         {
             return (Cliente)Utilizador.DeModel(UtilizadorRepository.Instancia.Obter(this.ClienteRaw)!);
-        }
-        set
-        {
-            this.ClienteRaw = Cliente.EnderecoEletronico;
         }
     }
 
