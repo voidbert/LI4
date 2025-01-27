@@ -157,7 +157,7 @@ public class ProducaoService : IGestaoProducao
 
         this.BaseDeDados.IniciarTransacao();
 
-        // Remover partes necessárias e colocar novas EVAs no armazém 
+        // Remover partes necessárias e colocar novas EVAs no armazém
         foreach (KeyValuePair<EVA, int> evaEntrada in ordemProducao.Conteudo)
         {
             EVAModel eva = evaEntrada.Key.ParaModel();
