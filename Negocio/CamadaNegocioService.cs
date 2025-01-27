@@ -106,7 +106,7 @@ public class CamadaNegocioService : ICamadaNegocio
     }
 
     private EVARepository EVAs;
-    private ProducaoService Producao;
+    private IGestaoProducao Producao;
     private IGestaoStock Stock;
     private IGestaoUtilizadores Utilizadores;
 }

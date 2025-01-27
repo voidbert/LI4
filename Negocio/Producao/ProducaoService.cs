@@ -43,9 +43,12 @@ public class ProducaoService : IGestaoProducao
 
     public void RejeitarEncomendaEVAs(int identificador)
     {
+        this.BaseDeDados.IniciarTransacao();
+
         EncomendaEVAsModel? model = this.Encomendas.Obter(identificador);
         if (model == null)
         {
+            this.BaseDeDados.AbortarTransacao();
             throw new EncomendaNaoEncontradaException();
         }
 
@@ -53,12 +56,15 @@ public class ProducaoService : IGestaoProducao
 
         if (encomenda.Estado != EncomendaEVAs.EstadoEncomenda.Colocada)
         {
+            this.BaseDeDados.AbortarTransacao();
             throw new EstadoInvalidoException();
         }
 
         encomenda.Aprovada = false;
         encomenda.InstanteConfirmacao = DateTime.Now;
         this.Encomendas.Atualizar(encomenda.ParaModel());
+
+        this.BaseDeDados.CommitTransacao();
     }
 
     public void AprovarEncomendaEVAs(int identificador)
@@ -151,7 +157,7 @@ public class ProducaoService : IGestaoProducao
 
         this.BaseDeDados.IniciarTransacao();
 
-        // Remover partes necessárias e colocar novas EVAs no armazém 
+        // Remover partes necessárias e colocar novas EVAs no armazém
         foreach (KeyValuePair<EVA, int> evaEntrada in ordemProducao.Conteudo)
         {
             EVAModel eva = evaEntrada.Key.ParaModel();
@@ -201,8 +207,7 @@ public class ProducaoService : IGestaoProducao
     {
         this.BaseDeDados.IniciarTransacao();
 
-        Dictionary<int, EVAModel> evas = this.EVAs.ObterTodas().ToDictionary(eva => eva.Identificador, eva => eva);
-        bool podeSatisfazer = encomenda.ConteudoRaw.All(entrada => evas[entrada.Key].QuantidadeArmazem >= entrada.Value);
+        bool podeSatisfazer = encomenda.Conteudo.All(entrada => entrada.Key.QuantidadeArmazem >= entrada.Value);
 
         if (podeSatisfazer)
         {
